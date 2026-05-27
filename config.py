@@ -61,13 +61,22 @@ class BackendConfig:
     host: str = field(default_factory=lambda: os.environ.get("BLAXX_BACKEND_HOST", "127.0.0.1"))
     port: int = field(default_factory=lambda: int(os.environ.get("BLAXX_BACKEND_PORT", "5050")))
     health_timeout_s: float = 20.0
-    health_check_interval_s: float = 10.0
+    # Intervalo do health monitor em runtime. 30s em vez de 10s pra não poluir
+    # log com falsos positivos quando Render hiberna (free tier).
+    health_check_interval_s: float = 30.0
+    # 3 falhas consecutivas = ~90s offline antes de notificar. Render hiberna
+    # após 15min de inatividade — esse threshold evita avisos espúrios.
     health_failure_threshold: int = 3
 
     remote_url: str = field(default_factory=lambda: os.environ.get(
         "BLAXX_BACKEND_URL", PRODUCTION_BACKEND_URL
     ).rstrip("/"))
-    remote_health_timeout_s: float = 8.0
+    # Timeout inicial de 40s contempla cold start do Render free tier (~30s).
+    # Antes era 8s — falhava todo boot quando o servidor estava hibernando.
+    # Pode ser sobrescrito via env var BLAXX_REMOTE_TIMEOUT.
+    remote_health_timeout_s: float = field(default_factory=lambda: float(
+        os.environ.get("BLAXX_REMOTE_TIMEOUT", "40")
+    ))
 
     @property
     def local_url(self) -> str:

@@ -124,14 +124,25 @@ def check_remote_health(timeout: Optional[float] = None) -> bool:
 
 
 def wait_for_remote(timeout_s: Optional[float] = None) -> bool:
-    """Aguarda o backend remoto responder /health (default: 8s)."""
+    """Aguarda o backend remoto responder /health (default: 40s — Render cold start)."""
     timeout = timeout_s if timeout_s is not None else CONFIG.backend.remote_health_timeout_s
     start = time.monotonic()
+    last_progress_log = start
+    # Cada attempt tem timeout próprio curto (3s) — retry rápido até o
+    # cold start do Render terminar OU o limite total estourar.
+    per_attempt = 3.0
     while time.monotonic() - start < timeout:
-        if check_remote_health():
+        if check_remote_health(timeout=per_attempt):
             log.info("backend remoto OK em %.2fs", time.monotonic() - start)
             return True
-        time.sleep(0.4)
+        # Log de progresso a cada 5s pra usuario saber que esta tentando
+        # (especialmente util pra Render free tier que demora ~30s pra acordar)
+        now = time.monotonic()
+        if now - last_progress_log >= 5.0:
+            log.info("aguardando backend acordar... %.0fs (cold start Render pode levar 30-40s)",
+                     now - start)
+            last_progress_log = now
+        time.sleep(0.5)
     log.error("backend remoto não respondeu em %.0fs", timeout)
     return False
 
