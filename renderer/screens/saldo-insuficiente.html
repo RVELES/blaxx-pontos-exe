@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Saldo insuficiente · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="card elevated center-text" style="max-width:480px;">
+        <div class="success-tick" style="background:var(--negative);color:#fff;">!</div>
+        <span class="eyebrow">Atenção</span>
+        <h2>Saldo insuficiente</h2>
+        <p class="subtitle">Você não tem pontos suficientes para essa operação.</p>
+        <div class="row mt-6" style="justify-content:center;">
+          <button class="btn primary" onclick="go('comprar-pontos.html')">Comprar pontos</button>
+          <button class="btn ghost" onclick="go('carteira.html')">Voltar à carteira</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) { document.getElementById('side').outerHTML = renderSidebar('enviar'); }
+  </script>
+</body>
+</html>

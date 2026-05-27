@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Pagamento PIX · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="grid cols-2" style="grid-template-columns: 1fr 1fr;">
+        <div class="card center-text">
+          <span class="eyebrow">Escaneie</span>
+          <h3>QR Code PIX</h3>
+          <div class="qr-box mt-4" id="qr-box">QR CODE</div>
+          <p class="muted mt-4" style="font-size:13px;">Abra o app do seu banco e aponte para o QR.</p>
+        </div>
+
+        <div class="card">
+          <span class="eyebrow">Ou cole o código</span>
+          <h3>PIX copia-e-cola</h3>
+          <div class="copy-box mt-4" id="br-code">…</div>
+          <button class="btn dark block mt-4" id="btn-copy">Copiar código</button>
+          <div class="divider"></div>
+          <div class="row between"><span>Valor</span><strong id="amt">—</strong></div>
+          <div class="row between mt-2"><span>Pontos</span><strong id="pts">—</strong></div>
+          <div class="row between mt-2"><span>Expira em</span><strong id="exp">30 min</strong></div>
+          <button class="btn primary block mt-6" id="btn-sim">Simular pagamento (demo)</button>
+          <p class="muted center-text mt-2" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;">
+            Em produção: webhook do gateway credita automaticamente
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('comprar');
+      document.getElementById('top').outerHTML  = renderTopbar({eyebrow:'Pagamento', title:'Aguardando PIX'});
+
+      const charge = JSON.parse(sessionStorage.getItem('blaxx_charge') || '{}');
+      if (!charge.id) { toast('Cobrança não encontrada', 'error'); setTimeout(()=>go('comprar-pontos.html'), 1200); }
+      document.getElementById('br-code').textContent = charge.br_code || '';
+      document.getElementById('amt').textContent = fmtBRL(charge.amount_brl);
+      document.getElementById('pts').textContent = Number(charge.points_to_credit||0).toLocaleString('pt-BR') + ' pts';
+
+      document.getElementById('btn-copy').addEventListener('click', () => {
+        navigator.clipboard.writeText(charge.br_code || '').then(() => toast('Código copiado'));
+      });
+      document.getElementById('btn-sim').addEventListener('click', async () => {
+        try {
+          await api('/pix/simulate-payment', { method:'POST', body:{ charge_id: charge.id } });
+          toast('Pagamento confirmado!', 'success');
+          setTimeout(() => go('compra-aprovada.html?id=' + charge.id), 700);
+        } catch (e) { toast('Falha: ' + e.message, 'error'); }
+      });
+
+      // Countdown da expiração
+      if (charge.expires_at) {
+        const end = new Date(charge.expires_at).getTime();
+        const tick = () => {
+          const ms = end - Date.now();
+          if (ms <= 0) { document.getElementById('exp').textContent = 'Expirado'; return; }
+          const m = Math.floor(ms/60000), s = Math.floor((ms%60000)/1000);
+          document.getElementById('exp').textContent = `${m}min ${String(s).padStart(2,'0')}s`;
+          setTimeout(tick, 1000);
+        };
+        tick();
+      }
+    }
+  </script>
+</body>
+</html>

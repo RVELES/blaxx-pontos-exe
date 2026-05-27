@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Carteira · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="grid cols-2" style="grid-template-columns: 1.4fr 1fr;">
+        <div class="balance-card">
+          <div class="label">Saldo disponível</div>
+          <div class="amount"><span id="balance">—</span><span class="unit">pts</span></div>
+          <div class="equiv">Equivalente a <span id="equiv">R$ —</span> em cashback (após 6 meses)</div>
+          <div class="row mt-6">
+            <button class="btn primary" onclick="go('comprar-pontos.html')">Comprar</button>
+            <button class="btn ghost" style="border-color:rgba(255,255,255,.18);color:#fff;" onclick="go('enviar-pontos.html')">Enviar</button>
+            <button class="btn ghost" style="border-color:rgba(255,255,255,.18);color:#fff;" onclick="go('vender-pontos.html')">Resgatar</button>
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="card metric">
+            <span class="label">Pontos pendentes</span>
+            <div class="value">+<span id="pending">—</span></div>
+            <div class="muted" style="font-size:12px;">cobranças aguardando pagamento</div>
+          </div>
+          <div class="card metric">
+            <span class="label">Validade próxima</span>
+            <div class="value">12 meses</div>
+            <div class="muted" style="font-size:12px;">consumo FIFO: pontos mais antigos primeiro</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-8">
+        <div class="row between mb-4">
+          <div>
+            <span class="eyebrow">Extrato</span>
+            <h3 style="margin:0;">Últimas movimentações</h3>
+          </div>
+          <a class="btn ghost" onclick="go('extrato.html')">Ver tudo</a>
+        </div>
+        <div id="tx">Carregando…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('carteira');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Sua carteira', title:'Carteira'});
+      (async () => {
+        try {
+          const w = await api('/wallet/');
+          document.getElementById('balance').textContent = Number(w.balance_pts).toLocaleString('pt-BR');
+          document.getElementById('equiv').textContent = fmtBRL(w.balance_brl_equiv);
+          document.getElementById('pending').textContent = Number(w.pending_pts || 0).toLocaleString('pt-BR');
+
+          const t = await api('/wallet/transactions?limit=10');
+          const items = t.transactions || t.items || t || [];
+          if (!items.length) {
+            document.getElementById('tx').innerHTML = '<p class="muted">Nenhuma transação ainda.</p>';
+          } else {
+            document.getElementById('tx').innerHTML = `
+              <table class="blaxx">
+                <thead><tr><th>Tipo</th><th>Descrição</th><th>Status</th><th style="text-align:right;">Pontos</th><th>Data</th></tr></thead>
+                <tbody>
+                ${items.map(x => `
+                  <tr>
+                    <td><span class="chip ${x.amount_pts>0?'success':''}">${x.type}</span></td>
+                    <td>${x.description||'—'}</td>
+                    <td><span class="chip ${x.status==='confirmed'?'success':x.status==='reversed'?'danger':'warning'}">${x.status}</span></td>
+                    <td style="text-align:right;" class="${x.amount_pts>0?'amount-pos':'amount-neg'}">${x.amount_pts>0?'+':''}${Number(x.amount_pts).toLocaleString('pt-BR')}</td>
+                    <td class="muted">${fmtDateTime(x.created_at)}</td>
+                  </tr>
+                `).join('')}
+                </tbody>
+              </table>`;
+          }
+        } catch (e) {
+          toast('Falha: ' + e.message, 'error');
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

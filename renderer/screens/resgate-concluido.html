@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Resgate concluído · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="card elevated center-text" style="max-width:520px;">
+        <div id="tick" class="success-tick">✓</div>
+        <span class="eyebrow" id="eyebrow">Resgate aprovado</span>
+        <h2 id="title">PIX enviado!</h2>
+        <p class="subtitle" id="subtitle">Recurso disponível na sua conta em até 30 segundos.</p>
+        <div class="card lime mt-4" id="summary">…</div>
+        <div class="row mt-6" style="justify-content:center;">
+          <button class="btn primary" onclick="go('carteira.html')">Ver carteira</button>
+          <button class="btn ghost" onclick="go('dashboard.html')">Início</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('resgatar');
+      const r = JSON.parse(sessionStorage.getItem('blaxx_redeem_result') || '{}');
+      const failed = r.status === 'failed';
+      if (failed) {
+        document.getElementById('tick').textContent = '↺';
+        document.getElementById('tick').style.background = 'var(--warning)';
+        document.getElementById('eyebrow').textContent = 'Estorno automático';
+        document.getElementById('title').textContent = 'Payout falhou';
+        document.getElementById('subtitle').textContent = 'Os pontos foram devolvidos à sua carteira (Transaction REFUND).';
+      }
+      document.getElementById('summary').innerHTML = `
+        <div class="row between"><span>Valor</span><strong>${fmtBRL(r.amount_brl)}</strong></div>
+        <div class="row between mt-2"><span>Pontos debitados</span><strong>${Number(r.points_debited||0).toLocaleString('pt-BR')} pts</strong></div>
+        <div class="row between mt-2"><span>End-to-End ID</span><span class="mono">${r.end_to_end_id || '—'}</span></div>
+        <div class="row between mt-2"><span>Status</span><span class="chip ${failed?'danger':'success'}">${r.status||'—'}</span></div>
+      `;
+    }
+  </script>
+</body>
+</html>

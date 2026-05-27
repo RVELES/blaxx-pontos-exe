@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Resgate PIX · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="center-wrap">
+        <div class="card elevated">
+          <span class="eyebrow">Chave PIX</span>
+          <h3>Para qual chave enviar?</h3>
+          <p class="subtitle">Em produção a chave precisa pertencer ao mesmo CPF do cadastro.</p>
+
+          <div class="field">
+            <label>Chave PIX (e-mail, CPF, telefone ou aleatória)</label>
+            <input id="pix_key" name="pix_key" type="text" placeholder="seu@email.com"
+                   autocomplete="off" autocapitalize="none" spellcheck="false" />
+            <span class="hint">Dica: chaves começando com <span class="mono">fail-</span> simulam falha de payout</span>
+          </div>
+          <div class="field">
+            <label>Senha</label>
+            <input id="pwd" name="password" type="password" placeholder="••••••"
+                   autocomplete="current-password" />
+          </div>
+          <div class="card lime" id="summary">…</div>
+          <button class="btn primary lg block mt-4" id="btn-confirm">Solicitar resgate</button>
+          <button class="btn link block mt-2" onclick="go('vender-pontos.html')">Voltar</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('resgatar');
+      const data = JSON.parse(sessionStorage.getItem('blaxx_redeem') || '{}');
+      (async () => {
+        try {
+          const q = await api(`/redeem/quote?points=${data.points}`);
+          document.getElementById('summary').innerHTML = `
+            <div class="row between"><span>Pontos</span><strong>${Number(data.points).toLocaleString('pt-BR')} pts</strong></div>
+            <div class="row between mt-2"><span>Você recebe</span><strong style="font-family:var(--font-display);font-size:22px;">${fmtBRL(q.amount_brl)}</strong></div>
+            <div class="row between mt-2"><span>Cotação</span><span class="muted">${q.rate}</span></div>
+          `;
+        } catch (e) { toast('Erro na cotação: ' + e.message, 'error'); }
+      })();
+
+      document.getElementById('btn-confirm').addEventListener('click', async () => {
+        const pix_key = document.getElementById('pix_key').value.trim();
+        const password = document.getElementById('pwd').value;
+        if (!pix_key) return toast('Informe sua chave PIX', 'error');
+        if (!password) return toast('Informe a senha', 'error');
+        try {
+          const r = await api('/redeem/', {
+            method: 'POST',
+            body: { points: data.points, pix_key, password }
+          });
+          sessionStorage.setItem('blaxx_redeem_result', JSON.stringify(r));
+          go('resgate-concluido.html');
+        } catch (e) { toast(e.message, 'error', 3000); }
+      });
+    }
+  </script>
+</body>
+</html>

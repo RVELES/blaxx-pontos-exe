@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Notificações · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+      <div class="card">
+        <div class="row between mb-4">
+          <div>
+            <span class="eyebrow">Avisos</span>
+            <h3 style="margin:0;">Suas notificações</h3>
+          </div>
+          <button class="btn ghost" id="btn-read-all">Marcar todas como lidas</button>
+        </div>
+        <div id="list">Carregando…</div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    function bgFor(type) {
+      switch (type) {
+        case 'purchase':
+        case 'campaign':
+        case 'voucher': return 'var(--blaxx-lime)';
+        case 'transfer_in': return 'var(--blaxx-lime)';
+        case 'expiration': return 'var(--warning)';
+        case 'system':
+        default: return 'var(--blaxx-black)';
+      }
+    }
+    function fgFor(type) {
+      return (bgFor(type) === 'var(--blaxx-lime)') ? 'var(--blaxx-black)' : 'var(--blaxx-lime)';
+    }
+
+    async function load() {
+      try {
+        const d = await api('/notifications/');
+        const items = d.items || [];
+        if (!items.length) {
+          document.getElementById('list').innerHTML =
+            '<p class="muted">Sem notificações por enquanto.</p>';
+          return;
+        }
+        document.getElementById('list').innerHTML = `<div class="col">` +
+          items.map(n => `
+            <div class="row" style="padding:14px 0;border-bottom:1px solid var(--border);${n.is_read?'':'background:rgba(198,244,50,0.06);'}cursor:pointer;"
+                 onclick="markRead('${n.id}')">
+              <div class="avatar" style="background:${bgFor(n.type)};color:${fgFor(n.type)};flex-shrink:0;">
+                ${n.icon || '!'}
+              </div>
+              <div style="flex:1;">
+                <strong>${n.title}${n.is_read?'':' •'}</strong>
+                <p class="muted" style="margin:2px 0 0;font-size:13px;">${n.body || ''}</p>
+                <p class="muted" style="margin:4px 0 0;font-size:11px;">${fmtDateTime(n.created_at)}</p>
+              </div>
+            </div>
+          `).join('') + '</div>';
+      } catch (e) {
+        document.getElementById('list').innerHTML = `<p class="muted">Erro: ${e.message}</p>`;
+      }
+    }
+
+    async function markRead(id) {
+      try { await api('/notifications/' + id + '/read', { method: 'PATCH' }); }
+      catch {}
+      load();
+    }
+
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Central', title:'Notificações'});
+      document.getElementById('btn-read-all').onclick = async () => {
+        try {
+          await api('/notifications/read-all', { method: 'POST' });
+          toast('Marcadas como lidas', 'success');
+          load();
+        } catch (e) { toast(e.message, 'error'); }
+      };
+      load();
+    }
+  </script>
+</body>
+</html>

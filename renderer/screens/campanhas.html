@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Campanhas · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+      <span class="eyebrow">Promoções ativas</span>
+      <h3 class="mb-6">Campanhas em andamento</h3>
+      <div id="list">Carregando…</div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    async function load() {
+      try {
+        const d = await api('/campaigns/');
+        const items = d.items || [];
+        if (!items.length) {
+          document.getElementById('list').innerHTML =
+            '<p class="muted">Nenhuma campanha ativa no momento.</p>';
+          return;
+        }
+        document.getElementById('list').innerHTML = `
+          <div class="grid cols-2">
+            ${items.map(c => {
+              const completed = c.completed_at != null;
+              const pct = c.progress_pct || 0;
+              return `
+                <div class="card">
+                  ${completed
+                    ? '<span class="chip success">Concluída</span>'
+                    : c.joined ? '<span class="chip success">Participando</span>'
+                               : '<span class="chip">Ativa</span>'}
+                  <h3 style="margin:8px 0 4px;">${c.name}</h3>
+                  <p class="muted" style="font-size:13px;">${c.description || ''}</p>
+                  <div class="card lime mt-4">
+                    <span class="eyebrow">Mecânica</span>
+                    <div style="font-size:14px;color:var(--gray-800);margin-top:4px;">${c.mechanic || ''}</div>
+                  </div>
+                  ${c.joined ? `
+                    <div style="height:10px;background:var(--gray-200);border-radius:999px;margin-top:14px;overflow:hidden;">
+                      <div style="height:100%;width:${pct}%;background:var(--blaxx-lime);border-radius:999px;"></div>
+                    </div>
+                    <p class="muted" style="font-size:12px;margin-top:6px;">
+                      Progresso: ${(c.progress_brl||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+                      de ${c.target_brl.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+                      (${pct}%)
+                    </p>
+                  ` : ''}
+                  <div class="row between mt-4">
+                    <span class="muted" style="font-size:12px;">Bônus ao concluir</span>
+                    <strong>${Number(c.reward_pts).toLocaleString('pt-BR')} pts</strong>
+                  </div>
+                  ${completed
+                    ? '<button class="btn ghost block mt-4" disabled>Concluída</button>'
+                    : c.joined
+                      ? `<button class="btn primary block mt-4" onclick="addDemo('${c.id}')">Simular gasto de R$ 100 (demo)</button>`
+                      : `<button class="btn primary block mt-4" onclick="join('${c.id}')">Participar</button>`}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById('list').innerHTML = `<p class="muted">Erro: ${e.message}</p>`;
+      }
+    }
+
+    async function join(id) {
+      try {
+        await api(`/campaigns/${id}/join`, { method: 'POST' });
+        toast('Você está participando!', 'success');
+        load();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    async function addDemo(id) {
+      try {
+        const r = await api(`/campaigns/${id}/progress`, { method: 'POST', body: { amount_brl: 100 } });
+        if (r.completed_at) toast('Campanha concluída! Bônus creditado.', 'success', 3000);
+        else toast(`Progresso: ${r.progress_pct}%`, 'success');
+        load();
+      } catch (e) { toast(e.message, 'error'); }
+    }
+
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('campanhas');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Engajamento', title:'Campanhas'});
+      load();
+    }
+  </script>
+</body>
+</html>

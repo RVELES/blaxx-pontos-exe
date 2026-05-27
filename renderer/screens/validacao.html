@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Confirmar e-mail · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="main center" style="min-height:100vh;">
+    <div class="center-wrap">
+      <div class="brand">
+        <div class="logo logo-blaxx"><span class="logo-mark">BlaxX</span><span class="logo-sub">pontos</span></div>
+        <div class="tagline">Confirmar e-mail</div>
+      </div>
+
+      <div class="card elevated">
+        <span class="eyebrow">Validação</span>
+        <h3 id="bx-state-title">Validando seu e-mail…</h3>
+        <p class="subtitle" id="bx-state-msg">Aguarde enquanto verificamos o link.</p>
+
+        <form id="form-resend" style="display:none;" autocomplete="on">
+          <p class="subtitle" style="margin-top:18px;">Não recebeu o link? Informe seu e-mail para reenviar:</p>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email"
+                   autocomplete="email" autocapitalize="none" spellcheck="false" required />
+          </div>
+          <button type="submit" class="btn primary lg block" id="btn-resend">Reenviar link</button>
+        </form>
+
+        <div class="row between mt-6">
+          <a class="btn link" onclick="go('login.html')">Voltar para o login</a>
+          <a class="btn link" onclick="go('cadastro.html')">Cadastrar nova conta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    function getQuery(name) {
+      const m = location.search.match(new RegExp('[?&]' + name + '=([^&]+)'));
+      return m ? decodeURIComponent(m[1]) : null;
+    }
+
+    function setState(title, msg, kind) {
+      const t = document.getElementById('bx-state-title');
+      const m = document.getElementById('bx-state-msg');
+      if (t) t.textContent = title;
+      if (m) m.textContent = msg;
+      if (kind === 'ok') { t.style.color = '#a4d65e'; }
+      else if (kind === 'err') { t.style.color = '#ff6b6b'; }
+      else if (kind === 'warn') { t.style.color = '#ffb74d'; }
+      else { t.style.color = ''; }
+    }
+
+    function showResend() {
+      const f = document.getElementById('form-resend');
+      if (f) f.style.display = 'block';
+    }
+
+    async function runVerification() {
+      const token = getQuery('token');
+      if (!token) {
+        setState('Confirmar e-mail', 'Não recebeu o link? Informe seu e-mail para reenviar.', 'warn');
+        showResend();
+        return;
+      }
+      setState('Validando…', 'Aguarde enquanto verificamos o link.', '');
+      try {
+        await api('/auth/verify-email', { method: 'POST', body: { token } });
+        setState('E-mail confirmado!', 'Redirecionando para o login…', 'ok');
+        setTimeout(() => go('login.html'), 1500);
+      } catch (err) {
+        const code = err.data && err.data.code;
+        if (code === 'token_expired') setState('Link expirado', 'Solicite um novo abaixo.', 'err');
+        else if (code === 'token_used') setState('Link já usado', 'Faça login normalmente.', 'warn');
+        else if (code === 'invalid_token') setState('Link inválido', 'Verifique a URL ou solicite um novo.', 'err');
+        else setState('Falha na validação', err.message || 'Erro desconhecido', 'err');
+        showResend();
+      }
+    }
+
+    document.getElementById('form-resend').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const btn = document.getElementById('btn-resend');
+      const orig = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Enviando…';
+      try {
+        const d = await api('/auth/resend-verification', { method: 'POST', body: { email } });
+        toast(d.message || 'Se necessário, enviamos novo link.', 'success', 3000);
+      } catch (err) {
+        toast(err.message || 'Falha ao reenviar', 'error', 3000);
+      } finally {
+        btn.disabled = false; btn.textContent = orig;
+      }
+    });
+
+    runVerification();
+  </script>
+</body>
+</html>

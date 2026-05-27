@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Indique e ganhe · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="card elevated center-text" style="max-width:480px;">
+        <span class="eyebrow">Indique e ganhe</span>
+        <h2>Seu código</h2>
+        <div class="card lime mt-4">
+          <div class="mono" style="font-size:24px;letter-spacing:0.1em;font-weight:700;">BLAXX-A7K3</div>
+        </div>
+        <p class="subtitle mt-4">Você ganha 1.000 pts a cada amigo que se cadastrar e fizer a 1ª compra.</p>
+        <button class="btn primary" onclick="navigator.clipboard.writeText('BLAXX-A7K3');toast('Código copiado')">Copiar código</button>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) { document.getElementById('side').outerHTML = renderSidebar(''); }
+  </script>
+</body>
+</html>

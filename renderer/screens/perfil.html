@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Perfil · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+      <div class="grid cols-2" style="grid-template-columns: 1fr 1fr;">
+        <div class="card">
+          <span class="eyebrow">Dados pessoais</span>
+          <h3>Seu perfil</h3>
+          <div id="profile" class="mt-4">…</div>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Conta</span>
+          <h3>Ações</h3>
+          <button class="btn ghost block mt-4" onclick="go('seguranca.html')">Segurança e senha</button>
+          <button class="btn ghost block mt-3" onclick="go('indique.html')">Indique e ganhe</button>
+          <button class="btn ghost block mt-3" onclick="go('termos.html')">Termos e privacidade</button>
+          <div class="divider"></div>
+          <button class="btn ghost block" style="color:var(--negative);border-color:var(--negative);" onclick="go('excluir-conta.html')">Excluir conta (LGPD)</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('perfil');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Você', title:'Perfil'});
+      (async () => {
+        try {
+          const me = await api('/auth/me');
+          document.getElementById('profile').innerHTML = `
+            <div class="row between"><span class="muted">Nome</span><strong>${me.name}</strong></div>
+            <div class="row between mt-2"><span class="muted">E-mail</span><strong>${me.email}</strong></div>
+            <div class="row between mt-2"><span class="muted">CPF</span><strong>${me.cpf}</strong></div>
+            <div class="row between mt-2"><span class="muted">Chave PIX</span><strong>${me.pix_key || 'não cadastrada'}</strong></div>
+          `;
+        } catch (e) { document.getElementById('profile').innerHTML = `<p class="muted">${e.message}</p>`; }
+      })();
+    }
+  </script>
+</body>
+</html>

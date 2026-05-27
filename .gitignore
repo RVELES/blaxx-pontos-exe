@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# PyInstaller
+build/
+dist/
+*.spec.bak
+
+# Backend instance (banco SQLite local)
+backend/instance/
+backend/*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets — jamais commitar
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# Editor cruft
+*.tmp.*
+desktop.ini
+
+# Claude local
+.claude/settings.local.json
+
+# Logs
+*.log
+
+# Coverage
+.coverage
+htmlcov/
+backend/pytest-cache-files-*/
+
+# Outros DB
+*.sqlite
+*.sqlite3

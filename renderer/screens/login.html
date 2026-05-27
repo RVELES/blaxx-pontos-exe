@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Entrar · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="main center" style="min-height:100vh;">
+    <div class="center-wrap">
+      <div class="brand">
+        <div class="logo logo-blaxx"><span class="logo-mark">BlaxX</span><span class="logo-sub">pontos</span></div>
+        <div class="tagline">Créditos promocionais de uso restrito</div>
+      </div>
+
+      <div class="card elevated">
+        <span class="eyebrow">Entrar</span>
+        <h3>Acesse sua carteira</h3>
+        <p class="subtitle">Use o e-mail ou CPF cadastrado.</p>
+
+        <form id="form-login" autocomplete="on">
+          <div class="field">
+            <label for="email">E-mail ou CPF</label>
+            <input id="email" name="email" type="text" placeholder="voce@email.com"
+                   autocomplete="username" autocapitalize="none" spellcheck="false" required />
+          </div>
+          <div class="field">
+            <label for="password">Senha</label>
+            <input id="password" name="password" type="password" placeholder="••••••"
+                   autocomplete="current-password" required />
+            <span class="hint">Demo: <span class="mono">123456</span></span>
+          </div>
+          <button type="submit" class="btn primary lg block">Entrar</button>
+        </form>
+
+        <div class="row between mt-6">
+          <a class="btn link" onclick="go('recuperar-senha.html')">Esqueci a senha</a>
+          <a class="btn link" onclick="go('cadastro.html')">Criar conta</a>
+        </div>
+      </div>
+
+      <p class="muted center-text mt-6" style="font-size:12px;">
+        Ao entrar você aceita os <a class="btn link" style="display:inline" onclick="go('termos.html')">termos de uso</a>.
+      </p>
+    </div>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    const loginForm = document.getElementById('form-login');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = loginForm.querySelector('button[type="submit"]');
+      const orig = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Entrando…';
+      try {
+        const data = await api('/auth/login', {
+          method: 'POST',
+          body: { email, password }
+        });
+        // Resposta pode ser:
+        //  - Login direto: { token, user }
+        //  - 2FA pendente: { mfa_required, mfa_challenge_token, mfa_phone_hint, mfa_method }
+        if (data && data.mfa_required) {
+          showMfaChallenge(data);
+          btn.disabled = false; btn.textContent = orig;
+          return;
+        }
+        Session.set({ token: data.token, user: data.user });
+        toast('Bem-vindo, ' + (data.user.name || '').split(' ')[0], 'success');
+        setTimeout(() => go('dashboard.html'), 400);
+      } catch (err) {
+        const code = err.data && err.data.code;
+        if (code === 'email_not_verified') {
+          toast('Confirme seu e-mail para entrar.', 'error', 3500);
+          api('/auth/resend-verification', { method: 'POST', body: { email } }).catch(() => {});
+          setTimeout(() => go('validacao.html'), 1500);
+        } else {
+          toast(err.message || 'Credenciais inválidas', 'error');
+        }
+        btn.disabled = false; btn.textContent = orig;
+      }
+    });
+
+    // ---- Challenge 2FA in-place sobre o form de login ----
+    function showMfaChallenge(challenge) {
+      // Esconde form original
+      loginForm.style.display = 'none';
+      // Remove card anterior (se houver — caso de retry)
+      const old = document.getElementById('bx-mfa-card');
+      if (old) old.remove();
+
+      const wrap = document.createElement('div');
+      wrap.id = 'bx-mfa-card';
+      wrap.innerHTML = `
+        <span class="eyebrow">Verificação em duas etapas</span>
+        <h3>Insira o código</h3>
+        <p class="subtitle">Enviamos um código por SMS para <strong>${challenge.mfa_phone_hint || 'seu telefone'}</strong>. O código expira em alguns minutos.</p>
+        <div class="field">
+          <label for="bx-mfa-code">Código de 6 dígitos</label>
+          <input id="bx-mfa-code" type="text" inputmode="numeric" maxlength="6" pattern="\\d{6}"
+                 placeholder="000000" autocomplete="one-time-code"
+                 style="font-size:24px;letter-spacing:0.4em;text-align:center;font-weight:700;" />
+        </div>
+        <button id="bx-mfa-submit" class="btn primary lg block" type="button">Validar e entrar</button>
+        <div class="center-text mt-6">
+          <a class="btn link" id="bx-mfa-back">Voltar e tentar outra conta</a>
+        </div>
+        <p id="bx-mfa-err" style="display:none;color:#ff6b6b;text-align:center;font-size:13px;margin-top:8px;"></p>
+      `;
+      // Insere antes do form
+      loginForm.parentNode.insertBefore(wrap, loginForm);
+
+      const codeInput = document.getElementById('bx-mfa-code');
+      const submitBtn = document.getElementById('bx-mfa-submit');
+      const errEl = document.getElementById('bx-mfa-err');
+      codeInput.focus();
+
+      function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
+      function clearErr() { errEl.style.display = 'none'; }
+
+      submitBtn.addEventListener('click', async () => {
+        clearErr();
+        const code = codeInput.value.trim();
+        if (!/^\d{6}$/.test(code)) { showErr('Código de 6 dígitos.'); return; }
+        submitBtn.disabled = true; submitBtn.textContent = 'Validando…';
+        try {
+          const r = await api('/auth/login/2fa', {
+            method: 'POST',
+            body: { challenge_token: challenge.mfa_challenge_token, code }
+          });
+          Session.set({ token: r.token, user: r.user });
+          toast('Bem-vindo, ' + (r.user.name || '').split(' ')[0], 'success');
+          setTimeout(() => go('dashboard.html'), 400);
+        } catch (err) {
+          const c = err.data && err.data.code;
+          if (c === 'wrong_code') showErr('Código incorreto. Confira o SMS.');
+          else if (c === 'code_expired' || c === 'challenge_expired') showErr('Código expirado. Volte e tente novamente.');
+          else showErr(err.message || 'Falha ao validar.');
+          submitBtn.disabled = false; submitBtn.textContent = 'Validar e entrar';
+        }
+      });
+      codeInput.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') submitBtn.click(); });
+      document.getElementById('bx-mfa-back').addEventListener('click', () => {
+        wrap.remove();
+        loginForm.style.display = '';
+      });
+    }
+  </script>
+</body>
+</html>

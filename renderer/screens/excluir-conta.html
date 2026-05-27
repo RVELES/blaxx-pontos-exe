@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Excluir conta · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="card elevated center-text" style="max-width:520px;">
+        <span class="eyebrow" style="color:var(--negative);">LGPD · Direito ao esquecimento</span>
+        <h2>Excluir conta</h2>
+        <p class="subtitle">Esta ação anonimiza seus dados pessoais. O ledger é preservado por obrigação fiscal (sem identificar você).</p>
+        <p class="muted" style="font-size:13px;">Saldo restante de pontos será perdido. Não há reversão.</p>
+        <div class="row mt-6" style="justify-content:center;">
+          <button class="btn ghost" onclick="history.back()">Cancelar</button>
+          <button class="btn ghost" style="color:var(--negative);border-color:var(--negative);" onclick="toast('Em produção: confirmação dupla obrigatória', 'error', 3000)">Confirmar exclusão</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) { document.getElementById('side').outerHTML = renderSidebar(''); }
+  </script>
+</body>
+</html>

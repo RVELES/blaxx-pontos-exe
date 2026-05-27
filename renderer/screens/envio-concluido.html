@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Envio concluído · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="card elevated center-text" style="max-width:520px;">
+        <div class="success-tick">✓</div>
+        <span class="eyebrow">Comprovante</span>
+        <h2>Pontos enviados!</h2>
+        <div class="card lime mt-4 center-text">
+          <div class="row between"><span>Para</span><strong id="to">—</strong></div>
+          <div class="row between mt-2"><span>Valor</span><strong id="amount">—</strong></div>
+          <div class="row between mt-2"><span>Comprovante</span><span class="mono" id="receipt">—</span></div>
+        </div>
+        <div class="row mt-6" style="justify-content:center;">
+          <button class="btn primary" onclick="go('carteira.html')">Ver carteira</button>
+          <button class="btn ghost" onclick="go('dashboard.html')">Início</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('enviar');
+      const r = JSON.parse(sessionStorage.getItem('blaxx_receipt') || '{}');
+      const t = JSON.parse(sessionStorage.getItem('blaxx_transfer') || '{}');
+      document.getElementById('to').textContent = t.to || '—';
+      document.getElementById('amount').textContent = Number(r.amount_pts || t.amount_pts || 0).toLocaleString('pt-BR') + ' pts';
+      document.getElementById('receipt').textContent = r.receipt_code || '—';
+    }
+  </script>
+</body>
+</html>

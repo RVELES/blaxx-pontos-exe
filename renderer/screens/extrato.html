@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080907">
+<title>Extrato | Blaxx Pontos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Blaxx">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+<header class="topbar">
+    <nav class="nav">
+        <a href="dashboard.html" class="brand">
+            <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
+        </a>
+        <div class="links">
+            <a href="dashboard.html" data-link="dashboard">Início</a>
+            <a href="carteira.html" data-link="carteira">Carteira</a>
+            <a href="parceiros.html" data-link="parceiros">Parceiros</a>
+            <a href="resgates.html" data-link="resgates">Resgates</a>
+            <a href="campanhas.html" data-link="campanhas">Campanhas</a>
+        </div>
+        <div class="cta-row">
+            <a href="central-notificacoes.html" class="button ghost" aria-label="Notificações">🔔</a>
+            <a href="perfil.html" class="button secondary" data-bx-user-name>Olá!</a>
+        </div>
+    </nav>
+</header>
+<div class="app-shell">
+<aside class="sidebar">
+    <div class="side-user">
+        <div class="avatar">M</div>
+        <div>
+            <div class="side-user-name" data-bx-user-name>—</div>
+            <div class="side-user-tier" data-bx-user-tier>Plano Plus</div>
+        </div>
+    </div>
+    <ul class="side-nav">
+        <li><a href="dashboard.html" data-side="dashboard"><span class="ic">●</span> Início</a></li>
+        <li><a href="carteira.html" data-side="carteira"><span class="ic">◆</span> Carteira</a></li>
+        <li><a href="extrato.html" data-side="extrato"><span class="ic">≡</span> Extrato</a></li>
+        <li><a href="parceiros.html" data-side="parceiros"><span class="ic">⊙</span> Parceiros</a></li>
+        <li><a href="resgates.html" data-side="resgates"><span class="ic">★</span> Resgates</a></li>
+        <li><a href="meus-resgates.html" data-side="meus-resgates"><span class="ic">✓</span> Meus resgates</a></li>
+        <li><a href="campanhas.html" data-side="campanhas"><span class="ic">▲</span> Campanhas</a></li>
+        <li><a href="comprar-pontos.html" data-side="comprar-pontos"><span class="ic">+</span> Comprar pontos</a></li>
+        <li><a href="enviar-pontos.html" data-side="enviar-pontos"><span class="ic">→</span> Enviar pontos</a></li>
+        <li><a href="indique-ganhe.html" data-side="indique"><span class="ic">♥</span> Indique e ganhe</a></li>
+    </ul>
+    <div class="side-foot">
+        <ul class="side-nav">
+            <li><a href="perfil.html" data-side="perfil"><span class="ic">⚙</span> Perfil</a></li>
+            <li><a href="seguranca.html" data-side="seguranca"><span class="ic">🔒</span> Segurança</a></li>
+            <li><a href="central-ajuda.html" data-side="ajuda"><span class="ic">?</span> Ajuda</a></li>
+            <li><a href="login.html"><span class="ic">↩</span> Sair</a></li>
+        </ul>
+    </div>
+</aside>
+<main>
+<div class="page-head">
+    <div class="crumbs"><a href="dashboard.html">Início</a><span class="sep">/</span> Extrato</div>
+    <h1 style="font-size:36px;">Extrato completo</h1>
+    <p class="muted">Acompanhe todos os movimentos da sua carteira.</p>
+</div>
+
+<section class="section">
+    <div class="card" style="padding:18px;">
+        <div class="toolbar">
+            <input id="ex-search" name="search" type="search" class="search"
+                   placeholder="Buscar por descrição…" autocomplete="off"
+                   oninput="window.reloadExtrato && reloadExtrato()">
+            <select id="ex-type" style="width:auto;" onchange="window.reloadExtrato && reloadExtrato()">
+                <option value="">Todos os tipos</option>
+                <option value="purchase">Compra de pontos</option>
+                <option value="transfer_in">Recebido</option>
+                <option value="transfer_out">Enviado</option>
+                <option value="redeem">Resgate</option>
+                <option value="refund">Estorno</option>
+                <option value="bonus">Bônus</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="stat-row">
+        <div class="stat"><div class="lbl">Total acumulado</div><div class="val amount-pos" id="ex-stat-in">—</div><div class="delta">No período</div></div>
+        <div class="stat"><div class="lbl">Total resgatado</div><div class="val" id="ex-stat-redeem">—</div><div class="delta">No período</div></div>
+        <div class="stat"><div class="lbl">Comprados</div><div class="val amount-pos" id="ex-stat-purchase">—</div><div class="delta" id="ex-stat-purchase-count">—</div></div>
+        <div class="stat"><div class="lbl">Saldo atual</div><div class="val" id="ex-stat-balance">—</div><div class="delta">Atualizado agora</div></div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <h2>Transações</h2>
+        <span id="ex-last-fetch" style="font-size:12px;color:var(--muted);"></span>
+    </div>
+    <table class="table">
+        <thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Status</th><th class="right">Pontos</th></tr></thead>
+        <tbody id="ex-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);">Carregando…</td></tr>
+        </tbody>
+    </table>
+    <div class="flex between mt-2">
+        <span class="muted" id="ex-count" style="font-size:13px;">—</span>
+        <a href="#" class="button secondary sm" onclick="window.reloadExtrato && reloadExtrato(); return false;">↻ Atualizar</a>
+    </div>
+</section>
+</main>
+</div>
+<footer class="footer">
+    <div class="footer-inner">
+        <div>
+            <div class="brand">
+                <span class="mark">BlaxX</span> <span class="brand-sub">pontos</span>
+            </div>
+            <p class="about">Programa de pontos, benefícios e relacionamento. Acumule, compre, envie e troque pontos por vantagens reais.</p>
+        </div>
+        <div>
+            <h4>Produto</h4>
+            <ul>
+                <li><a href="como-funciona.html">Como funciona</a></li>
+                <li><a href="parceiros.html">Parceiros</a></li>
+                <li><a href="resgates.html">Resgates</a></li>
+                <li><a href="comprar-pontos.html">Comprar pontos</a></li>
+                <li><a href="venda-pontos.html">Vender pontos</a></li>
+                <li><a href="campanhas.html">Campanhas</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Conta</h4>
+            <ul>
+                <li><a href="login.html">Entrar</a></li>
+                <li><a href="cadastro.html">Cadastre-se</a></li>
+                <li><a href="dashboard.html">Painel</a></li>
+                <li><a href="carteira.html">Carteira</a></li>
+                <li><a href="extrato.html">Extrato</a></li>
+                <li><a href="indique-ganhe.html">Indique e ganhe</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Suporte</h4>
+            <ul>
+                <li><a href="central-ajuda.html">Central de ajuda</a></li>
+                <li><a href="abrir-chamado.html">Abrir chamado</a></li>
+                <li><a href="meus-chamados.html">Meus chamados</a></li>
+                <li><a href="termos.html">Termos de uso</a></li>
+                <li><a href="documentos-termos.html">Documentos</a></li>
+                <li><a href="sitemap.html">Mapa do site</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 Blaxx Pontos. Todos os direitos reservados.</span>
+        <span class="disclaimer">Os pontos Blaxx não são moeda, depósito, investimento, valor mobiliário ou criptoativo. São créditos promocionais de uso restrito dentro da plataforma Blaxx Pontos.</span>
+    </div>
+</footer>
+<style>
+  [data-link=""] { background: var(--black) !important; color: var(--lime) !important; font-weight: 600 !important; }
+  [data-side="extrato"] { background: var(--black) !important; color: var(--lime) !important; font-weight: 700 !important; }
+  [data-side="extrato"] .ic { background: var(--lime) !important; color: var(--black) !important; }
+</style>
+<script src="assets/blaxx-config.js"></script>
+<script src="assets/blaxx-app.js"></script>
+</body>
+</html>

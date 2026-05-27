@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Compra aprovada · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="card elevated center-text" style="max-width:520px;">
+        <div class="success-tick">✓</div>
+        <span class="eyebrow">Compra aprovada</span>
+        <h2>Pontos creditados!</h2>
+        <p class="subtitle">Sua carteira foi atualizada agora.</p>
+        <div class="card lime mt-4">
+          <div class="row between"><span>Novo saldo</span><strong id="balance" style="font-family:var(--font-display);font-size:22px;">—</strong></div>
+        </div>
+        <div class="row mt-6" style="justify-content:center;">
+          <button class="btn primary" onclick="go('carteira.html')">Ver carteira</button>
+          <button class="btn ghost" onclick="go('dashboard.html')">Início</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('comprar');
+      (async () => {
+        try {
+          const w = await api('/wallet/');
+          document.getElementById('balance').textContent =
+            Number(w.balance_pts).toLocaleString('pt-BR') + ' pts';
+        } catch (e) {}
+      })();
+    }
+  </script>
+</body>
+</html>

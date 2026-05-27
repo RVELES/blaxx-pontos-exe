@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Início · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="grid cols-3" style="grid-template-columns: 2fr 1fr 1fr;">
+        <div class="balance-card">
+          <div class="label">Saldo de pontos</div>
+          <div class="amount"><span id="balance">—</span><span class="unit">pts</span></div>
+          <div class="equiv">Equivalente a <span id="equiv">R$ —</span> · Validade FIFO</div>
+          <div class="row mt-6">
+            <button class="btn primary" onclick="go('comprar-pontos.html')">Comprar pontos</button>
+            <button class="btn ghost" style="border-color:rgba(255,255,255,.18);color:#fff;" onclick="go('carteira.html')">Ver carteira</button>
+          </div>
+        </div>
+        <div class="card metric">
+          <span class="label">Próxima expiração</span>
+          <div class="value">7 dias</div>
+          <div class="muted" style="font-size:12px;margin-top:6px;">2.000 pts vencem em 30/05</div>
+        </div>
+        <div class="card metric">
+          <span class="label">Mês atual</span>
+          <div class="value">+<span id="month-in">—</span></div>
+          <div class="muted" style="font-size:12px;margin-top:6px;">pontos creditados</div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <span class="eyebrow">Ações principais</span>
+        <h3 style="margin-bottom:16px;">Fluxos do programa</h3>
+        <div class="action-grid">
+          <button class="action-tile" onclick="go('comprar-pontos.html')">
+            <div class="icon">+</div>
+            <div class="label">Compra</div>
+            <div class="name">Comprar pontos via PIX</div>
+          </button>
+          <button class="action-tile" onclick="go('enviar-pontos.html')">
+            <div class="icon">↗</div>
+            <div class="label">Presente</div>
+            <div class="name">Enviar pontos a outro cliente</div>
+          </button>
+          <button class="action-tile" onclick="go('vender-pontos.html')">
+            <div class="icon">↙</div>
+            <div class="label">Cashback</div>
+            <div class="name">Resgatar via PIX</div>
+          </button>
+          <button class="action-tile" onclick="go('parceiros.html')">
+            <div class="icon">◯</div>
+            <div class="label">Marketplace</div>
+            <div class="name">Parceiros e benefícios</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid cols-2 mt-8">
+        <div class="card">
+          <div class="row between mb-4">
+            <h3 style="margin:0;">Últimas movimentações</h3>
+            <a class="btn link" onclick="go('extrato.html')">Ver extrato →</a>
+          </div>
+          <div id="recent">Carregando…</div>
+        </div>
+        <div class="card lime">
+          <span class="eyebrow">Princípio regulatório</span>
+          <h3 style="margin-bottom:8px;">Pontos = créditos promocionais</h3>
+          <p class="muted" style="font-size:14px;line-height:1.6;color:var(--gray-800);">
+            Não são moeda, depósito ou investimento. Resgates por PIX classificam-se
+            como cashback e ficam disponíveis após 6 meses de programa. Cada operação
+            é registrada em ledger imutável.
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    if (!Session.requireAuth()) {} else {
+      document.getElementById('side').outerHTML = renderSidebar('dashboard');
+      document.getElementById('top').outerHTML  = renderTopbar();
+      (async () => {
+        try {
+          const w = await api('/wallet/');
+          document.getElementById('balance').textContent = Number(w.balance_pts).toLocaleString('pt-BR');
+          document.getElementById('equiv').textContent = fmtBRL(w.balance_brl_equiv);
+          const txs = await api('/wallet/transactions?limit=5');
+          const items = (txs.transactions || txs.items || txs || []).slice(0,5);
+          const monthIn = items.filter(t => t.amount_pts > 0).reduce((s,t)=>s+t.amount_pts,0);
+          document.getElementById('month-in').textContent = monthIn.toLocaleString('pt-BR');
+          if (!items.length) {
+            document.getElementById('recent').innerHTML =
+              '<p class="muted">Nenhuma movimentação ainda. Comece comprando ou enviando pontos.</p>';
+          } else {
+            document.getElementById('recent').innerHTML = `
+              <table class="blaxx">
+                <thead><tr><th>Tipo</th><th>Descrição</th><th style="text-align:right;">Pontos</th><th>Quando</th></tr></thead>
+                <tbody>
+                  ${items.map(t => `
+                    <tr>
+                      <td><span class="chip ${t.amount_pts > 0 ? 'success' : ''}">${t.type}</span></td>
+                      <td>${t.description || '—'}</td>
+                      <td style="text-align:right;" class="${t.amount_pts>0?'amount-pos':'amount-neg'}">${t.amount_pts>0?'+':''}${Number(t.amount_pts).toLocaleString('pt-BR')}</td>
+                      <td class="muted">${fmtDateTime(t.created_at)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            `;
+          }
+        } catch (e) {
+          toast('Falha ao carregar carteira: ' + e.message, 'error', 3200);
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

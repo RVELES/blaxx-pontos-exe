@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Voucher · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="center-wrap" style="max-width:520px;">
+        <div class="card elevated center-text">
+          <div class="success-tick">✦</div>
+          <span class="eyebrow">Voucher emitido</span>
+          <h2 id="title">Carregando…</h2>
+          <div class="card lime mt-4">
+            <div class="muted" style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;">Código</div>
+            <div class="mono" id="code" style="font-size:22px;font-weight:700;letter-spacing:0.06em;margin-top:6px;">—</div>
+            <div class="muted mt-2" style="font-size:12px;">Apresente este código no parceiro.</div>
+          </div>
+          <table class="blaxx mt-6" style="font-size:13px;">
+            <tbody>
+              <tr><td class="muted">Pontos debitados</td><td id="pts" style="text-align:right;">—</td></tr>
+              <tr><td class="muted">Validade</td><td id="exp" style="text-align:right;">—</td></tr>
+              <tr><td class="muted">Status</td><td id="status" style="text-align:right;">—</td></tr>
+            </tbody>
+          </table>
+          <button class="btn dark block mt-6" id="btn-copy">Copiar código</button>
+          <button class="btn ghost block mt-2" onclick="go('resgates.html')">Ver meus vouchers</button>
+          <button class="btn link block mt-2" onclick="go('dashboard.html')">Início</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('parceiros');
+      const id = new URLSearchParams(location.search).get('id');
+      (async () => {
+        try {
+          const v = await api('/vouchers/' + id);
+          document.getElementById('title').textContent = v.benefit_name || 'Voucher Blaxx';
+          document.getElementById('code').textContent = v.code;
+          document.getElementById('pts').textContent = Number(v.points_spent).toLocaleString('pt-BR') + ' pts';
+          document.getElementById('exp').textContent = new Date(v.expires_at).toLocaleDateString('pt-BR');
+          document.getElementById('status').innerHTML = `<span class="chip ${v.status==='active'?'success':v.status==='used'?'':'danger'}">${v.status}</span>`;
+          document.getElementById('btn-copy').onclick = () => {
+            navigator.clipboard.writeText(v.code).then(() => toast('Código copiado'));
+          };
+        } catch (e) {
+          document.getElementById('title').textContent = 'Voucher não encontrado';
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

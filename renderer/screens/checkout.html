@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Checkout · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="grid cols-2" style="grid-template-columns: 1.4fr 1fr;">
+        <div class="card">
+          <span class="eyebrow">Resumo</span>
+          <h3>Confirme sua compra</h3>
+          <div id="summary" class="mt-4 muted">Carregando…</div>
+          <div class="divider"></div>
+          <span class="eyebrow">Método de pagamento</span>
+          <div class="row mt-2">
+            <label class="row" style="gap:8px;cursor:pointer;">
+              <input type="radio" name="method" value="pix" checked /> PIX (instantâneo)
+            </label>
+            <label class="row" style="gap:8px;cursor:pointer;color:var(--text-muted);">
+              <input type="radio" name="method" value="card" disabled /> Cartão (em breve)
+            </label>
+          </div>
+          <button class="btn primary lg block mt-6" id="btn-pay">Gerar cobrança PIX</button>
+        </div>
+
+        <div class="card lime">
+          <span class="eyebrow">Princípio regulatório</span>
+          <h3 style="margin-bottom:8px;">Pontos = créditos promocionais</h3>
+          <p style="color:var(--gray-800);font-size:14px;">
+            Esta compra credita pontos de uso restrito dentro do programa Blaxx,
+            com validade de 24 meses. Não há saque em dinheiro. Resgates por PIX
+            ficam disponíveis 6 meses após o primeiro cadastro.
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('comprar');
+      document.getElementById('top').outerHTML  = renderTopbar({eyebrow:'Checkout', title:'Confirmar compra'});
+
+      const params = new URLSearchParams(location.search);
+      const pkgKey = params.get('pkg') || 'plus';
+
+      (async () => {
+        try {
+          const data = await api('/pix/packages');
+          const items = Array.isArray(data)
+            ? data
+            : Object.entries(data).map(([key, v]) => ({ key, ...v }));
+          const p = items.find(x => x.key === pkgKey) || items[0];
+          document.getElementById('summary').innerHTML = `
+            <div class="row between"><span>Pacote</span><strong>${p.label}</strong></div>
+            <div class="row between mt-2"><span>Pontos</span><strong>${Number(p.points).toLocaleString('pt-BR')} pts</strong></div>
+            <div class="row between mt-2"><span>Validade</span><strong>24 meses</strong></div>
+            <div class="row between mt-4" style="font-size:18px;">
+              <span>Total</span><strong style="font-family:var(--font-display);font-size:28px;color:var(--blaxx-black);">${fmtBRL(p.price_brl)}</strong>
+            </div>`;
+        } catch (e) { toast('Erro: ' + e.message, 'error'); }
+      })();
+
+      document.getElementById('btn-pay').addEventListener('click', async () => {
+        try {
+          const charge = await api('/pix/charge', { method:'POST', body:{ package: pkgKey } });
+          sessionStorage.setItem('blaxx_charge', JSON.stringify(charge));
+          go('pagamento-pix.html');
+        } catch (e) {
+          toast('Erro ao gerar PIX: ' + e.message, 'error', 3000);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

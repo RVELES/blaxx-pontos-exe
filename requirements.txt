@@ -1,0 +1,41 @@
+# Blaxx Pontos · Windows app · dependências Python
+#
+# Instala com:
+#   python -m pip install -r requirements.txt
+#
+# Pré-requisito do Windows: Microsoft Edge WebView2 Runtime
+# (já vem por padrão no Windows 10/11 atualizado; se faltar, instalar de
+# https://developer.microsoft.com/microsoft-edge/webview2/)
+
+# ---------- App shell (PyWebView + dependências) ----------
+pywebview>=5.3                  # janela nativa Windows usando WebView2
+pywebview[edgechromium]>=5.3    # extra: força backend WebView2 (Edge Chromium)
+pythonnet>=3.0                  # dependência transitiva do pywebview no Windows
+pystray>=0.19.5                 # tray icon (bandeja do sistema)
+Pillow>=10.4                    # ícones, gera o .ico, fallback do tray
+
+# ---------- Backend Flask (mesmo do blaxx_app/) ----------
+Flask>=3.0.3
+Flask-SQLAlchemy>=3.1.1
+Flask-Cors>=5.0.0
+Flask-JWT-Extended>=4.6.0
+Flask-Limiter>=3.8.0
+SQLAlchemy>=2.0.43
+Werkzeug>=3.0.4
+qrcode[pil]>=7.4.2
+
+# Driver PostgreSQL (usado apenas quando DATABASE_URL aponta pra Neon)
+psycopg[binary]>=3.2.0
+
+# Segurança e autenticação (Onda 2)
+argon2-cffi>=23.1.0
+pyotp>=2.9.0
+phonenumbers>=8.13.0
+Flask-Talisman>=1.1.0
+
+# Google OAuth (validação de id_tokens)
+google-auth>=2.30.0
+requests>=2.32.0
+
+# ---------- Build do .exe ----------
+pyinstaller>=6.10.0

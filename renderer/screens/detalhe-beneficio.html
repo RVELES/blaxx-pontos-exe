@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Benefício · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+      <div id="content">Carregando…</div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('parceiros');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Benefício', title:'Detalhe'});
+      const id = new URLSearchParams(location.search).get('id');
+
+      (async () => {
+        try {
+          const b = await api('/benefits/' + id);
+          const w = await api('/wallet/');
+          const canAfford = w.balance_pts >= b.cost_pts;
+
+          document.getElementById('content').innerHTML = `
+            <div class="grid cols-2" style="grid-template-columns: 1.3fr 1fr;">
+              <div class="card">
+                <div style="font-size:64px;margin-bottom:12px;">${b.image_emoji || '★'}</div>
+                ${b.tag ? `<span class="chip success">${b.tag}</span>` : ''}
+                <h2 style="margin-top:8px;">${b.name}</h2>
+                ${b.partner_name ? `<p class="muted" style="margin-top:-8px;">Parceiro: <strong>${b.partner_name}</strong></p>` : ''}
+                <p style="margin-top:12px;">${b.description || ''}</p>
+                <div class="divider"></div>
+                <span class="eyebrow">Detalhes</span>
+                <ul style="padding-left:18px;color:var(--gray-600);">
+                  <li>Validade do voucher: ${b.expires_in_days} dias</li>
+                  <li>Categoria: ${b.category}</li>
+                  ${b.stock >= 0 ? `<li>Estoque: ${b.stock} unidades</li>` : ''}
+                </ul>
+              </div>
+
+              <div class="card lime">
+                <span class="eyebrow">Custo</span>
+                <div style="font-family:var(--font-display);font-size:48px;font-weight:700;color:var(--blaxx-black);line-height:1;margin:8px 0;">
+                  ${Number(b.cost_pts).toLocaleString('pt-BR')}<span style="font-size:14px;color:var(--gray-600);font-family:var(--font-body);"> pts</span>
+                </div>
+                <div class="muted" style="font-size:13px;color:var(--gray-800)">
+                  Seu saldo: <strong>${Number(w.balance_pts).toLocaleString('pt-BR')} pts</strong>
+                </div>
+                ${canAfford
+                  ? `<button class="btn primary lg block mt-6" id="btn-redeem">Resgatar agora</button>`
+                  : `<button class="btn primary lg block mt-6" disabled>Saldo insuficiente</button>
+                     <button class="btn ghost block mt-2" onclick="go('comprar-pontos.html')">Comprar pontos</button>`
+                }
+                <button class="btn link block mt-2" onclick="go('resgates.html')">Voltar ao catálogo</button>
+              </div>
+            </div>
+          `;
+
+          if (canAfford) {
+            document.getElementById('btn-redeem').onclick = async () => {
+              const btn = document.getElementById('btn-redeem');
+              btn.disabled = true;
+              btn.textContent = 'Resgatando…';
+              try {
+                const v = await api('/benefits/' + id + '/redeem', { method: 'POST' });
+                sessionStorage.setItem('blaxx_voucher', JSON.stringify(v));
+                go('detalhe-voucher.html?id=' + v.id);
+              } catch (e) {
+                toast(e.message || 'Falha no resgate', 'error', 3000);
+                btn.disabled = false;
+                btn.textContent = 'Resgatar agora';
+              }
+            };
+          }
+        } catch (e) {
+          document.getElementById('content').innerHTML = `<p class="muted">Erro: ${e.message}</p>`;
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Resgates · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+      <span class="eyebrow">Marketplace de benefícios</span>
+      <h3 class="mb-4">Troque seus pontos</h3>
+
+      <div class="row mb-6" style="gap:10px;">
+        <button class="chip dark" id="tab-all">Disponíveis</button>
+        <button class="chip" id="tab-mine">Meus vouchers</button>
+      </div>
+
+      <div id="content">Carregando…</div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    let view = 'all';
+
+    async function renderAll() {
+      const d = await api('/benefits/');
+      const items = d.items || [];
+      document.getElementById('content').innerHTML = items.length === 0
+        ? '<p class="muted">Nenhum benefício disponível.</p>'
+        : `<div class="grid cols-3">${items.map(b => `
+            <div class="card" style="cursor:pointer;" onclick="go('detalhe-beneficio.html?id=${b.id}')">
+              ${b.tag ? `<span class="chip success">${b.tag}</span>` : ''}
+              <div style="font-size:32px;margin-top:8px;">${b.image_emoji || '★'}</div>
+              <h3 style="margin:6px 0;">${b.name}</h3>
+              ${b.partner_name ? `<p class="muted" style="font-size:12px;">${b.partner_name}</p>` : ''}
+              <p class="muted" style="font-size:13px;">${b.description || ''}</p>
+              <div class="row between mt-4">
+                <span style="font-family:var(--font-display);font-size:20px;font-weight:600;">
+                  ${Number(b.cost_pts).toLocaleString('pt-BR')} <span style="font-size:11px;color:var(--gray-600);">pts</span>
+                </span>
+                <button class="btn primary" style="padding:8px 14px;font-size:12px;">Resgatar</button>
+              </div>
+            </div>
+          `).join('')}</div>`;
+    }
+
+    async function renderMine() {
+      const d = await api('/vouchers/');
+      const items = d.items || [];
+      document.getElementById('content').innerHTML = items.length === 0
+        ? '<p class="muted">Você ainda não tem vouchers. Resgate um benefício para começar.</p>'
+        : `<table class="blaxx">
+            <thead><tr><th>Benefício</th><th>Código</th><th>Status</th><th>Validade</th><th style="text-align:right">Pontos</th></tr></thead>
+            <tbody>${items.map(v => `
+              <tr>
+                <td>${v.benefit_name || '—'}</td>
+                <td class="mono">${v.code}</td>
+                <td><span class="chip ${v.status === 'active' ? 'success' : v.status === 'used' ? '' : 'danger'}">${v.status}</span></td>
+                <td>${new Date(v.expires_at).toLocaleDateString('pt-BR')}</td>
+                <td style="text-align:right;" class="amount-neg">-${Number(v.points_spent).toLocaleString('pt-BR')}</td>
+              </tr>
+            `).join('')}</tbody>
+          </table>`;
+    }
+
+    async function load() {
+      try {
+        if (view === 'all') await renderAll(); else await renderMine();
+      } catch (e) {
+        document.getElementById('content').innerHTML = `<p class="muted">Erro: ${e.message}</p>`;
+      }
+    }
+
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('parceiros');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Resgates', title:'Benefícios'});
+      document.getElementById('tab-all').onclick = () => {
+        view = 'all';
+        document.getElementById('tab-all').className = 'chip dark';
+        document.getElementById('tab-mine').className = 'chip';
+        load();
+      };
+      document.getElementById('tab-mine').onclick = () => {
+        view = 'mine';
+        document.getElementById('tab-mine').className = 'chip dark';
+        document.getElementById('tab-all').className = 'chip';
+        load();
+      };
+      load();
+    }
+  </script>
+</body>
+</html>

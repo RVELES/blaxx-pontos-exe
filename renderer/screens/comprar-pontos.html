@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Comprar pontos · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="card lime mb-6">
+        <span class="eyebrow">Pacotes de pontos</span>
+        <h3 style="margin-bottom:4px;">Escolha um pacote</h3>
+        <p class="muted" style="color:var(--gray-800);">Pague via PIX e os pontos são creditados em segundos. Validade 24 meses.</p>
+      </div>
+
+      <div id="packages" class="grid cols-4">Carregando…</div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('comprar');
+      document.getElementById('top').outerHTML  = renderTopbar({eyebrow:'Compra de pontos', title:'Comprar pontos'});
+      (async () => {
+        try {
+          const pkg = await api('/pix/packages');
+          // O backend devolve dict {key: {...}}, convertemos para array
+          const items = Array.isArray(pkg)
+            ? pkg
+            : Object.entries(pkg).map(([key, v]) => ({ key, ...v }));
+          document.getElementById('packages').innerHTML = items.map(p => `
+            <div class="card elevated">
+              <span class="eyebrow">${p.label || p.key}</span>
+              <div class="display" style="font-family:var(--font-display);font-size:38px;color:var(--blaxx-black);">
+                ${Number(p.points).toLocaleString('pt-BR')}<span style="font-size:14px;color:var(--gray-600);font-family:var(--font-body);"> pts</span>
+              </div>
+              <div class="muted" style="margin-top:4px;">por <strong style="color:var(--blaxx-black)">${fmtBRL(p.price_brl)}</strong></div>
+              <div class="divider"></div>
+              <ul style="padding-left:18px;margin:0;color:var(--gray-600);font-size:13px;line-height:1.7;">
+                <li>Crédito imediato após PIX</li>
+                <li>Validade 24 meses</li>
+                <li>Cashback liberado em 6 meses</li>
+              </ul>
+              <button class="btn primary block mt-6" onclick='go("checkout.html?pkg=${p.key}")'>Pagar com PIX</button>
+            </div>
+          `).join('');
+        } catch (e) { toast('Erro: ' + e.message, 'error'); }
+      })();
+    }
+  </script>
+</body>
+</html>

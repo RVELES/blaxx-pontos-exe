@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <!-- CSP relaxada para Windows: aceita backend local (127.0.0.1:5050) e remoto (https://). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' http://127.0.0.1:5050 https://*.fly.dev https://blaxx-pontos-backend.fly.dev; img-src 'self' data:; font-src 'self' https: data:; connect-src 'self' http://127.0.0.1:5050 https://*.fly.dev https://blaxx-pontos-backend.fly.dev;" />
+  <title>Blaxx Pontos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/design-system.css" />
+</head>
+<body>
+  <div class="main center" style="min-height:100vh;background:var(--blaxx-black);color:var(--blaxx-white);">
+    <div class="center-text">
+      <div style="font-family:var(--font-display);font-size:56px;font-weight:700;">
+        blaxx<span style="color:var(--blaxx-lime)">·</span>pontos
+      </div>
+      <div class="muted" style="margin-top:8px;letter-spacing:0.18em;text-transform:uppercase;font-size:11px;color:var(--gray-400);">
+        Plataforma institucional de pontos
+      </div>
+      <div style="margin-top:48px;color:var(--gray-400);font-size:13px;">Iniciando…</div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    // Roteia para o splash inteligente (que aguarda o backend e mostra status).
+    // O splash redireciona depois para login.html ou dashboard.html.
+    setTimeout(() => { location.href = 'splash.html'; }, 50);
+  </script>
+</body>
+</html>

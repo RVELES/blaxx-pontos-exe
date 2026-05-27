@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Confirmar envio · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main center">
+      <div class="center-wrap">
+        <div class="card elevated">
+          <span class="eyebrow">Confirmação</span>
+          <h3>Revise o envio</h3>
+          <div class="card lime mt-4" id="summary">…</div>
+          <div class="field mt-6">
+            <label>Senha</label>
+            <input id="pwd" name="password" type="password" placeholder="••••••"
+                   autocomplete="current-password" />
+            <span class="hint">Demo: <span class="mono">123456</span></span>
+          </div>
+          <button class="btn primary lg block" id="btn-confirm">Confirmar envio</button>
+          <button class="btn link block mt-2" onclick="go('enviar-pontos.html')">Voltar</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('enviar');
+      const data = JSON.parse(sessionStorage.getItem('blaxx_transfer') || '{}');
+      document.getElementById('summary').innerHTML = `
+        <div class="row between"><span>Para</span><strong>${data.to||'—'}</strong></div>
+        <div class="row between mt-2"><span>Valor</span><strong>${Number(data.amount_pts||0).toLocaleString('pt-BR')} pts</strong></div>
+        ${data.message ? `<div class="row between mt-2"><span>Mensagem</span><strong>"${data.message}"</strong></div>` : ''}
+      `;
+
+      document.getElementById('btn-confirm').addEventListener('click', async () => {
+        const password = document.getElementById('pwd').value;
+        if (!password) return toast('Informe sua senha', 'error');
+        try {
+          const r = await api('/transfer/', {
+            method: 'POST',
+            body: { ...data, password }
+          });
+          sessionStorage.setItem('blaxx_receipt', JSON.stringify(r));
+          go('envio-concluido.html');
+        } catch (e) {
+          if (e.status === 402 || /saldo/i.test(e.message)) {
+            go('saldo-insuficiente.html');
+          } else {
+            toast(e.message, 'error', 3200);
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

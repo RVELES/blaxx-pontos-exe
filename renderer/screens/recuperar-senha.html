@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Recuperar senha · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="main center" style="min-height:100vh;">
+    <div class="center-wrap">
+      <div class="brand">
+        <div class="logo logo-blaxx"><span class="logo-mark">BlaxX</span><span class="logo-sub">pontos</span></div>
+        <div class="tagline">Recuperar senha</div>
+      </div>
+      <div class="card elevated">
+        <span class="eyebrow">Recuperação</span>
+        <h3>Reenviaremos para o seu e-mail</h3>
+        <p class="subtitle">Digite o e-mail cadastrado para receber instruções.</p>
+        <form id="form-r">
+          <div class="field">
+            <label>E-mail</label>
+            <input id="email" name="email" type="email"
+                   autocomplete="email" autocapitalize="none" spellcheck="false" required />
+          </div>
+          <button class="btn primary lg block" type="submit">Enviar link</button>
+        </form>
+        <div class="center-text mt-6">
+          <a class="btn link" onclick="go('login.html')">Voltar para o login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    document.getElementById('form-r').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const btn = e.target.querySelector('button[type="submit"]');
+      const orig = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Enviando…';
+      try {
+        const d = await api('/auth/forgot-password', { method: 'POST', body: { email } });
+        toast(d.message || 'Se o e-mail existir, você receberá um link em alguns minutos', 'success', 3200);
+        setTimeout(() => go('login.html'), 1800);
+      } catch (err) {
+        // Sempre genérico — não revelar se email existe
+        toast('Se o e-mail existir, você receberá um link em alguns minutos', 'success', 3200);
+        setTimeout(() => go('login.html'), 1800);
+      } finally {
+        btn.disabled = false; btn.textContent = orig;
+      }
+    });
+  </script>
+</body>
+</html>

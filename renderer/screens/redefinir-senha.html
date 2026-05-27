@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Redefinir senha · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="main center" style="min-height:100vh;">
+    <div class="center-wrap">
+      <div class="brand">
+        <div class="logo logo-blaxx"><span class="logo-mark">BlaxX</span><span class="logo-sub">pontos</span></div>
+        <div class="tagline">Criar nova senha</div>
+      </div>
+
+      <div class="card elevated">
+        <span class="eyebrow">Redefinição</span>
+        <h3>Escolha uma nova senha</h3>
+        <p class="subtitle" id="bx-state-msg">Defina uma nova senha forte. O link tem validade limitada.</p>
+
+        <form id="form-reset" autocomplete="on">
+          <div class="field">
+            <label for="password">Nova senha (mín. 8 caracteres)</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+            <span class="hint" id="bx-strength">Use maiúscula, minúscula, número e caractere especial.</span>
+          </div>
+          <div class="field">
+            <label for="password-confirm">Confirmar senha</label>
+            <input id="password-confirm" name="password-confirm" type="password" autocomplete="new-password" required />
+          </div>
+          <button type="submit" class="btn primary lg block" id="btn-submit">Redefinir senha</button>
+        </form>
+
+        <div class="center-text mt-6">
+          <a class="btn link" onclick="go('login.html')">Voltar para o login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    function getQuery(name) {
+      const m = location.search.match(new RegExp('[?&]' + name + '=([^&]+)'));
+      return m ? decodeURIComponent(m[1]) : null;
+    }
+
+    const token = getQuery('token');
+    const form = document.getElementById('form-reset');
+    const stateMsg = document.getElementById('bx-state-msg');
+    const submitBtn = document.getElementById('btn-submit');
+
+    if (!token) {
+      stateMsg.textContent = 'Link inválido. Solicite um novo em "Esqueci minha senha".';
+      stateMsg.style.color = '#ff6b6b';
+      form.style.display = 'none';
+    }
+
+    // Indicador de força (idêntico ao cadastro)
+    function passwordStrength(pwd) {
+      pwd = pwd || '';
+      let score = 0; const hints = [];
+      if (pwd.length >= 8) score++; else hints.push('8+ caracteres');
+      if (/[a-z]/.test(pwd)) score++; else hints.push('minúscula');
+      if (/[A-Z]/.test(pwd)) score++; else hints.push('maiúscula');
+      if (/\d/.test(pwd)) score++; else hints.push('número');
+      if (/[^A-Za-z0-9\s]/.test(pwd)) score++; else hints.push('caractere especial');
+      const labels = ['muito fraca','fraca','razoável','boa','forte'];
+      return { score, label: labels[Math.max(0,score-1)] || 'muito fraca', hints, ok: score === 5 };
+    }
+    const STRENGTH_COLORS = ['#ff6b6b','#ff6b6b','#ffb74d','#a4d65e','#a4d65e'];
+    const senhaEl = document.getElementById('password');
+    const strengthEl = document.getElementById('bx-strength');
+    const defaultStrengthText = strengthEl.textContent;
+    senhaEl.addEventListener('input', () => {
+      const v = senhaEl.value;
+      if (!v) { strengthEl.textContent = defaultStrengthText; strengthEl.style.color = ''; return; }
+      const r = passwordStrength(v);
+      strengthEl.style.color = STRENGTH_COLORS[Math.max(0, r.score - 1)] || '';
+      strengthEl.textContent = 'Senha ' + r.label + (r.hints.length ? ' — falta: ' + r.hints.join(', ') : ' ✓');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pwd = document.getElementById('password').value;
+      const pwdConfirm = document.getElementById('password-confirm').value;
+      if (!passwordStrength(pwd).ok) {
+        toast('Senha fraca: 8+ chars com maiúscula, minúscula, número e símbolo.', 'error', 3200);
+        return;
+      }
+      if (pwd !== pwdConfirm) { toast('Senhas não conferem.', 'error'); return; }
+      submitBtn.disabled = true; submitBtn.textContent = 'Salvando…';
+      try {
+        await api('/auth/reset-password', {
+          method: 'POST',
+          body: { token, password: pwd, password_confirm: pwdConfirm }
+        });
+        toast('Senha redefinida! Faça login.', 'success', 2500);
+        Session.clear();
+        setTimeout(() => go('login.html'), 1500);
+      } catch (err) {
+        const code = err.data && err.data.code;
+        let msg = err.message || 'Falha ao redefinir senha';
+        if (code === 'token_expired') msg = 'Link expirado. Solicite um novo.';
+        else if (code === 'token_used') msg = 'Link já utilizado.';
+        else if (code === 'invalid_token') msg = 'Link inválido.';
+        toast(msg, 'error', 3500);
+        submitBtn.disabled = false; submitBtn.textContent = 'Redefinir senha';
+      }
+    });
+  </script>
+</body>
+</html>

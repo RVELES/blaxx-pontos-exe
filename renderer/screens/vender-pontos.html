@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Resgatar pontos · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="grid cols-2" style="grid-template-columns: 1.3fr 1fr;">
+        <div class="card">
+          <span class="eyebrow">Cashback via PIX</span>
+          <h3>Resgatar pontos</h3>
+          <p class="subtitle">1 pt = R$ 0,09 · disponível após 6 meses de programa · VIPs sem limite diário.</p>
+
+          <div class="field">
+            <label>Quantos pontos resgatar?</label>
+            <input id="points" name="points" type="number" min="1" step="1"
+                   placeholder="1000" autocomplete="off" inputmode="numeric" />
+            <span class="hint" id="quote">Equivalente a R$ —</span>
+          </div>
+
+          <button class="btn primary lg block" id="btn-next">Continuar</button>
+        </div>
+
+        <div class="card lime">
+          <span class="eyebrow">Como funciona</span>
+          <h3 style="margin-bottom:8px;">Resgate seguro</h3>
+          <p style="color:var(--gray-800);font-size:14px;">
+            Em produção, validamos sua chave PIX via DICT do Banco Central e
+            confirmamos que o titular da chave é você. Se o payout falhar por
+            qualquer motivo, os pontos voltam à sua carteira automaticamente
+            (Transaction REFUND).
+          </p>
+          <div class="divider"></div>
+          <span class="eyebrow">Limites</span>
+          <p style="color:var(--gray-800);font-size:14px;margin:0;">
+            • Conversão: 1 pt = R$ 0,09<br/>
+            • Máximo diário: R$ 100.000 (= 1.111.111 pts)<br/>
+            • Usuários VIP: sem limite diário<br/>
+            • Carência: 6 meses após cadastro
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('resgatar');
+      document.getElementById('top').outerHTML  = renderTopbar({eyebrow:'Resgate', title:'Resgatar pontos'});
+
+      const ptsInput = document.getElementById('points');
+      const quote = document.getElementById('quote');
+
+      async function updateQuote() {
+        const v = parseInt(ptsInput.value || '0', 10);
+        if (v >= 2500) {
+          try {
+            const q = await api(`/redeem/quote?points=${v}`);
+            quote.textContent = `Equivalente a ${fmtBRL(q.amount_brl)} · ${q.rate}`;
+          } catch (e) { quote.textContent = 'Erro na cotação'; }
+        } else {
+          quote.textContent = 'Mínimo 2.500 pts';
+        }
+      }
+      ptsInput.addEventListener('input', updateQuote);
+
+      document.getElementById('btn-next').addEventListener('click', () => {
+        const v = parseInt(ptsInput.value || '0', 10);
+        if (v < 2500) return toast('Mínimo 2.500 pts', 'error');
+        if (v > 100000) return toast('Máximo 100.000 pts/dia', 'error');
+        sessionStorage.setItem('blaxx_redeem', JSON.stringify({ points: v }));
+        go('resgate-pix.html');
+      });
+    }
+  </script>
+</body>
+</html>

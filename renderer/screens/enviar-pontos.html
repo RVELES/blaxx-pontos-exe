@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Enviar pontos · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="grid cols-2" style="grid-template-columns: 1.3fr 1fr;">
+        <div class="card">
+          <span class="eyebrow">Presente para alguém</span>
+          <h3>Enviar pontos</h3>
+          <p class="subtitle">Mínimo 100 pts · máximo 50.000 pts por dia.</p>
+
+          <div class="field">
+            <label>Destinatário (e-mail ou CPF)</label>
+            <input id="to" name="recipient" type="text"
+                   placeholder="lucas@blaxx.com ou 987.654.321-00"
+                   autocomplete="off" autocapitalize="none" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label>Quantos pontos?</label>
+            <input id="amount" name="amount" type="number" min="100" max="50000" step="100"
+                   placeholder="2000" autocomplete="off" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label>Mensagem (opcional)</label>
+            <input id="message" name="message" type="text" maxlength="140"
+                   placeholder="Obrigado!" autocomplete="off" />
+          </div>
+          <button class="btn primary lg block" id="btn-next">Continuar</button>
+        </div>
+
+        <div class="card lime">
+          <span class="eyebrow">Como funciona</span>
+          <h3 style="margin-bottom:8px;">Transferência atômica</h3>
+          <p style="color:var(--gray-800);font-size:14px;">
+            O envio acontece numa única transação no ledger: ou os pontos saem
+            de você e entram no destinatário ao mesmo tempo, ou nada acontece.
+            Em caso de falha, seu saldo é preservado integralmente.
+          </p>
+          <div class="divider"></div>
+          <span class="eyebrow">Limites</span>
+          <p style="color:var(--gray-800);font-size:14px;margin:0;">
+            • Mínimo: 100 pts<br/>
+            • Máximo diário: 50.000 pts<br/>
+            • Os pontos preservam a validade original
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('enviar');
+      document.getElementById('top').outerHTML  = renderTopbar({eyebrow:'Envio P2P', title:'Enviar pontos'});
+
+      document.getElementById('btn-next').addEventListener('click', () => {
+        const to = document.getElementById('to').value.trim();
+        const amount = parseInt(document.getElementById('amount').value || '0', 10);
+        const message = document.getElementById('message').value.trim();
+        if (!to) return toast('Informe o destinatário', 'error');
+        if (amount < 100) return toast('Mínimo 100 pts', 'error');
+        if (amount > 50000) return toast('Máximo 50.000 pts/dia', 'error');
+        sessionStorage.setItem('blaxx_transfer', JSON.stringify({ to, amount_pts: amount, message }));
+        go('confirmar-envio.html');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Parceiros · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+      <span class="eyebrow">Marketplace</span>
+      <h3 class="mb-4">Parceiros credenciados</h3>
+
+      <div class="row mb-6" style="gap:8px;flex-wrap:wrap;" id="filters">
+        <button class="chip" data-cat="">Todos</button>
+      </div>
+
+      <div id="grid" class="grid cols-3">Carregando…</div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    let all = [];
+    let currentCat = '';
+
+    function render() {
+      const items = currentCat ? all.filter(p => p.category === currentCat) : all;
+      if (!items.length) {
+        document.getElementById('grid').innerHTML =
+          '<p class="muted">Nenhum parceiro nesta categoria.</p>';
+        return;
+      }
+      document.getElementById('grid').innerHTML = items.map(p => `
+        <div class="card" style="cursor:pointer;" onclick="openPartner('${p.id}')">
+          <div class="chip dark">${p.category}</div>
+          <h3 style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:22px;">${p.logo_emoji || '◯'}</span>
+            ${p.name}
+          </h3>
+          <p class="muted" style="font-size:13px;margin:4px 0 8px;">${p.description || ''}</p>
+          <span class="chip success">${p.accrual_rule || ''}</span>
+        </div>
+      `).join('');
+    }
+
+    function openPartner(id) {
+      // Em produção: navegação para detalhe do parceiro
+      go('detalhe-parceiro.html?id=' + id);
+    }
+
+    function renderFilters(categories) {
+      const html = ['<button class="chip ' + (currentCat===''?'success':'') + '" data-cat="">Todos</button>']
+        .concat(categories.map(c =>
+          `<button class="chip ${currentCat===c?'success':''}" data-cat="${c}">${c}</button>`
+        )).join('');
+      document.getElementById('filters').innerHTML = html;
+      document.getElementById('filters').querySelectorAll('button').forEach(btn => {
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+          currentCat = btn.dataset.cat;
+          renderFilters(categories);
+          render();
+        });
+      });
+    }
+
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('parceiros');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Rede Blaxx', title:'Parceiros'});
+      (async () => {
+        try {
+          const data = await api('/partners/');
+          all = data.items || [];
+          const cats = await api('/partners/categories');
+          renderFilters(cats.items || []);
+          render();
+        } catch (e) {
+          document.getElementById('grid').innerHTML = `<p class="muted">Erro: ${e.message}</p>`;
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

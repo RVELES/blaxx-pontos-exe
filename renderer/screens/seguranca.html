@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Segurança · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+  <style>
+    .seg-grid { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 900px) { .seg-grid { grid-template-columns: 1fr; } }
+    .seg-status { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+    .seg-status.on  { background: rgba(164,214,94,0.15); color: #a4d65e; }
+    .seg-status.off { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+    .seg-status.pending { background: rgba(255,183,77,0.15); color: #ffb74d; }
+    .seg-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size: 13px; }
+    .seg-row:last-child { border-bottom: 0; }
+    .seg-row .k { color: rgba(255,255,255,0.5); }
+    table.seg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.seg-table th, table.seg-table td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+    table.seg-table th { color: rgba(255,255,255,0.5); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .ev-ok    { color: #a4d65e; }
+    .ev-fail  { color: #ff6b6b; }
+    .ev-info  { color: rgba(255,255,255,0.7); }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="seg-grid">
+        <!-- Card: trocar senha -->
+        <div class="card">
+          <span class="eyebrow">Senha</span>
+          <h3>Trocar senha</h3>
+          <p class="muted">Use uma senha forte e única para sua conta Blaxx.</p>
+          <form id="form-senha" class="mt-4" autocomplete="on">
+            <div class="field">
+              <label for="senha-atual">Senha atual</label>
+              <input id="senha-atual" type="password" autocomplete="current-password" required />
+            </div>
+            <div class="field">
+              <label for="senha-nova">Nova senha</label>
+              <input id="senha-nova" type="password" autocomplete="new-password" minlength="8" required />
+              <span class="hint" id="bx-strength">Use maiúscula, minúscula, número e caractere especial.</span>
+            </div>
+            <div class="field">
+              <label for="senha-confirm">Confirmar nova senha</label>
+              <input id="senha-confirm" type="password" autocomplete="new-password" required />
+            </div>
+            <button type="submit" class="btn primary block">Atualizar senha</button>
+          </form>
+        </div>
+
+        <!-- Card: 2FA -->
+        <div class="card">
+          <span class="eyebrow">2FA</span>
+          <h3>Autenticação em duas etapas</h3>
+          <p class="muted">Código por SMS a cada novo dispositivo.</p>
+          <div class="mt-4">
+            <span id="bx-2fa-status" class="seg-status off">carregando…</span>
+          </div>
+
+          <div id="bx-phone-section" class="mt-4">
+            <form id="form-phone" autocomplete="on">
+              <div class="field">
+                <label for="bx-phone">Celular</label>
+                <input id="bx-phone" type="tel" placeholder="(11) 99999-9999" autocomplete="tel" />
+                <span class="hint" id="bx-phone-status"></span>
+              </div>
+              <button type="submit" class="btn ghost block" id="bx-phone-send">Enviar código por SMS</button>
+            </form>
+
+            <form id="form-phone-verify" class="mt-4" style="display:none;" autocomplete="on">
+              <div class="field">
+                <label for="bx-phone-code">Código de 6 dígitos</label>
+                <input id="bx-phone-code" type="text" inputmode="numeric" maxlength="6" pattern="\d{6}"
+                       placeholder="000000" autocomplete="one-time-code"
+                       style="font-size:20px;letter-spacing:0.3em;text-align:center;font-weight:700;" />
+              </div>
+              <button type="submit" class="btn primary block" id="bx-phone-verify-btn">Verificar telefone</button>
+            </form>
+          </div>
+
+          <div id="bx-2fa-actions" class="mt-4" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+
+      <!-- Sessões ativas -->
+      <div class="card mt-6">
+        <span class="eyebrow">Sessões</span>
+        <h3>Dispositivos com login ativo</h3>
+        <table class="seg-table mt-4">
+          <thead><tr><th>Dispositivo</th><th>IP</th><th>Última atividade</th><th></th></tr></thead>
+          <tbody id="bx-sessions-list">
+            <tr><td colspan="4" class="muted" style="text-align:center;padding:18px;">Carregando…</td></tr>
+          </tbody>
+        </table>
+        <button id="bx-logout-all" type="button" class="btn ghost mt-4" style="color:var(--negative);border-color:var(--negative);">Encerrar todas as outras sessões</button>
+      </div>
+
+      <!-- Histórico de acessos -->
+      <div class="card mt-6">
+        <span class="eyebrow">Histórico</span>
+        <h3>Acessos e eventos de segurança</h3>
+        <table class="seg-table mt-4">
+          <thead><tr><th>Data</th><th>Evento</th><th>Dispositivo</th><th>IP</th></tr></thead>
+          <tbody id="bx-access-log">
+            <tr><td colspan="4" class="muted" style="text-align:center;padding:18px;">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('perfil');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Conta', title:'Segurança'});
+
+      // ===== util: força de senha =====
+      function passwordStrength(pwd) {
+        pwd = pwd || '';
+        let score = 0; const hints = [];
+        if (pwd.length >= 8) score++; else hints.push('8+ caracteres');
+        if (/[a-z]/.test(pwd)) score++; else hints.push('minúscula');
+        if (/[A-Z]/.test(pwd)) score++; else hints.push('maiúscula');
+        if (/\d/.test(pwd)) score++; else hints.push('número');
+        if (/[^A-Za-z0-9\s]/.test(pwd)) score++; else hints.push('caractere especial');
+        const labels = ['muito fraca','fraca','razoável','boa','forte'];
+        return { score, label: labels[Math.max(0,score-1)] || 'muito fraca', hints, ok: score === 5 };
+      }
+      const COLORS = ['#ff6b6b','#ff6b6b','#ffb74d','#a4d65e','#a4d65e'];
+      const senhaNova = document.getElementById('senha-nova');
+      const strengthEl = document.getElementById('bx-strength');
+      const defaultHint = strengthEl.textContent;
+      senhaNova.addEventListener('input', () => {
+        const v = senhaNova.value;
+        if (!v) { strengthEl.textContent = defaultHint; strengthEl.style.color = ''; return; }
+        const r = passwordStrength(v);
+        strengthEl.style.color = COLORS[Math.max(0, r.score - 1)] || '';
+        strengthEl.textContent = 'Senha ' + r.label + (r.hints.length ? ' — falta: ' + r.hints.join(', ') : ' ✓');
+      });
+
+      // ===== 1. Trocar senha =====
+      document.getElementById('form-senha').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const current = document.getElementById('senha-atual').value;
+        const nova = senhaNova.value;
+        const confirmV = document.getElementById('senha-confirm').value;
+        if (!passwordStrength(nova).ok) { toast('Senha fraca.', 'error'); return; }
+        if (nova !== confirmV) { toast('Confirmação não confere.', 'error'); return; }
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true; btn.textContent = 'Salvando…';
+        try {
+          await api('/auth/change-password', {
+            method: 'POST',
+            body: { current_password: current, new_password: nova }
+          });
+          toast('Senha alterada. Faça login novamente.', 'success', 2500);
+          Session.clear();
+          setTimeout(() => go('login.html'), 1500);
+        } catch (err) {
+          if (err.status === 404) toast('Troca de senha indisponível neste servidor.', 'error', 3500);
+          else toast(err.message || 'Falha ao trocar senha', 'error', 3500);
+          btn.disabled = false; btn.textContent = 'Atualizar senha';
+        }
+      });
+
+      // ===== 2. Telefone + 2FA =====
+      const formPhone = document.getElementById('form-phone');
+      const formVerify = document.getElementById('form-phone-verify');
+      const statusEl = document.getElementById('bx-2fa-status');
+      const actionsEl = document.getElementById('bx-2fa-actions');
+      const phoneStatusEl = document.getElementById('bx-phone-status');
+
+      function renderMfaState(u) {
+        if (!u) return;
+        if (u.mfa_enabled && u.mfa_method === 'sms') {
+          statusEl.className = 'seg-status on';
+          statusEl.textContent = '● 2FA por SMS ativa — ' + (u._phone_masked || '***');
+        } else if (u.phone_verified) {
+          statusEl.className = 'seg-status pending';
+          statusEl.textContent = '○ Telefone verificado, 2FA desligada';
+        } else if (u.phone) {
+          statusEl.className = 'seg-status pending';
+          statusEl.textContent = '○ Telefone aguardando verificação';
+        } else {
+          statusEl.className = 'seg-status off';
+          statusEl.textContent = '○ Sem telefone';
+        }
+        actionsEl.innerHTML = '';
+        if (u.phone_verified && !u.mfa_enabled) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'btn primary'; b.textContent = 'Ativar 2FA por SMS';
+          b.addEventListener('click', enable2FA);
+          actionsEl.appendChild(b);
+        }
+        if (u.mfa_enabled) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'btn ghost'; b.textContent = 'Desativar 2FA';
+          b.addEventListener('click', disable2FA);
+          actionsEl.appendChild(b);
+        }
+        if (u.phone) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'btn ghost'; b.textContent = 'Remover telefone';
+          b.style.color = 'var(--negative)';
+          b.style.borderColor = 'var(--negative)';
+          b.addEventListener('click', removePhone);
+          actionsEl.appendChild(b);
+        }
+      }
+
+      async function loadMe() {
+        try {
+          const d = await api('/auth/me');
+          const u = d.user || d;
+          if (u.phone) u._phone_masked = '***' + String(u.phone).slice(-4);
+          const phoneInp = document.getElementById('bx-phone');
+          if (phoneInp && !phoneInp.value && u.phone) phoneInp.value = u.phone;
+          Session.set({ token: Session.token(), user: u });
+          renderMfaState(u);
+        } catch (e) {
+          statusEl.className = 'seg-status off';
+          statusEl.textContent = '— indisponível —';
+        }
+      }
+
+      formPhone.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const phone = document.getElementById('bx-phone').value;
+        if (!phone.replace(/\D/g, '').match(/^\d{10,15}$/)) {
+          toast('Telefone inválido. Use (11) 99999-9999', 'error'); return;
+        }
+        const btn = document.getElementById('bx-phone-send');
+        btn.disabled = true;
+        try {
+          const d = await api('/user/phone', { method: 'POST', body: { phone } });
+          phoneStatusEl.textContent = 'Código enviado para ' + (d.phone_masked || phone) + '. Verifique seu SMS.';
+          formVerify.style.display = 'block';
+          document.getElementById('bx-phone-code').focus();
+        } catch (err) {
+          if (err.status === 404) toast('Cadastro de telefone indisponível neste servidor.', 'error', 3500);
+          else if (err.status === 429) toast(err.message + ' (' + ((err.data && err.data.retry_in) || '?') + 's)', 'error');
+          else toast(err.message || 'Falha ao enviar SMS', 'error');
+        } finally { btn.disabled = false; }
+      });
+
+      formVerify.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const code = document.getElementById('bx-phone-code').value;
+        if (!/^\d{6}$/.test(code)) { toast('Código de 6 dígitos', 'error'); return; }
+        const btn = document.getElementById('bx-phone-verify-btn');
+        btn.disabled = true;
+        try {
+          const d = await api('/user/phone/verify', { method: 'POST', body: { code } });
+          toast('Telefone verificado!', 'success');
+          Session.set({ token: Session.token(), user: d.user });
+          formVerify.style.display = 'none';
+          phoneStatusEl.textContent = 'Telefone verificado ✓';
+          loadMe();
+        } catch (err) {
+          toast(err.message || 'Código inválido', 'error');
+        } finally { btn.disabled = false; }
+      });
+
+      async function enable2FA() {
+        if (!confirm('Ativar 2FA por SMS?')) return;
+        try {
+          const d = await api('/user/2fa/sms/enable', { method: 'POST', body: {} });
+          toast('2FA ativada', 'success');
+          Session.set({ token: Session.token(), user: d.user });
+          loadMe();
+        } catch (err) { toast(err.message || 'Falha ao ativar', 'error'); }
+      }
+      async function disable2FA() {
+        const pwd = prompt('Para desativar a 2FA, confirme sua senha:');
+        if (!pwd) return;
+        try {
+          const d = await api('/user/2fa/sms/disable', { method: 'POST', body: { password: pwd } });
+          toast('2FA desativada', 'success');
+          Session.set({ token: Session.token(), user: d.user });
+          loadMe();
+        } catch (err) { toast(err.message || 'Falha ao desativar', 'error'); }
+      }
+      async function removePhone() {
+        const pwd = prompt('Para remover o telefone, confirme sua senha:');
+        if (!pwd) return;
+        try {
+          const d = await api('/user/phone', { method: 'DELETE', body: { password: pwd } });
+          toast('Telefone removido', 'success');
+          Session.set({ token: Session.token(), user: d.user });
+          document.getElementById('bx-phone').value = '';
+          formVerify.style.display = 'none';
+          phoneStatusEl.textContent = '';
+          loadMe();
+        } catch (err) { toast(err.message || 'Falha ao remover', 'error'); }
+      }
+
+      loadMe();
+
+      // ===== 3. Sessões ativas =====
+      async function loadSessions() {
+        const tbody = document.getElementById('bx-sessions-list');
+        try {
+          const d = await api('/user/sessions');
+          const rows = (d.sessions || []).map(s => `
+            <tr>
+              <td><strong>${s.device_name || '—'}</strong>${s.current ? ' <span class="seg-status on" style="margin-left:6px;">esta</span>' : ''}</td>
+              <td>${s.ip_address || '—'}</td>
+              <td>${s.last_used_at ? new Date(s.last_used_at).toLocaleString('pt-BR') : '—'}</td>
+              <td>${s.current ? '' : `<button data-id="${s.id}" class="btn ghost" style="padding:4px 10px;font-size:12px;color:var(--negative);">Encerrar</button>`}</td>
+            </tr>
+          `).join('');
+          tbody.innerHTML = rows || '<tr><td colspan="4" class="muted" style="text-align:center;padding:18px;">Sem sessões ativas.</td></tr>';
+          tbody.querySelectorAll('[data-id]').forEach(b => {
+            b.addEventListener('click', async () => {
+              if (!confirm('Encerrar esta sessão?')) return;
+              try {
+                await api('/user/sessions/' + b.dataset.id, { method: 'DELETE' });
+                toast('Sessão encerrada', 'success');
+                loadSessions();
+              } catch (err) { toast(err.message || 'Falha', 'error'); }
+            });
+          });
+        } catch (err) {
+          tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:18px;">Indisponível</td></tr>';
+        }
+      }
+      loadSessions();
+
+      document.getElementById('bx-logout-all').addEventListener('click', async () => {
+        if (!confirm('Encerrar todas as outras sessões?')) return;
+        try {
+          await api('/auth/sessions/revoke-all', { method: 'POST', body: {} });
+          toast('Todas as sessões foram encerradas', 'success');
+          Session.clear();
+          go('login.html');
+        } catch (err) { toast(err.message || 'Falha', 'error'); }
+      });
+
+      // ===== 4. Histórico de acessos =====
+      const EVENT_LABELS = {
+        'auth.login.success':       { lbl: '✓ Login com sucesso',    cls: 'ev-ok'   },
+        'auth.login.fail':          { lbl: '✗ Tentativa (falha)',     cls: 'ev-fail' },
+        'auth.login.blocked':       { lbl: '✗ Login bloqueado',       cls: 'ev-fail' },
+        'auth.logout':              { lbl: '↩ Logout',               cls: 'ev-info' },
+        'auth.logout.all':          { lbl: '↩ Logout de todas',       cls: 'ev-info' },
+        'user.password.changed':    { lbl: '🔑 Senha alterada',       cls: 'ev-ok'   },
+        'auth.reset_password.success': { lbl: '🔑 Senha redefinida',  cls: 'ev-ok'   },
+        'user.mfa.enabled':         { lbl: '🛡 2FA ativada',          cls: 'ev-ok'   },
+        'user.mfa.disabled':        { lbl: '🛡 2FA desativada',       cls: 'ev-info' },
+        'auth.mfa.challenge_success': { lbl: '🛡 2FA validada',       cls: 'ev-ok'   },
+        'auth.mfa.challenge_fail':  { lbl: '🛡 Falha em 2FA',         cls: 'ev-fail' },
+        'user.phone.verified':      { lbl: '📱 Telefone verificado',  cls: 'ev-ok'   },
+        'user.phone.removed':       { lbl: '📱 Telefone removido',    cls: 'ev-info' },
+        'user.email.changed':       { lbl: '✉ E-mail alterado',       cls: 'ev-info' }
+      };
+      (async () => {
+        const tbody = document.getElementById('bx-access-log');
+        try {
+          const d = await api('/user/access-log');
+          const items = d.items || [];
+          if (!items.length) {
+            tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:18px;">Sem eventos registrados.</td></tr>';
+            return;
+          }
+          tbody.innerHTML = items.map(it => {
+            const when = it.at ? new Date(it.at).toLocaleString('pt-BR') : '—';
+            const meta = EVENT_LABELS[it.event] || { lbl: it.event, cls: 'ev-info' };
+            return `
+              <tr>
+                <td>${when}</td>
+                <td><span class="${meta.cls}">${meta.lbl}</span></td>
+                <td>${it.device || '—'}</td>
+                <td>${it.ip || '—'}</td>
+              </tr>
+            `;
+          }).join('');
+        } catch (err) {
+          tbody.innerHTML = '<tr><td colspan="4" class="muted" style="text-align:center;padding:18px;">Histórico indisponível</td></tr>';
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

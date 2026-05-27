@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Criar conta · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="main center" style="min-height:100vh;">
+    <div class="center-wrap">
+      <div class="brand">
+        <div class="logo logo-blaxx"><span class="logo-mark">BlaxX</span><span class="logo-sub">pontos</span></div>
+        <div class="tagline">Criar conta</div>
+      </div>
+      <div class="card elevated">
+        <span class="eyebrow">Cadastro</span>
+        <h3>Comece a acumular pontos</h3>
+        <p class="subtitle">Cadastro rápido. Sua carteira é criada automaticamente.</p>
+
+        <form id="form-signup" autocomplete="on">
+          <div class="field">
+            <label for="name">Nome completo</label>
+            <input id="name" name="name" type="text" autocomplete="name" required minlength="3" />
+          </div>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" autocomplete="email"
+                   autocapitalize="none" spellcheck="false" required />
+          </div>
+          <div class="field">
+            <label for="cpf">CPF</label>
+            <input id="cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off"
+                   maxlength="14" placeholder="000.000.000-00" required />
+          </div>
+          <div class="field">
+            <label for="pix_key">Chave PIX (opcional)</label>
+            <input id="pix_key" name="pix_key" type="text" autocomplete="off"
+                   autocapitalize="none" spellcheck="false"
+                   placeholder="e-mail, telefone, CPF ou chave aleatória" />
+            <span class="hint">Você pode adicionar depois nas configurações.</span>
+          </div>
+          <div class="field">
+            <label for="password">Senha (mín. 8 caracteres)</label>
+            <input id="password" name="password" type="password" autocomplete="new-password"
+                   minlength="8" required />
+            <span class="hint" id="bx-strength">Use maiúscula, minúscula, número e caractere especial.</span>
+          </div>
+          <div class="field">
+            <label for="password-confirm">Confirmar senha</label>
+            <input id="password-confirm" name="password-confirm" type="password" autocomplete="new-password" required />
+          </div>
+
+          <div class="field" style="display:flex;align-items:flex-start;gap:10px;margin:18px 0 4px;">
+            <input type="checkbox" id="accept-terms" name="accept-terms" required
+                   style="margin-top:3px;flex-shrink:0;width:18px;height:18px;
+                          cursor:pointer;accent-color:#C6F432;" />
+            <label for="accept-terms"
+                   style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.75);
+                          cursor:pointer;flex:1;">
+              Li e aceito os
+              <a class="btn link" style="display:inline;padding:0;"
+                 onclick="go('termos.html')">termos de uso e a política de privacidade (LGPD)</a>.
+            </label>
+          </div>
+
+          <button class="btn primary lg block" type="submit" id="btn-submit" disabled>
+            Criar conta
+          </button>
+        </form>
+
+        <div class="center-text mt-6">
+          <a class="btn link" onclick="go('login.html')">Já tenho conta</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    // -----------------------------------------------------------------
+    // Persistencia do rascunho · nao perde o preenchido se o usuario
+    // navegar pro termos.html e voltar. Senha NAO e' persistida.
+    // -----------------------------------------------------------------
+    const DRAFT_KEY = 'blaxx_signup_draft';
+    const DRAFT_FIELDS = ['name', 'email', 'cpf', 'pix_key'];
+
+    function loadDraft() {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || 'null');
+        if (!saved) return;
+        DRAFT_FIELDS.forEach((f) => {
+          const el = document.getElementById(f);
+          if (el && typeof saved[f] === 'string') el.value = saved[f];
+        });
+        const cb = document.getElementById('accept-terms');
+        if (cb && saved.accepted) cb.checked = true;
+      } catch (_) { /* sessionStorage indisponivel */ }
+    }
+
+    function saveDraft() {
+      const data = { accepted: document.getElementById('accept-terms').checked };
+      DRAFT_FIELDS.forEach((f) => {
+        const el = document.getElementById(f);
+        if (el) data[f] = el.value;
+      });
+      try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch (_) {}
+    }
+
+    function clearDraft() {
+      try { sessionStorage.removeItem(DRAFT_KEY); } catch (_) {}
+    }
+
+    DRAFT_FIELDS.forEach((f) => {
+      const el = document.getElementById(f);
+      if (el) el.addEventListener('input', saveDraft);
+    });
+    document.getElementById('accept-terms').addEventListener('change', saveDraft);
+
+    // Restaura ANTES de qualquer outra logica que leia o DOM
+    loadDraft();
+
+    // -----------------------------------------------------------------
+    // Mascara de CPF
+    // -----------------------------------------------------------------
+    document.getElementById('cpf').addEventListener('input', (e) => {
+      const v = e.target.value.replace(/\D/g, '').slice(0, 11);
+      const masked = v
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      e.target.value = masked;
+    });
+
+    // -----------------------------------------------------------------
+    // Botao "Criar conta" so habilita apos aceitar os termos (LGPD)
+    // -----------------------------------------------------------------
+    const acceptCb = document.getElementById('accept-terms');
+    const submitBtn = document.getElementById('btn-submit');
+    function refreshSubmitState() {
+      submitBtn.disabled = !acceptCb.checked;
+      submitBtn.style.opacity = acceptCb.checked ? '1' : '0.55';
+      submitBtn.style.cursor = acceptCb.checked ? 'pointer' : 'not-allowed';
+    }
+    acceptCb.addEventListener('change', refreshSubmitState);
+    refreshSubmitState();
+
+    // -----------------------------------------------------------------
+    // Indicador inline de força de senha
+    // -----------------------------------------------------------------
+    const STRENGTH_COLORS = ['#ff6b6b', '#ff6b6b', '#ffb74d', '#a4d65e', '#a4d65e'];
+    function passwordStrength(pwd) {
+      pwd = pwd || '';
+      let score = 0;
+      const hints = [];
+      if (pwd.length >= 8) score++; else hints.push('8+ caracteres');
+      if (/[a-z]/.test(pwd)) score++; else hints.push('minúscula');
+      if (/[A-Z]/.test(pwd)) score++; else hints.push('maiúscula');
+      if (/\d/.test(pwd)) score++; else hints.push('número');
+      if (/[^A-Za-z0-9\s]/.test(pwd)) score++; else hints.push('caractere especial');
+      const labels = ['muito fraca','fraca','razoável','boa','forte'];
+      return { score, label: labels[Math.max(0,score-1)] || 'muito fraca', hints, ok: score === 5 };
+    }
+    const senhaEl = document.getElementById('password');
+    const strengthEl = document.getElementById('bx-strength');
+    const defaultStrengthText = strengthEl ? strengthEl.textContent : '';
+    if (senhaEl && strengthEl) {
+      senhaEl.addEventListener('input', () => {
+        const v = senhaEl.value;
+        if (!v) {
+          strengthEl.textContent = defaultStrengthText;
+          strengthEl.style.color = '';
+          return;
+        }
+        const r = passwordStrength(v);
+        strengthEl.style.color = STRENGTH_COLORS[Math.max(0, r.score - 1)] || '';
+        strengthEl.textContent = 'Senha ' + r.label + (r.hints.length ? ' — falta: ' + r.hints.join(', ') : ' ✓');
+      });
+    }
+
+    // -----------------------------------------------------------------
+    // Submit
+    // -----------------------------------------------------------------
+    document.getElementById('form-signup').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!acceptCb.checked) {
+        toast('Voce precisa aceitar os termos para criar a conta.', 'error', 3200);
+        return;
+      }
+      const pwd = document.getElementById('password').value;
+      const pwdConfirm = document.getElementById('password-confirm').value;
+      if (!passwordStrength(pwd).ok) {
+        toast('Senha fraca: 8+ chars com maiúscula, minúscula, número e símbolo.', 'error', 3200);
+        return;
+      }
+      if (pwd !== pwdConfirm) {
+        toast('Senhas não conferem.', 'error', 3200);
+        return;
+      }
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Criando...';
+      try {
+        const data = await api('/auth/register', {
+          method: 'POST',
+          body: {
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim().toLowerCase(),
+            cpf: document.getElementById('cpf').value.replace(/\D/g, ''),
+            pix_key: document.getElementById('pix_key').value.trim(),
+            password: pwd,
+            password_confirm: pwdConfirm,
+            accept_terms: true,
+            accept_privacy: true,
+            accept_terms_at: new Date().toISOString(),
+          },
+        });
+        clearDraft();
+        // Compatível com 2 contratos:
+        //  - backend antigo: emite token na hora -> Session + dashboard
+        //  - backend novo: status pending_verification + sem token -> validacao
+        if (data && data.token) {
+          Session.set({ token: data.token, user: data.user });
+          toast('Conta criada! Bem-vindo, ' + (data.user.name || '').split(' ')[0], 'success');
+          setTimeout(() => go('dashboard.html'), 600);
+        } else {
+          toast('Conta criada! Verifique seu e-mail para ativar.', 'success', 3000);
+          setTimeout(() => go('validacao.html'), 1200);
+        }
+      } catch (err) {
+        toast(err.message || 'Falha no cadastro', 'error', 3200);
+        submitBtn.textContent = 'Criar conta';
+        refreshSubmitState();
+      }
+    });
+  </script>
+</body>
+</html>

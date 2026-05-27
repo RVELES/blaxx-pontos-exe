@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' http://127.0.0.1:* https://*.fly.dev; img-src 'self' data:; font-src 'self' https: data:; connect-src 'self' http://127.0.0.1:* https://*.fly.dev https://*.blaxxpontos.com;" />
+  <title>Blaxx Pontos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/design-system.css" />
+  <style>
+    body { margin: 0; background: #0A0A0A; color: #FFFFFF;
+           font-family: 'Inter', -apple-system, system-ui, sans-serif;
+           display: flex; align-items: center; justify-content: center;
+           min-height: 100vh; }
+    .splash { text-align: center; max-width: 480px; width: 90%; padding: 24px; }
+    .brand { font-family: 'Playfair Display', serif; font-size: 56px;
+             font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .brand .dot { color: #C6F432; }
+    .tagline { margin-top: 12px; letter-spacing: 0.18em;
+               text-transform: uppercase; font-size: 11px;
+               color: rgba(255,255,255,0.45); }
+    .mode-badge { display:inline-block; margin-top:14px; padding:3px 10px;
+                  border:1px solid rgba(198,244,50,0.35); border-radius:999px;
+                  font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+                  color:#C6F432; opacity:0; transition:opacity .3s; }
+    .mode-badge.visible { opacity: 1; }
+    .progress-wrap { margin-top: 36px; width: 100%; max-width: 320px;
+                     margin-left: auto; margin-right: auto; }
+    .progress-bar { width: 100%; height: 3px;
+                    background: rgba(255,255,255,0.08);
+                    border-radius: 999px; overflow: hidden; position: relative; }
+    .progress-fill { position: absolute; inset: 0; width: 0%;
+                     background: #C6F432;
+                     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                     border-radius: 999px; }
+    .progress-fill.indeterminate { width: 32% !important;
+                                   animation: slide 1.4s ease-in-out infinite; }
+    @keyframes slide { 0% { transform: translateX(-100%); }
+                       100% { transform: translateX(320%); } }
+    .status { margin-top: 16px; font-size: 13px;
+              color: rgba(255,255,255,0.65); min-height: 1.4em;
+              font-variant-numeric: tabular-nums; }
+    .error { margin-top: 24px; padding: 16px 20px;
+             background: rgba(220, 38, 38, 0.12);
+             border: 1px solid rgba(220, 38, 38, 0.5);
+             border-radius: 8px; color: #fca5a5; font-size: 13px;
+             text-align: left; display: none; line-height: 1.5; }
+    .error.visible { display: block; }
+    .error-title { font-weight: 600; margin-bottom: 6px; color: #fecaca; }
+    .error code { background: rgba(0,0,0,0.3); padding: 1px 6px;
+                  border-radius: 4px; font-size: 12px; }
+    .retry-btn { margin-top: 14px; background: #C6F432; color: #0A0A0A;
+                 border: 0; padding: 8px 16px; font-weight: 600;
+                 font-size: 12px; border-radius: 6px; cursor: pointer;
+                 font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div class="splash">
+    <div class="brand">blaxx<span class="dot">·</span>pontos</div>
+    <div class="tagline">Plataforma institucional de pontos</div>
+    <div class="mode-badge" id="mode-badge"></div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill indeterminate" id="bar"></div>
+      </div>
+      <div class="status" id="status">Iniciando...</div>
+    </div>
+
+    <div class="error" id="error">
+      <div class="error-title" id="error-title">Falha ao iniciar</div>
+      <div id="error-msg"></div>
+      <button class="retry-btn" onclick="location.reload()">Tentar novamente</button>
+    </div>
+  </div>
+
+  <script>
+    const $status = document.getElementById('status');
+    const $bar    = document.getElementById('bar');
+    const $err    = document.getElementById('error');
+    const $errMsg = document.getElementById('error-msg');
+    const $badge  = document.getElementById('mode-badge');
+
+    function setStatus(text)  { $status.textContent = text; }
+    function setProgress(pct) {
+      $bar.classList.remove('indeterminate');
+      $bar.style.width = pct + '%';
+    }
+    function showError(title, htmlMsg) {
+      $err.classList.add('visible');
+      document.getElementById('error-title').textContent = title;
+      $errMsg.innerHTML = htmlMsg;
+      $status.textContent = 'Erro';
+      $bar.classList.remove('indeterminate');
+      $bar.style.width = '100%';
+      $bar.style.background = '#dc2626';
+    }
+    function hasSession() {
+      try { return !!JSON.parse(sessionStorage.getItem('blaxx_session') || 'null'); }
+      catch { return false; }
+    }
+
+    // Algumas versões do PyWebView disparam 'pywebviewready'; outras já
+    // registram pywebview.api antes do script rodar. Suporta os dois.
+    function waitForPywebviewReady(maxMs) {
+      return new Promise((resolve) => {
+        if (window.pywebview && window.pywebview.api) return resolve();
+        let done = false;
+        const onReady = () => { if (!done) { done = true; resolve(); } };
+        window.addEventListener('pywebviewready', onReady, { once: true });
+        setTimeout(() => { if (!done) { done = true; resolve(); } }, maxMs);
+      });
+    }
+
+    async function waitForBlaxxBridge(maxMs) {
+      const start = Date.now();
+      while (Date.now() - start < maxMs) {
+        // 1) window.blaxx já foi injetado pelo evento 'loaded' do PyWebView
+        if (window.blaxx && window.blaxx.backendUrl) return window.blaxx;
+
+        // 2) pywebview.api existe e a bridge responde - pega direto dela.
+        //    Funciona ANTES do 'loaded' do PyWebView, pois a bridge é
+        //    registrada na criação da janela (mais robusto).
+        if (window.pywebview && window.pywebview.api &&
+            window.pywebview.api.backend_url) {
+          try {
+            const url = await window.pywebview.api.backend_url();
+            const isLocal = await window.pywebview.api.is_local();
+            if (url) return { backendUrl: url, isLocal: !!isLocal };
+          } catch (_) { /* bridge ainda nao pronta, tenta de novo */ }
+        }
+
+        // 3) Fallback: localStorage de uma execucao anterior
+        try {
+          const saved = localStorage.getItem('blaxx_api_url');
+          if (saved) {
+            return { backendUrl: saved,
+                     isLocal: saved.indexOf('127.0.0.1') >= 0 };
+          }
+        } catch (_) {}
+
+        await new Promise(r => setTimeout(r, 100));
+      }
+      return null;
+    }
+
+    async function pollHealth(url, maxMs) {
+      const start = Date.now();
+      let attempt = 0;
+      while (Date.now() - start < maxMs) {
+        attempt++;
+        try {
+          const r = await fetch(url, { method: 'GET', cache: 'no-store' });
+          if (r.ok) return true;
+        } catch (_) { /* keep polling */ }
+        const pct = Math.min(85, Math.round((Date.now() - start) / maxMs * 100));
+        setProgress(pct);
+        if (attempt === 3)  setStatus('Conectando...');
+        if (attempt === 10) setStatus('Carregando dados...');
+        if (attempt === 20) setStatus('Quase la...');
+        await new Promise(r => setTimeout(r, 400));
+      }
+      return false;
+    }
+
+    (async () => {
+      setStatus('Aguardando aplicativo...');
+      await waitForPywebviewReady(300);
+
+      const blaxx = await waitForBlaxxBridge(5000);
+      if (!blaxx) {
+        showError(
+          'Aplicativo nao inicializado corretamente',
+          'A bridge PyWebView nao respondeu em 5s. Voce esta rodando o ' +
+          '<code>main.py</code>? Se sim, reabra o app e veja os logs em ' +
+          '<code>%APPDATA%\\Blaxx Pontos\\logs\\app.log</code>.'
+        );
+        return;
+      }
+
+      const isLocal = !!blaxx.isLocal;
+      const backendUrl = blaxx.backendUrl;
+      $badge.textContent = isLocal ? 'Modo dev local' : 'Banco compartilhado';
+      $badge.classList.add('visible');
+      setStatus(isLocal
+        ? 'Subindo backend local...'
+        : 'Conectando ao backend Blaxx...');
+
+      const timeoutMs = isLocal ? 25000 : 12000;
+      const ok = await pollHealth(backendUrl.replace(/\/$/, '') + '/health', timeoutMs);
+
+      if (!ok) {
+        if (isLocal) {
+          showError(
+            'Nao foi possivel conectar ao backend local',
+            'O Flask local nao respondeu em <code>/health</code> a tempo. ' +
+            'Verifique se a porta <code>5050</code> esta livre e os logs em ' +
+            '<code>%APPDATA%\\Blaxx Pontos\\logs\\app.log</code>.'
+          );
+        } else {
+          showError(
+            'Sem conexao com o backend remoto',
+            'Nao foi possivel alcancar <code>' + backendUrl + '</code>.<br>' +
+            '&bull; Verifique sua conexao com a internet.<br>' +
+            '&bull; O servidor pode estar fora do ar - cheque ' +
+            '<code>' + backendUrl + '/health</code> no navegador.<br>' +
+            '&bull; Para trabalhar offline, feche e rode ' +
+            '<code>python main.py --local</code>.'
+          );
+        }
+        return;
+      }
+
+      setProgress(100);
+      setStatus('Pronto');
+      setTimeout(() => {
+        const target = hasSession() ? 'screens/dashboard.html' : 'screens/login.html';
+        location.href = target;
+      }, 250);
+    })();
+  </script>
+</body>
+</html>

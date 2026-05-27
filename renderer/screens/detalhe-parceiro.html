@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Parceiro · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+      <div id="content">Carregando…</div>
+    </main>
+  </div>
+  <script src="../assets/app.js"></script>
+  <script>
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('parceiros');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Detalhe', title:'Parceiro'});
+      const id = new URLSearchParams(location.search).get('id');
+      (async () => {
+        try {
+          const p = await api('/partners/' + id);
+          document.getElementById('content').innerHTML = `
+            <div class="card mb-6">
+              <div class="chip dark">${p.category}</div>
+              <h2 style="margin-top:8px;display:flex;align-items:center;gap:10px;">
+                <span style="font-size:32px;">${p.logo_emoji || '◯'}</span>
+                ${p.name}
+              </h2>
+              <p class="muted">${p.description || ''}</p>
+              <div class="card lime mt-4">
+                <span class="eyebrow">Regra de acúmulo</span>
+                <div style="font-size:18px;font-weight:600;color:var(--blaxx-black);margin-top:4px;">
+                  ${p.accrual_rule || '—'}
+                </div>
+              </div>
+            </div>
+
+            <span class="eyebrow">Benefícios deste parceiro</span>
+            <h3 class="mb-4">Resgate seus pontos</h3>
+            ${(p.benefits || []).length === 0 ? '<p class="muted">Nenhum benefício disponível.</p>' :
+              '<div class="grid cols-3">' + p.benefits.map(b => `
+                <div class="card" style="cursor:pointer;" onclick="go('detalhe-beneficio.html?id=${b.id}')">
+                  <div style="font-size:32px;">${b.image_emoji || '★'}</div>
+                  <h3 style="margin:6px 0;">${b.name}</h3>
+                  <p class="muted" style="font-size:13px;">${b.description || ''}</p>
+                  <div class="row between mt-4">
+                    <span class="chip success">${b.cost_pts.toLocaleString('pt-BR')} pts</span>
+                    ${b.tag ? `<span class="chip">${b.tag}</span>` : ''}
+                  </div>
+                </div>
+              `).join('') + '</div>'}
+
+            <button class="btn ghost mt-6" onclick="go('parceiros.html')">← Voltar</button>
+          `;
+        } catch (e) {
+          document.getElementById('content').innerHTML = `<p class="muted">Erro: ${e.message}</p>`;
+        }
+      })();
+    }
+  </script>
+</body>
+</html>
