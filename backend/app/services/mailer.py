@@ -1,19 +1,22 @@
 """Serviço de envio de e-mail.
 
-Modo dev: imprime no console + grava em /tmp/blaxx_emails/<timestamp>.txt
-Modo prod: SendGrid/SES/Resend (interface pronta, implementação fica como TODO
-até integrar provider real).
+Providers disponiveis (selecionados via env var MAILER):
+  - "console" (default): grava em /tmp/ + loga corpo em logger.info
+  - "resend": Resend.com API (free tier 3k/mes, dominios proprios)
+  - "noop": nao envia nada (uso em testes)
 
-Em ambos os modos:
-  - Email contém token sensível → logamos hash, não o conteúdo
-  - Failure não derruba o fluxo (capturado, registrado)
+Em todos os modos:
+  - Failure nao derruba o fluxo de auth (capturado, registrado)
 """
 
 from __future__ import annotations
 
-import os
+import base64
 import json
 import logging
+import os
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Protocol
@@ -35,30 +38,44 @@ class EmailProvider(Protocol):
 
 
 class ConsoleMailer:
-    """Provider de dev. Imprime e salva em disco."""
+    """Provider de dev. Imprime e salva em disco.
+
+    Em ambientes sem acesso ao filesystem (ex: Render free tier sem SSH), o
+    arquivo em /tmp/ é inacessivel. Por isso ALEM de salvar o arquivo,
+    logamos o corpo INTEIRO no logger.info — assim o codigo aparece no
+    Render Dashboard → Logs e o admin/dev pode pegar dali pra testar fluxo.
+
+    JAMAIS use ConsoleMailer em producao real — ele expoe senhas/codigos
+    em logs. Pra producao real use SendGrid/Resend/SES (TODO).
+    """
     name = "console"
 
     def __init__(self, outdir: str = "/tmp/blaxx_emails"):
         self.outdir = outdir
-        os.makedirs(outdir, exist_ok=True)
+        try:
+            os.makedirs(outdir, exist_ok=True)
+        except Exception:
+            self.outdir = None  # filesystem read-only → desabilita gravacao
 
     def send(self, msg: EmailMessage) -> bool:
         ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-        path = os.path.join(self.outdir, f"{ts}_{msg.to.replace('@', '_at_')}.txt")
-        content = f"""From: noreply@blaxxpontos.com.br
-To: {msg.to}
-Subject: {msg.subject}
-Date: {ts}
-
-{msg.body_text}
-"""
-        try:
-            with open(path, "w") as f:
-                f.write(content)
-        except Exception as e:
-            logger.warning("ConsoleMailer: falha ao salvar arquivo: %s", e)
-        logger.info("[MAIL DEV] Enviado para %s · Assunto: %s · Arquivo: %s",
-                    msg.to, msg.subject, path)
+        if self.outdir:
+            path = os.path.join(self.outdir, f"{ts}_{msg.to.replace('@', '_at_')}.txt")
+            try:
+                with open(path, "w") as f:
+                    f.write(
+                        f"From: noreply@blaxxpontos.com.br\n"
+                        f"To: {msg.to}\n"
+                        f"Subject: {msg.subject}\n"
+                        f"Date: {ts}\n\n{msg.body_text}\n"
+                    )
+            except Exception as e:
+                logger.warning("ConsoleMailer: falha ao salvar arquivo: %s", e)
+        # Log do corpo inteiro pra Render Logs (acessivel via dashboard)
+        logger.info(
+            "[MAIL DEV] To=%s · Subject=%s\n----- BODY -----\n%s\n----- END -----",
+            msg.to, msg.subject, msg.body_text,
+        )
         return True
 
 
@@ -69,17 +86,115 @@ class NoOpMailer:
         return True
 
 
+class ResendMailer:
+    """Envia emails via Resend.com API (HTTPS REST).
+
+    Setup:
+      1. Crie conta em https://resend.com
+      2. Pegue API key em Dashboard → API Keys
+      3. Configure env vars no Render:
+           MAILER=resend
+           RESEND_API_KEY=re_xxxxx
+           EMAIL_FROM="Blaxx Pontos <noreply@blaxxpontos.com.br>"
+                  ↑ pro dominio precisa estar verificado no Resend
+                  ↑ pra testar: use "Blaxx <onboarding@resend.dev>"
+
+    Free tier: 3000 emails/mes, 100/dia. Sem cartao de credito.
+    Sem dependencia externa (usa urllib stdlib).
+    """
+    name = "resend"
+    API_URL = "https://api.resend.com/emails"
+
+    def __init__(self, api_key: str, from_addr: str):
+        if not api_key:
+            raise ValueError("RESEND_API_KEY não configurado")
+        self.api_key = api_key
+        self.from_addr = from_addr or "onboarding@resend.dev"
+
+    def send(self, msg: EmailMessage) -> bool:
+        # Resend aceita JSON com "text" e/ou "html". Mandamos text por enquanto;
+        # se body_html estiver populado, mandamos os dois.
+        body = {
+            "from": self.from_addr,
+            "to": [msg.to],
+            "subject": msg.subject,
+            "text": msg.body_text,
+        }
+        if msg.body_html:
+            body["html"] = msg.body_html
+
+        data = json.dumps(body).encode("utf-8")
+        req = urllib.request.Request(
+            self.API_URL,
+            data=data,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                payload = json.loads(resp.read().decode("utf-8", errors="replace") or "{}")
+                if resp.status >= 300:
+                    logger.error("Resend %s: %s", resp.status, payload)
+                    return False
+                logger.info("[MAIL Resend] enviado para %s · id=%s",
+                            msg.to, payload.get("id"))
+                return True
+        except urllib.error.HTTPError as e:
+            try:
+                err_body = e.read().decode("utf-8", errors="replace")
+            except Exception:
+                err_body = ""
+            logger.error("Resend HTTP %s: %s", e.code, err_body[:300])
+            return False
+        except Exception:
+            logger.exception("Resend: falha ao enviar para %s", msg.to)
+            return False
+
+
 _singleton: EmailProvider | None = None
 
 def get_mailer() -> EmailProvider:
     global _singleton
     if _singleton is None:
-        mode = os.environ.get("MAILER", "console").lower()
+        mode = (os.environ.get("MAILER", "console") or "").lower().strip()
         if mode == "noop":
             _singleton = NoOpMailer()
+        elif mode == "resend":
+            api_key = os.environ.get("RESEND_API_KEY", "")
+            from_addr = os.environ.get(
+                "EMAIL_FROM", "Blaxx Pontos <onboarding@resend.dev>"
+            )
+            if not api_key:
+                logger.error(
+                    "[MAILER] MAILER=resend mas RESEND_API_KEY NAO esta setada — "
+                    "fallback ConsoleMailer. Configure a env var no Render."
+                )
+                _singleton = ConsoleMailer()
+            else:
+                try:
+                    _singleton = ResendMailer(api_key=api_key, from_addr=from_addr)
+                    # Mascara API key no log pra debugar config sem expor secret
+                    masked = api_key[:6] + "..." + api_key[-4:] if len(api_key) > 12 else "***"
+                    logger.info(
+                        "[MAILER] Inicializado: ResendMailer · from=%s · key=%s",
+                        from_addr, masked,
+                    )
+                except ValueError as e:
+                    logger.error("[MAILER] ResendMailer config invalida (%s) — fallback Console", e)
+                    _singleton = ConsoleMailer()
         else:
             _singleton = ConsoleMailer()
+            logger.info("[MAILER] Inicializado: ConsoleMailer (MAILER=%s) — emails ficam só em log/disco", mode or "console")
     return _singleton
+
+
+def reset_mailer():
+    """Forca re-leitura das env vars (util em testes ou apos config change)."""
+    global _singleton
+    _singleton = None
 
 
 def send_password_reset(to_email: str, name: str, reset_url: str,

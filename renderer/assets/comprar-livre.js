@@ -84,15 +84,8 @@
       return;
     }
 
-    // Email verificado e' pre-requisito da /pix/custom-charge. Se nao for,
-    // mostra modal de verificacao e re-tenta createCharge ao sucesso.
-    if (typeof requireEmailVerifiedThen === 'function') {
-      var u = Session.user && Session.user();
-      if (u && !u.email_verified_at && !u.email_verified) {
-        requireEmailVerifiedThen(function () { window.createCharge(); });
-        return;
-      }
-    }
+    // NAO checamos email verificado upfront — deixamos o backend decidir.
+    // Se 403 email_not_verified vier, abrimos modal e retentamos.
 
     var btn = document.getElementById('btn-create');
     var orig = btn ? btn.textContent : '';
@@ -109,6 +102,23 @@
       if (e && e.status === 401) {
         Session.clear();
         if (typeof go === 'function') go('login.html');
+        return;
+      }
+      // Backend pode bloquear com 403 email_not_verified. Abre modal e retenta.
+      var data = (e && e.data) || {};
+      var msg = String((e && e.message) || '').toLowerCase();
+      var isEmailGate = (
+        e && e.status === 403 &&
+        (data.code === 'email_not_verified'
+          || data.error_code === 'email_not_verified'
+          || msg.indexOf('e-mail') >= 0
+          || msg.indexOf('email') >= 0
+          || msg.indexOf('verifique') >= 0
+          || msg.indexOf('confirme') >= 0)
+      );
+      if (isEmailGate && typeof requireEmailVerifiedThen === 'function') {
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
+        requireEmailVerifiedThen(function () { window.createCharge(); });
         return;
       }
       showInlineError(e.message || 'Falha ao gerar QR Code');

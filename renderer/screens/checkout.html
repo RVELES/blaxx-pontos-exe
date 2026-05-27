@@ -69,18 +69,34 @@
         } catch (e) { toast('Erro: ' + e.message, 'error'); }
       })();
 
-      document.getElementById('btn-pay').addEventListener('click', () => {
-        // Verifica email antes de criar a cobrança. Se nao verificado,
-        // abre o modal de verificacao e retoma esse fluxo apos sucesso.
-        requireEmailVerifiedThen(async () => {
+      document.getElementById('btn-pay').addEventListener('click', async () => {
+        // NAO checamos email upfront — deixa o BACKEND decidir.
+        // Se 403 email_not_verified, abre modal e retenta.
+        const tryCharge = async () => {
           try {
             const charge = await api('/pix/charge', { method:'POST', body:{ package: pkgKey } });
             sessionStorage.setItem('blaxx_charge', JSON.stringify(charge));
             go('pagamento-pix.html');
           } catch (e) {
+            const data = (e && e.data) || {};
+            const msg = String((e && e.message) || '').toLowerCase();
+            const isEmailGate = (
+              e && e.status === 403 &&
+              (data.code === 'email_not_verified'
+                || data.error_code === 'email_not_verified'
+                || msg.indexOf('e-mail') >= 0
+                || msg.indexOf('email') >= 0
+                || msg.indexOf('verifique') >= 0
+                || msg.indexOf('confirme') >= 0)
+            );
+            if (isEmailGate && typeof requireEmailVerifiedThen === 'function') {
+              requireEmailVerifiedThen(tryCharge);
+              return;
+            }
             toast('Erro ao gerar PIX: ' + e.message, 'error', 3000);
           }
-        });
+        };
+        tryCharge();
       });
     }
   </script>

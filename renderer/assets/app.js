@@ -299,8 +299,23 @@ function showEmailVerificationModal(user, onSuccess) {
     if (btn === sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Enviando…'; }
     else { resendLink.style.opacity = '0.5'; resendLink.style.pointerEvents = 'none'; resendLink.textContent = 'Enviando…'; }
     try {
-      await api('/auth/verify-email/send', { method: 'POST', body: {} });
-      sentMsg.textContent = '✓ Código enviado para ' + emailMasked + '. Confira a caixa de entrada (e spam).';
+      const resp = await api('/auth/verify-email/send', { method: 'POST', body: {} });
+      // Backend devolve _dev_code quando MAILER=console (sem provedor real).
+      // Auto-preenche e auto-submit pra desbloquear teste sem precisar abrir Render Logs.
+      if (resp && resp._dev_code) {
+        sentMsg.innerHTML = '<strong>[DEV] MAILER=console</strong> — código capturado direto do response. ' +
+          'Pra envio real, configure MAILER=resend + RESEND_API_KEY no Render.';
+        stepSend.style.display = 'none';
+        stepInput.style.display = 'block';
+        codeInput.value = resp._dev_code;
+        setTimeout(() => { codeInput.focus(); submitCode(); }, 200);
+        return;
+      }
+      const deliverNote = resp && resp.delivered === false
+        ? ' (⚠ provedor reportou falha — confira Render Logs)'
+        : '';
+      sentMsg.textContent = '✓ Código enviado para ' + emailMasked + '.' + deliverNote +
+        ' Confira a caixa de entrada (e spam).';
       stepSend.style.display = 'none';
       stepInput.style.display = 'block';
       setTimeout(() => codeInput.focus(), 50);
