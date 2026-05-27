@@ -420,16 +420,21 @@ function renderSidebar(active) {
 function renderTopbar({ eyebrow = 'Bem-vindo de volta', title } = {}) {
   const user = Session.user() || { name: '' };
   const initial = (user.name || '?').slice(0,1).toUpperCase();
+  const firstName = (user.name || '').split(' ')[0];
+  // Quando o caller passa title (ex: "Comprar pontos"), mostra como pagina
+  // na esquerda. "Olá, X" sempre vai pra DIREITA (alinhado a borda do
+  // painel de conteudo). Quando NAO passa title, esquerda mostra so eyebrow.
   const html = `
     <div class="topbar">
       <div class="greeting">
         <span class="eyebrow">${eyebrow}</span>
-        <h2>${title || 'Olá, ' + (user.name || '').split(' ')[0]}</h2>
+        ${title ? `<h2>${title}</h2>` : ''}
       </div>
       <div class="actions">
         <button class="btn ghost" onclick="go('central-notificacoes.html')" id="btn-notif">
           Notificações <span id="notif-count" style="display:none;background:var(--blaxx-lime);color:var(--blaxx-black);padding:2px 8px;border-radius:999px;margin-left:6px;font-weight:700;font-size:11px;"></span>
         </button>
+        <button class="btn ghost" onclick="go('perfil.html')" style="font-weight:600;">Olá, ${firstName}</button>
         <div class="avatar">${initial}</div>
       </div>
     </div>

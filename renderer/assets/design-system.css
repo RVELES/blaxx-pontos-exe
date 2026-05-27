@@ -123,14 +123,17 @@ h3, .display-3 { font-size: 22px; line-height: 1.25; }
 }
 .sidebar .logo {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 56px;            /* era 28px — 2x conforme pedido */
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: var(--space-8);
+  /* Alinha o logo a borda esquerda da sidebar (em vez de centralizado) */
+  margin-left: 0;
+  padding-left: 0;
 }
 .sidebar .logo .dot { color: var(--blaxx-lime); }
 /* Novo brand mark "BlaxX" — texto lime sobre fundo preto, identidade
-   compartilhada com o AppIcon do Mac/iOS. */
+   compartilhada com o AppIcon do Mac/iOS. 2x maior conforme solicitado. */
 .sidebar .logo.logo-blaxx {
   display: flex;
   flex-direction: column;
@@ -140,13 +143,13 @@ h3, .display-3 { font-size: 22px; line-height: 1.25; }
 }
 .sidebar .logo .logo-mark {
   color: var(--blaxx-lime);
-  font-size: 30px;
+  font-size: 60px;            /* era 30px — 2x */
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1;
 }
 .sidebar .logo .logo-sub {
-  font-size: 10px;
+  font-size: 16px;            /* era 10px — escalado proporcionalmente */
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
