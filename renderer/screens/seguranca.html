@@ -136,7 +136,7 @@
       function passwordStrength(pwd) {
         pwd = pwd || '';
         let score = 0; const hints = [];
-        if (pwd.length >= 8) score++; else hints.push('8+ caracteres');
+        if (pwd.length >= 10) score++; else hints.push('10+ caracteres');
         if (/[a-z]/.test(pwd)) score++; else hints.push('minúscula');
         if (/[A-Z]/.test(pwd)) score++; else hints.push('maiúscula');
         if (/\d/.test(pwd)) score++; else hints.push('número');
