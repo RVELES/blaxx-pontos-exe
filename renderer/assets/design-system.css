@@ -181,9 +181,9 @@ h3, .display-3 { font-size: 22px; line-height: 1.25; }
   font-weight: 600;
 }
 .sidebar .nav-item .icon {
-  font-size: 36px;   /* 1.5x sobre 24px (segundo pedido do usuario) */
+  font-size: 18px;   /* metade do anterior (36px) — ajuste do usuario */
   line-height: 1;
-  width: 42px;
+  width: 21px;
   display: inline-grid;
   place-items: center;
 }
