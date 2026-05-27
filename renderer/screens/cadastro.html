@@ -83,6 +83,11 @@
 
   <script src="../assets/app.js"></script>
   <script>
+    // Se ja logado, manda pro dashboard — evita flash do form de cadastro.
+    if (typeof redirectIfLoggedIn === 'function' && redirectIfLoggedIn()) {
+      /* navegando, abort */
+    } else {
+
     // -----------------------------------------------------------------
     // Persistencia do rascunho · nao perde o preenchido se o usuario
     // navegar pro termos.html e voltar. Senha NAO e' persistida.
@@ -241,6 +246,8 @@
         refreshSubmitState();
       }
     });
+
+    } // fecha o else do redirectIfLoggedIn (linha ~163)
   </script>
 </body>
 </html>

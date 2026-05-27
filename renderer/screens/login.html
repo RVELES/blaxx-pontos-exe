@@ -52,6 +52,12 @@
 
   <script src="../assets/app.js"></script>
   <script>
+    // Se ja logado, manda pro dashboard ANTES de inicializar o form
+    // (evita flash da tela de login quando o user reabre o app).
+    if (typeof redirectIfLoggedIn === 'function' && redirectIfLoggedIn()) {
+      /* navegando, abort */
+    } else {
+
     const loginForm = document.getElementById('form-login');
 
 
@@ -155,6 +161,8 @@
         loginForm.style.display = '';
       });
     }
+
+    } // fecha o else do redirectIfLoggedIn (linha 56 deste arquivo)
   </script>
 </body>
 </html>

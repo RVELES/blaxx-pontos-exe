@@ -18,13 +18,36 @@ const API = (() => {
   return 'http://127.0.0.1:5050';
 })();
 
+// Sessão persistida em localStorage (sobrevive reabertura do app).
+// Antes era sessionStorage — perdia login a cada nova janela do WebView2.
+// Migração transparente: se houver session em sessionStorage, copia para
+// localStorage uma vez e limpa o antigo.
+(function _migrateOldSession() {
+  try {
+    const old = sessionStorage.getItem('blaxx_session');
+    if (old && !localStorage.getItem('blaxx_session')) {
+      localStorage.setItem('blaxx_session', old);
+      sessionStorage.removeItem('blaxx_session');
+    }
+  } catch (_) { /* tolera storage indisponível */ }
+})();
+
 const Session = {
   get() {
-    try { return JSON.parse(sessionStorage.getItem('blaxx_session') || 'null'); }
-    catch { return null; }
+    try { return JSON.parse(localStorage.getItem('blaxx_session') || 'null'); }
+    catch {
+      try { return JSON.parse(sessionStorage.getItem('blaxx_session') || 'null'); }
+      catch { return null; }
+    }
   },
-  set(s) { sessionStorage.setItem('blaxx_session', JSON.stringify(s)); },
-  clear() { sessionStorage.removeItem('blaxx_session'); },
+  set(s) {
+    try { localStorage.setItem('blaxx_session', JSON.stringify(s)); }
+    catch { sessionStorage.setItem('blaxx_session', JSON.stringify(s)); }
+  },
+  clear() {
+    try { localStorage.removeItem('blaxx_session'); } catch (_) {}
+    try { sessionStorage.removeItem('blaxx_session'); } catch (_) {}
+  },
   token() { const s = this.get(); return s ? s.token : null; },
   user()  { const s = this.get(); return s ? s.user  : null; },
   requireAuth() {
@@ -52,6 +75,25 @@ async function api(path, opts = {}) {
     const err = new Error(data.error || data.message || `HTTP ${res.status}`);
     err.status = res.status;
     err.data = data;
+    // 401 global: token expirado/invalidado em endpoints autenticados →
+    // limpa Session e manda pro login. Não dispara em endpoints públicos
+    // (auth/login, register, google, forgot, reset) — ali 401 é "credenciais
+    // inválidas" e a UI específica trata.
+    if (res.status === 401
+        && !path.startsWith('/auth/login')
+        && !path.startsWith('/auth/register')
+        && !path.startsWith('/auth/google')
+        && !path.startsWith('/auth/forgot')
+        && !path.startsWith('/auth/reset')) {
+      try { Session.clear(); } catch (_) {}
+      // Evita loop se já estiver na própria login
+      const here = (location.pathname.split('/').pop() || '').toLowerCase();
+      if (here !== 'login.html' && here !== 'cadastro.html'
+          && here !== 'recuperar-senha.html' && here !== 'redefinir-senha.html'
+          && here !== 'validacao.html' && here !== 'index.html') {
+        go('login.html');
+      }
+    }
     throw err;
   }
   return data;
@@ -66,9 +108,59 @@ function go(file) {
   }
 }
 
+// Logout proper — avisa backend (POST /auth/logout pra revogar JWT)
+// e só depois limpa Session local. Silencioso em erro de rede.
 function logout() {
-  Session.clear();
-  go('login.html');
+  const finish = () => { Session.clear(); go('login.html'); };
+  try {
+    api('/auth/logout', { method: 'POST' }).then(finish, finish);
+  } catch (_) {
+    finish();
+  }
+}
+
+// Redirect síncrono se já logado — usado em login.html/cadastro.html pra
+// evitar flash da tela de login quando o user reabre o app já logado.
+// Retorna true se redirecionou (caller deve abortar init).
+function redirectIfLoggedIn() {
+  if (Session.token()) {
+    go('dashboard.html');
+    return true;
+  }
+  return false;
+}
+
+// Handler global pra cliques em links "Sair" / "Entrar" hardcoded no HTML.
+// Algumas telas tem <a href="login.html">Sair</a> direto, sem onclick que
+// limpe Session — clicar só navega, deixando token no storage. Resultado:
+// user "achava" que deslogou mas estava ainda autenticado.
+//
+// Solução: event delegation captura todo <a> apontando pra login.html e
+// analisa o texto pra decidir entre logout() ou ir pro dashboard.
+function installGlobalLogoutHandler() {
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (!/login(\.html)?(\?|#|$)/.test(href)) return;
+    const text = (a.textContent || '').trim().toLowerCase();
+    if (text.indexOf('sair') >= 0 || text.indexOf('logout') >= 0) {
+      e.preventDefault();
+      logout();
+      return;
+    }
+    if (Session.token() && (text.indexOf('entrar') >= 0 || text.indexOf('cadastre') >= 0)) {
+      e.preventDefault();
+      go('dashboard.html');
+    }
+  }, true);
+}
+
+// Instala o handler global assim que o DOM estiver disponível
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', installGlobalLogoutHandler);
+} else {
+  installGlobalLogoutHandler();
 }
 
 function toast(msg, kind = 'success', ms = 2400) {
