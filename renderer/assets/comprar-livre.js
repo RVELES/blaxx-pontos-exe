@@ -83,6 +83,17 @@
       showInlineError('Valor mínimo: R$ 10,00');
       return;
     }
+
+    // Email verificado e' pre-requisito da /pix/custom-charge. Se nao for,
+    // mostra modal de verificacao e re-tenta createCharge ao sucesso.
+    if (typeof requireEmailVerifiedThen === 'function') {
+      var u = Session.user && Session.user();
+      if (u && !u.email_verified_at && !u.email_verified) {
+        requireEmailVerifiedThen(function () { window.createCharge(); });
+        return;
+      }
+    }
+
     var btn = document.getElementById('btn-create');
     var orig = btn ? btn.textContent : '';
     if (btn) { btn.disabled = true; btn.textContent = 'Gerando QR…'; }

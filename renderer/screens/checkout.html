@@ -69,14 +69,18 @@
         } catch (e) { toast('Erro: ' + e.message, 'error'); }
       })();
 
-      document.getElementById('btn-pay').addEventListener('click', async () => {
-        try {
-          const charge = await api('/pix/charge', { method:'POST', body:{ package: pkgKey } });
-          sessionStorage.setItem('blaxx_charge', JSON.stringify(charge));
-          go('pagamento-pix.html');
-        } catch (e) {
-          toast('Erro ao gerar PIX: ' + e.message, 'error', 3000);
-        }
+      document.getElementById('btn-pay').addEventListener('click', () => {
+        // Verifica email antes de criar a cobrança. Se nao verificado,
+        // abre o modal de verificacao e retoma esse fluxo apos sucesso.
+        requireEmailVerifiedThen(async () => {
+          try {
+            const charge = await api('/pix/charge', { method:'POST', body:{ package: pkgKey } });
+            sessionStorage.setItem('blaxx_charge', JSON.stringify(charge));
+            go('pagamento-pix.html');
+          } catch (e) {
+            toast('Erro ao gerar PIX: ' + e.message, 'error', 3000);
+          }
+        });
       });
     }
   </script>

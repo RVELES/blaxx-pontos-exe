@@ -88,6 +88,11 @@
 </div>
 
 <script>window.BLAXX_API = location.origin;</script>
+<!--
+  Carrega app.js antes — disponibiliza requireEmailVerifiedThen, Session,
+  api, go, toast pra comprar-livre.js usar (rotina de verify email).
+-->
+<script src="../assets/app.js"></script>
 <script src="../assets/comprar-livre.js"></script>
 </body>
 </html>

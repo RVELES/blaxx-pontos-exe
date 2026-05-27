@@ -47,7 +47,7 @@
                 <li>Validade 24 meses</li>
                 <li>Cashback liberado em 6 meses</li>
               </ul>
-              <button class="btn primary block mt-6" onclick='go("checkout.html?pkg=${p.key}")'>Pagar com PIX</button>
+              <button class="btn primary block mt-6" onclick='requireEmailVerifiedThen(function(){ go("checkout.html?pkg=${p.key}"); })'>Pagar com PIX</button>
             </div>
           `).join('');
         } catch (e) { toast('Erro: ' + e.message, 'error'); }
