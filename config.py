@@ -71,11 +71,12 @@ class BackendConfig:
     remote_url: str = field(default_factory=lambda: os.environ.get(
         "BLAXX_BACKEND_URL", PRODUCTION_BACKEND_URL
     ).rstrip("/"))
-    # Timeout inicial de 40s contempla cold start do Render free tier (~30s).
+    # Timeout inicial de 60s contempla cold start do Render free tier
+    # quando ele esta hibernando ha muito tempo (pode levar 35-50s).
     # Antes era 8s — falhava todo boot quando o servidor estava hibernando.
     # Pode ser sobrescrito via env var BLAXX_REMOTE_TIMEOUT.
     remote_health_timeout_s: float = field(default_factory=lambda: float(
-        os.environ.get("BLAXX_REMOTE_TIMEOUT", "40")
+        os.environ.get("BLAXX_REMOTE_TIMEOUT", "60")
     ))
 
     @property

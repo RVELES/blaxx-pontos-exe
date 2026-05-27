@@ -124,7 +124,18 @@ class _ProxyHandler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(resp_body)))
         self.end_headers()
         if resp_body:
-            self.wfile.write(resp_body)
+            try:
+                self.wfile.write(resp_body)
+            except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
+                # WebView2 fechou a conexão antes de a resposta sair
+                # (usuário navegou ou fechou janela mid-request). Benigno
+                # — silencia em vez de poluir o log com stack trace.
+                pass
+
+    # Suprime o log padrão do http.server pra essas exceções benignas
+    def log_message(self, format, *args):  # noqa: N802
+        # Mantém logs HTTP normais mas no nivel debug
+        log.debug("proxy: " + (format % args))
 
     # Métodos HTTP — todos delegam pro _proxy
     def do_GET(self):    self._proxy("GET")     # noqa: N802
@@ -132,6 +143,13 @@ class _ProxyHandler(http.server.BaseHTTPRequestHandler):
     def do_PUT(self):    self._proxy("PUT")     # noqa: N802
     def do_PATCH(self):  self._proxy("PATCH")   # noqa: N802
     def do_DELETE(self): self._proxy("DELETE")  # noqa: N802
+
+    def handle_one_request(self):
+        # Wrapper pra silenciar ConnectionAbortedError no .recv()
+        try:
+            return super().handle_one_request()
+        except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
+            pass
     def do_HEAD(self):   self._proxy("HEAD")    # noqa: N802
     def do_OPTIONS(self):  # noqa: N802
         # Preflight CORS — responde direto sem ir ao upstream

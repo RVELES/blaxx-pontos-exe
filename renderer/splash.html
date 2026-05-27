@@ -117,22 +117,13 @@
     async function waitForBlaxxBridge(maxMs) {
       const start = Date.now();
       while (Date.now() - start < maxMs) {
-        // 1) window.blaxx já foi injetado pelo evento 'loaded' do PyWebView
+        // 1) window.blaxx é injetado SINCRONAMENTE pelo evento 'loaded'
+        // do PyWebView (ver inject_blaxx_globals em main.py). É a forma
+        // segura e canônica de obter a URL do backend.
         if (window.blaxx && window.blaxx.backendUrl) return window.blaxx;
 
-        // 2) pywebview.api existe e a bridge responde - pega direto dela.
-        //    Funciona ANTES do 'loaded' do PyWebView, pois a bridge é
-        //    registrada na criação da janela (mais robusto).
-        if (window.pywebview && window.pywebview.api &&
-            window.pywebview.api.backend_url) {
-          try {
-            const url = await window.pywebview.api.backend_url();
-            const isLocal = await window.pywebview.api.is_local();
-            if (url) return { backendUrl: url, isLocal: !!isLocal };
-          } catch (_) { /* bridge ainda nao pronta, tenta de novo */ }
-        }
-
-        // 3) Fallback: localStorage de uma execucao anterior
+        // 2) Fallback: localStorage de uma execucao anterior (sempre
+        // sobrescrito por inject_blaxx_globals quando o app abre).
         try {
           const saved = localStorage.getItem('blaxx_api_url');
           if (saved) {
@@ -140,6 +131,12 @@
                      isLocal: saved.indexOf('127.0.0.1') >= 0 };
           }
         } catch (_) {}
+
+        // NOTA: anteriormente tentavamos chamar pywebview.api.backend_url()
+        // como fallback, mas isso causava uma race condition do PyWebView
+        // (`Cannot read properties of undefined (reading <call_id>)`) quando
+        // a splash navegava pra outra pagina antes do callback Python voltar.
+        // Removido — confiamos em window.blaxx + localStorage.
 
         await new Promise(r => setTimeout(r, 100));
       }
