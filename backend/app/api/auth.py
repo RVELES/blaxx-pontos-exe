@@ -670,11 +670,22 @@ def forgot_password():
         frontend = current_app.config.get(
             "FRONTEND_URL", "https://blaxxpontos.netlify.app"
         )
-        reset_url = f"{frontend}/reset-senha?token={raw_token}"
+        # Apontamos pra rota /redefinir-senha.html — caminho consistente
+        # entre Netlify (web), EXE local (file://...) e Mac/iOS.
+        reset_url = f"{frontend}/redefinir-senha.html?token={raw_token}"
+        # is_first_password=True quando user e' Google-only (sem senha local).
+        # Email vira "Defina sua primeira senha (login alternativo)".
+        is_first = not user.has_password
         try:
-            send_password_reset(user.email, user.name, reset_url)
+            send_password_reset(user.email, user.name, reset_url,
+                                is_first_password=is_first)
         except Exception as e:
             current_app.logger.warning("Falha ao enviar e-mail reset: %s", e)
+        try:
+            audit_svc.log_event("password_reset_request", user_id=user.id,
+                                extra={"first_password": is_first})
+        except Exception:
+            pass
 
     # Sempre OK pra evitar enumeração de e-mails cadastrados
     return jsonify({"ok": True})

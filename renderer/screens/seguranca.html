@@ -33,8 +33,20 @@
         <!-- Card: trocar senha -->
         <div class="card">
           <span class="eyebrow">Senha</span>
-          <h3>Trocar senha</h3>
-          <p class="muted">Use uma senha forte e única para sua conta Blaxx.</p>
+          <h3 id="bx-senha-title">Trocar senha</h3>
+          <p class="muted" id="bx-senha-sub">Use uma senha forte e única para sua conta Blaxx.</p>
+
+          <!-- Hint pra Google-only users (escondido por default; mostrado via JS) -->
+          <div id="bx-google-only-hint" class="mt-4" style="display:none;padding:14px;border-radius:10px;background:rgba(66,133,244,0.1);border:1px solid rgba(66,133,244,0.3);font-size:13px;line-height:1.5;">
+            <strong style="color:#4285F4;">Sua conta entra via Google</strong><br/>
+            Você ainda não tem senha local. Para também acessar via e-mail+senha
+            (útil quando o Google estiver indisponível), envie um link de definição
+            de senha para o seu e-mail.<br/>
+            <button type="button" id="bx-send-first-password" class="btn primary mt-3" style="margin-top:10px;">
+              Receber link para definir senha
+            </button>
+          </div>
+
           <form id="form-senha" class="mt-4" autocomplete="on">
             <div class="field">
               <label for="senha-atual">Senha atual</label>
@@ -223,10 +235,50 @@
           if (phoneInp && !phoneInp.value && u.phone) phoneInp.value = u.phone;
           Session.set({ token: Session.token(), user: u });
           renderMfaState(u);
+          // Google-only user → mostra hint e esconde form "trocar senha"
+          // (porque não há senha atual pra informar).
+          const googleOnly = (u.has_password === false) || (u.auth_provider === 'google' && !u.has_password);
+          const hint = document.getElementById('bx-google-only-hint');
+          const formSenha = document.getElementById('form-senha');
+          const senhaTitle = document.getElementById('bx-senha-title');
+          const senhaSub = document.getElementById('bx-senha-sub');
+          if (googleOnly) {
+            if (hint) hint.style.display = 'block';
+            if (formSenha) formSenha.style.display = 'none';
+            if (senhaTitle) senhaTitle.textContent = 'Definir senha';
+            if (senhaSub) senhaSub.textContent = 'Sua conta usa Google. Crie uma senha para também entrar por e-mail.';
+          } else {
+            if (hint) hint.style.display = 'none';
+            if (formSenha) formSenha.style.display = '';
+            if (senhaTitle) senhaTitle.textContent = 'Trocar senha';
+            if (senhaSub) senhaSub.textContent = 'Use uma senha forte e única para sua conta Blaxx.';
+          }
         } catch (e) {
           statusEl.className = 'seg-status off';
           statusEl.textContent = '— indisponível —';
         }
+      }
+
+      // Botão "Receber link" (Google-only → forgot-password com email do user)
+      const sendFirstBtn = document.getElementById('bx-send-first-password');
+      if (sendFirstBtn) {
+        sendFirstBtn.addEventListener('click', async () => {
+          const u = Session.user();
+          if (!u || !u.email) { toast('Email não encontrado na sessão', 'error'); return; }
+          sendFirstBtn.disabled = true;
+          const orig = sendFirstBtn.textContent;
+          sendFirstBtn.textContent = 'Enviando…';
+          try {
+            await api('/auth/forgot-password', { method: 'POST', body: { email: u.email } });
+            toast('Link enviado para ' + u.email + '. Confira sua caixa de entrada.', 'success', 4000);
+            sendFirstBtn.textContent = '✓ Link enviado';
+          } catch (err) {
+            // Endpoint sempre retorna 200 (anti-enumeração), então erro só é rede.
+            toast('Falha ao enviar. Verifique sua conexão.', 'error');
+            sendFirstBtn.disabled = false;
+            sendFirstBtn.textContent = orig;
+          }
+        });
       }
 
       formPhone.addEventListener('submit', async (e) => {

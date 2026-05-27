@@ -203,6 +203,10 @@ class User(db.Model):
             "is_vip": self.is_vip,
             "mfa_enabled": self.mfa_enabled,
             "status": self.status,
+            # Onda 3 — pra UI mostrar "Definir senha" pra users Google-only.
+            # Não expõe o hash em si; só se existe.
+            "has_password": self.has_password,
+            "google_linked": bool(self.google_sub),
         }
 
     def to_admin_dict(self) -> dict:

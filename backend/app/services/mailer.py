@@ -82,20 +82,39 @@ def get_mailer() -> EmailProvider:
     return _singleton
 
 
-def send_password_reset(to_email: str, name: str, reset_url: str) -> bool:
-    msg = EmailMessage(
-        to=to_email,
-        subject="Blaxx Pontos · Recuperação de senha",
-        body_text=(
+def send_password_reset(to_email: str, name: str, reset_url: str,
+                        is_first_password: bool = False) -> bool:
+    """Email de definição/recuperação de senha.
+
+    is_first_password=True quando o usuário entrou só via Google (sem senha
+    local) e está definindo a primeira. Texto e assunto ficam adaptados pra
+    não parecer estranho ("recuperar" algo que nunca teve).
+    """
+    if is_first_password:
+        subject = "Blaxx Pontos · Defina sua senha (login alternativo)"
+        body = (
+            f"Olá {name},\n\n"
+            f"Sua conta no Blaxx Pontos foi criada via Google e ainda não tem senha local.\n"
+            f"Definir uma senha permite que você acesse também por e-mail e senha — útil\n"
+            f"no app de Windows ou em dispositivos onde você prefere não usar o Google.\n\n"
+            f"Para escolher sua senha, abra o link abaixo (válido por 30 minutos):\n\n"
+            f"  {reset_url}\n\n"
+            f"Você continuará podendo entrar via Google normalmente. O Google e a senha\n"
+            f"levam à MESMA conta com o MESMO saldo de pontos.\n\n"
+            f"Se não foi você que solicitou, ignore este e-mail.\n\n"
+            f"— Equipe Blaxx Pontos"
+        )
+    else:
+        subject = "Blaxx Pontos · Recuperação de senha"
+        body = (
             f"Olá {name},\n\n"
             f"Você (ou alguém) solicitou recuperação de senha da sua conta Blaxx Pontos.\n\n"
             f"Para criar uma nova senha, acesse o link abaixo (válido por 30 minutos):\n\n"
             f"  {reset_url}\n\n"
             f"Se não foi você, ignore este e-mail. Sua senha permanece a mesma.\n\n"
             f"— Equipe Blaxx Pontos"
-        ),
-    )
-    return get_mailer().send(msg)
+        )
+    return get_mailer().send(EmailMessage(to=to_email, subject=subject, body_text=body))
 
 
 def send_email_verification(to_email: str, name: str, code: str) -> bool:
