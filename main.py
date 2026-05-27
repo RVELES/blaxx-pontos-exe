@@ -9,8 +9,13 @@ Arquitetura:
     isolado, só para dev/offline.
   - --backend URL: aponta para outra instância remota (staging, branch).
 
-Login: e-mail/senha + Google Sign-In (OAuth 2.0 + PKCE via janela child).
-Defina BLAXX_GOOGLE_CLIENT_ID (tipo Desktop App) para habilitar o botão Google.
+Login: e-mail/senha (Google Sign-In removido da UI por exigir Client ID
+do tipo Desktop App; a infra OAuth segue presente em google_auth.py e na
+BlaxxBridge.google_sign_in, basta reativar o botão no renderer).
+
+Usuários que entraram via Google na web podem definir uma senha local
+clicando em "Esqueci minha senha" e recebendo o email "Defina sua senha
+(login alternativo)" — backend já gera template adaptativo.
 
 Uso:
     python main.py                                # produção (default)
