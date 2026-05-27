@@ -369,18 +369,20 @@ function showEmailVerificationModal(user, onSuccess) {
   sendBtn.focus();
 }
 
-// Sidebar reutilizável - injetada nas telas autenticadas
+// Sidebar reutilizável - injetada nas telas autenticadas.
+// Icones alegres (emojis coloridos) substituindo simbolos geometricos antigos.
+// Tamanho dos icones aumentado 1.5x via CSS (.sidebar .nav-item .icon).
 function renderSidebar(active) {
   const items = [
-    { id: 'dashboard',     icon: '◇', label: 'Início',         href: 'dashboard.html' },
-    { id: 'carteira',      icon: '⌬', label: 'Carteira',       href: 'carteira.html' },
-    { id: 'extrato',       icon: '≡', label: 'Extrato',         href: 'extrato.html' },
-    { id: 'comprar',       icon: '+', label: 'Comprar pontos', href: 'comprar-pontos.html' },
-    { id: 'enviar',        icon: '↗', label: 'Enviar pontos',  href: 'enviar-pontos.html' },
-    { id: 'resgatar',      icon: '↙', label: 'Resgatar',       href: 'vender-pontos.html' },
-    { id: 'parceiros',     icon: '◯', label: 'Parceiros',      href: 'parceiros.html' },
-    { id: 'beneficios',    icon: '✦', label: 'Benefícios',     href: 'resgates.html' },
-    { id: 'campanhas',     icon: '★', label: 'Campanhas',      href: 'campanhas.html' },
+    { id: 'dashboard',     icon: '🏠', label: 'Início',         href: 'dashboard.html' },
+    { id: 'carteira',      icon: '💳', label: 'Carteira',       href: 'carteira.html' },
+    { id: 'extrato',       icon: '📊', label: 'Extrato',        href: 'extrato.html' },
+    { id: 'comprar',       icon: '💰', label: 'Comprar pontos', href: 'comprar-pontos.html' },
+    { id: 'enviar',        icon: '📤', label: 'Enviar pontos',  href: 'enviar-pontos.html' },
+    { id: 'resgatar',      icon: '💼', label: 'Vender pontos',  href: 'vender-pontos.html' },
+    { id: 'parceiros',     icon: '🏬', label: 'Parceiros',      href: 'parceiros.html' },
+    { id: 'beneficios',    icon: '🎁', label: 'Benefícios',     href: 'resgates.html' },
+    { id: 'campanhas',     icon: '🎯', label: 'Campanhas',      href: 'campanhas.html' },
   ];
   const user = Session.user() || { name: 'Convidado' };
   const initial = (user.name || '?').slice(0,1).toUpperCase();
@@ -400,13 +402,13 @@ function renderSidebar(active) {
 
       <div class="section-label">Conta</div>
       <div class="nav-item ${active === 'perfil' ? 'active' : ''}" onclick="go('perfil.html')">
-        <span class="icon">◐</span><span>Perfil</span>
+        <span class="icon">👤</span><span>Perfil</span>
       </div>
       <div class="nav-item ${active === 'seguranca' ? 'active' : ''}" onclick="go('seguranca.html')">
-        <span class="icon">🔒</span><span>Segurança</span>
+        <span class="icon">🔐</span><span>Segurança</span>
       </div>
       <div class="nav-item" onclick="logout()">
-        <span class="icon">⎋</span><span>Sair</span>
+        <span class="icon">🚪</span><span>Sair</span>
       </div>
 
       <div class="sidebar-footer">
