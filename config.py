@@ -14,8 +14,10 @@ APP_NAME = "Blaxx Pontos"
 APP_VERSION = "0.1.0"
 APP_ID = "com.blaxx.pontos.windows"
 
-# URL de produção do backend Fly.io (mesmo banco Neon usado por Web/Mac/iOS).
-PRODUCTION_BACKEND_URL = "https://blaxx-pontos-backend.fly.dev"
+# URL de produção do backend — migrado do Fly.io pra Render.com em 2026-05-27.
+# Mesmo banco Neon Postgres compartilhado por Web/Mac/iOS/Windows.
+# Override via env var BLAXX_BACKEND_URL se quiser apontar pra staging/Fly.
+PRODUCTION_BACKEND_URL = "https://blaxx-pontos-backend.onrender.com"
 
 
 def app_root() -> Path:
