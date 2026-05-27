@@ -34,6 +34,24 @@
           <button type="submit" class="btn primary lg block">Entrar</button>
         </form>
 
+        <!-- ============ Google Sign-In ============ -->
+        <div class="auth-divider mt-6" style="display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">
+          <span style="flex:1;height:1px;background:rgba(255,255,255,0.12);"></span>
+          ou
+          <span style="flex:1;height:1px;background:rgba(255,255,255,0.12);"></span>
+        </div>
+
+        <button type="button" id="btn-google" class="btn ghost lg block mt-4" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M16.51 8.18c0-.6-.05-1.18-.15-1.74H9v3.29h4.21a3.6 3.6 0 01-1.56 2.36v1.97h2.53c1.48-1.36 2.33-3.36 2.33-5.88z" fill="#4285F4"/>
+            <path d="M9 17c2.1 0 3.87-.7 5.16-1.9l-2.53-1.97c-.7.47-1.6.75-2.63.75-2.03 0-3.74-1.37-4.36-3.21H1.96v2.02A8 8 0 009 17z" fill="#34A853"/>
+            <path d="M4.64 10.67A4.8 4.8 0 014.4 9c0-.58.1-1.15.24-1.67V5.31H1.96A8 8 0 001 9c0 1.29.31 2.5.86 3.69l2.78-2.02z" fill="#FBBC05"/>
+            <path d="M9 4.12c1.14 0 2.17.4 2.97 1.16l2.23-2.23A8 8 0 001.96 5.31l2.68 2.02C5.26 5.49 6.97 4.12 9 4.12z" fill="#EA4335"/>
+          </svg>
+          <span>Continuar com Google</span>
+        </button>
+        <p id="google-error" style="display:none;color:#ff6b6b;text-align:center;font-size:13px;margin-top:8px;"></p>
+
         <div class="row between mt-6">
           <a class="btn link" onclick="go('recuperar-senha.html')">Esqueci a senha</a>
           <a class="btn link" onclick="go('cadastro.html')">Criar conta</a>
@@ -47,8 +65,45 @@
   </div>
 
   <script src="../assets/app.js"></script>
+  <script src="../assets/google-auth.js"></script>
   <script>
     const loginForm = document.getElementById('form-login');
+
+    // ============ Google Sign-In ============
+    const googleBtn = document.getElementById('btn-google');
+    const googleErr = document.getElementById('google-error');
+    function showGoogleErr(msg) {
+      if (!googleErr) return;
+      googleErr.textContent = msg;
+      googleErr.style.display = 'block';
+    }
+    function clearGoogleErr() {
+      if (googleErr) googleErr.style.display = 'none';
+    }
+    if (googleBtn) {
+      googleBtn.addEventListener('click', () => {
+        clearGoogleErr();
+        const orig = googleBtn.querySelector('span').textContent;
+        googleBtn.disabled = true;
+        googleBtn.querySelector('span').textContent = 'Conectando ao Google…';
+        BlaxxGoogleAuth.signIn({
+          onSuccess: (user) => {
+            toast('Bem-vindo, ' + (user.name || '').split(' ')[0], 'success');
+            setTimeout(() => go('dashboard.html'), 400);
+          },
+          onCancel: () => {
+            googleBtn.disabled = false;
+            googleBtn.querySelector('span').textContent = orig;
+          },
+          onError: (msg) => {
+            showGoogleErr(msg);
+            googleBtn.disabled = false;
+            googleBtn.querySelector('span').textContent = orig;
+          },
+        });
+      });
+    }
+
 
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();

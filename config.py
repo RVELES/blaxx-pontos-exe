@@ -85,6 +85,29 @@ class BackendConfig:
 
 
 @dataclass(frozen=True)
+class GoogleConfig:
+    """Google Sign-In (Desktop App OAuth Client ID).
+
+    O Client ID e' publico por design (nao e' segredo); seguranca vem do
+    PKCE + validacao do ID Token no backend. Configure em:
+    https://console.cloud.google.com/apis/credentials
+    Tipo: 'Desktop app' (nao Web!), pra suportar redirect 127.0.0.1.
+    """
+    client_id: str = field(default_factory=lambda: os.environ.get(
+        "BLAXX_GOOGLE_CLIENT_ID", ""
+    ).strip())
+    # client_secret e' opcional pro tipo "Desktop app" + PKCE. Se setado,
+    # eh enviado no token exchange (alguns Client IDs exigem).
+    client_secret: str = field(default_factory=lambda: os.environ.get(
+        "BLAXX_GOOGLE_CLIENT_SECRET", ""
+    ).strip())
+
+    @property
+    def configured(self) -> bool:
+        return bool(self.client_id)
+
+
+@dataclass(frozen=True)
 class LoggingConfig:
     level: str = field(default_factory=lambda: os.environ.get("BLAXX_LOG_LEVEL", "INFO"))
     file_max_bytes: int = 5 * 1024 * 1024
@@ -95,6 +118,7 @@ class LoggingConfig:
 class AppConfig:
     window: WindowConfig = field(default_factory=WindowConfig)
     backend: BackendConfig = field(default_factory=BackendConfig)
+    google: GoogleConfig = field(default_factory=GoogleConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
 
     @property

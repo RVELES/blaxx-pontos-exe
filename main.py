@@ -9,7 +9,8 @@ Arquitetura:
     isolado, só para dev/offline.
   - --backend URL: aponta para outra instância remota (staging, branch).
 
-Login: somente email/senha (Google Sign-In removido nesta versao).
+Login: e-mail/senha + Google Sign-In (OAuth 2.0 + PKCE via janela child).
+Defina BLAXX_GOOGLE_CLIENT_ID (tipo Desktop App) para habilitar o botão Google.
 
 Uso:
     python main.py                                # produção (default)
@@ -33,6 +34,7 @@ from config import APP_NAME, APP_VERSION, CONFIG, PRODUCTION_BACKEND_URL
 from logging_setup import init_logging
 import backend_runner
 from backend_proxy import PROXY as _PROXY
+import google_auth  # GoogleAuthFlow + GoogleAuthError
 
 log = logging.getLogger("blaxx.main")
 
@@ -74,6 +76,99 @@ class BlaxxBridge:
             except Exception:
                 log.exception("notify falhou")
         return False
+
+    # ------------------------------------------------------------------
+    # Google Sign-In · Authorization Code + PKCE
+    # ------------------------------------------------------------------
+    # Chamado pelo renderer via window.pywebview.api.google_sign_in().
+    # Bloqueia ATÉ o usuario completar o consent OU 5 min de timeout.
+    # Retorna {ok, id_token, nonce} em sucesso, {ok:false, error, code}
+    # em falha — frontend trata com BlaxxGoogleAuth.signIn().
+    # ------------------------------------------------------------------
+    def google_sign_in(self) -> dict:
+        client_id = CONFIG.google.client_id
+        client_secret = CONFIG.google.client_secret or None
+        if not client_id:
+            return {
+                "ok": False,
+                "error": "Google Client ID não configurado",
+                "code": "NOT_CONFIGURED",
+                "hint": "Defina BLAXX_GOOGLE_CLIENT_ID antes de iniciar o app",
+                "doc_url": "https://console.cloud.google.com/apis/credentials",
+            }
+
+        try:
+            flow = google_auth.GoogleAuthFlow(client_id, client_secret=client_secret)
+        except google_auth.GoogleAuthError as e:
+            return {"ok": False, "error": str(e), "code": "NOT_CONFIGURED"}
+
+        child = None
+        used_browser = False
+        try:
+            # Tenta abrir a tela do Google em janela child (UX coesa).
+            # Se PyWebView não suportar (versão antiga ou erro de WebView2),
+            # cai pro navegador padrão como fallback.
+            try:
+                child = webview.create_window(
+                    title="Entrar com Google",
+                    url=flow.auth_url,
+                    width=520,
+                    height=680,
+                    background_color="#ffffff",
+                    resizable=True,
+                )
+                log.info("Google sign-in: child window aberta")
+            except Exception:
+                log.warning("Google sign-in: create_window child falhou; abrindo browser default",
+                            exc_info=True)
+                import webbrowser
+                webbrowser.open(flow.auth_url)
+                used_browser = True
+
+            # Bloqueia esperando callback (max 5 min)
+            got_callback = flow.wait_for_callback(timeout=300.0)
+
+            # Fecha child window (se foi a usada)
+            if child is not None:
+                try:
+                    child.destroy()
+                except Exception:
+                    pass
+
+            if not got_callback:
+                return {
+                    "ok": False,
+                    "error": "Tempo esgotado aguardando Google",
+                    "code": "TIMEOUT",
+                }
+
+            result = flow.complete()
+            return {
+                "ok": True,
+                "id_token": result["id_token"],
+                "nonce": result["nonce"],
+                "via": "browser" if used_browser else "embedded",
+            }
+        except google_auth.GoogleAuthError as e:
+            msg = str(e).lower()
+            if "cancel" in msg:
+                return {"ok": False, "error": str(e), "code": "CANCELLED"}
+            # Detecta loopback bloqueado (Client ID errado — tipo Web em vez de Desktop)
+            if "invalid_request" in msg or "unauthorized" in msg or "redirect_uri" in msg:
+                return {
+                    "ok": False, "error": str(e), "code": "LOOPBACK_BLOCKED",
+                    "hint": "Client ID precisa ser do tipo 'Desktop app' no Google Cloud",
+                    "doc_url": "https://console.cloud.google.com/apis/credentials",
+                }
+            return {"ok": False, "error": str(e), "code": "UNKNOWN"}
+        except Exception as e:
+            log.exception("Google sign-in: erro inesperado")
+            return {"ok": False, "error": str(e), "code": "UNKNOWN"}
+        finally:
+            try:
+                flow.close()
+            except Exception:
+                pass
 
 
 def inject_blaxx_globals(window, backend_url: str, is_local: bool) -> None:
