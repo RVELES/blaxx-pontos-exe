@@ -64,6 +64,41 @@
   }
 
   /**
+   * Traduz erros crus do backend no login Google para mensagens amigaveis.
+   * O usuario nao deve ver jargao tecnico (ex.: "Token Google invalido ou
+   * expirado") que sugere falha na conta dele, quando geralmente e' config do
+   * servidor (GOOGLE_WEB_CLIENT_ID/GOOGLE_IOS_CLIENT_ID ausente) ou algo
+   * transitorio. Paridade com Session.friendlyGoogleError (Mac/iOS) e
+   * friendlyGoogleError (Web SPA).
+   */
+  function friendlyBackendError(err) {
+    var raw = (err && err.message) || '';
+    var status = (err && err.status) || 0;
+    switch (raw) {
+      case 'Token Google inválido ou expirado':
+      case 'issuer inválido':
+      case 'Token Google sem sub ou email':
+        return 'Não foi possível entrar com o Google agora. '
+             + 'Tente novamente ou use e-mail e senha.';
+      case 'Google Sign-In não está configurado neste servidor':
+        return 'Login com Google está temporariamente indisponível. '
+             + 'Use e-mail e senha por enquanto.';
+      case 'nonce inválido — possível replay':
+        return 'A sessão de login expirou. Clique em '
+             + '"Entrar com Google" novamente.';
+      case 'Sua conta Google não tem e-mail verificado':
+        return 'Sua conta Google precisa ter o e-mail verificado '
+             + 'para entrar no Blaxx.';
+      default:
+        if (status >= 500 || status < 0) {
+          return 'Serviço indisponível no momento. '
+               + 'Tente novamente em alguns instantes.';
+        }
+        return raw || 'Falha ao entrar com Google.';
+    }
+  }
+
+  /**
    * Executa o fluxo completo.
    * @param {{onStart?:Function, onSuccess?:(user)=>void,
    *          onError?:(msg)=>void, onCancel?:Function}} cb
@@ -95,7 +130,7 @@
       if (cb.onSuccess) cb.onSuccess(data.user);
       return data.user;
     } catch (err) {
-      const msg = (err && err.message) || 'Falha ao entrar com Google';
+      const msg = friendlyBackendError(err);
       if (cb.onError) cb.onError(msg);
       return null;
     }
