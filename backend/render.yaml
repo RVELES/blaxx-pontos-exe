@@ -90,3 +90,10 @@ services:
         sync: false
       - key: TWILIO_FROM_PHONE
         sync: false
+
+      # PIX — chave recebedora (só usada pelo provider 'mock'/estático).
+      # Default no código = 65975e3a-57b7-47a9-bfcb-13b3c11e011d.
+      # ATENÇÃO: com PIX_PROVIDER=mercadopago esta chave é IGNORADA — o
+      # dinheiro cai na conta do MP_ACCESS_TOKEN, não nesta chave.
+      - key: PIX_MERCHANT_KEY
+        sync: false                    # chave PIX aleatória/e-mail/CPF do recebedor
