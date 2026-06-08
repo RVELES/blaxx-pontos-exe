@@ -12,11 +12,14 @@
     <main class="main">
       <div id="top"></div>
 
-      <div class="grid cols-3" style="grid-template-columns: 2fr 1fr 1fr;">
+      <div class="grid cols-3" style="grid-template-columns: 1.4fr 1fr 1fr;">
         <div class="balance-card">
-          <div class="label">Saldo de pontos</div>
-          <div class="amount"><span id="balance">—</span><span class="unit">pts</span></div>
-          <div class="equiv">Equivalente a <span id="equiv">R$ —</span> · Validade FIFO</div>
+          <div class="row between" style="align-items:flex-start;">
+            <div class="label">Valor total estimado</div>
+            <span class="growth-pill on-dark">▲ +8,42%</span>
+          </div>
+          <div class="amount" style="font-size:44px;margin-top:8px;"><span id="equiv">R$ —</span></div>
+          <div class="equiv"><span id="balance">—</span> pontos · Validade FIFO</div>
           <div class="row mt-6">
             <button class="btn primary" onclick="go('comprar-pontos.html')">Comprar pontos</button>
             <button class="btn ghost" style="border-color:rgba(255,255,255,.18);color:#fff;" onclick="go('carteira.html')">Ver carteira</button>
@@ -35,8 +38,6 @@
       </div>
 
       <div class="mt-8">
-        <span class="eyebrow">Ações principais</span>
-        <h3 style="margin-bottom:16px;">Fluxos do programa</h3>
         <div class="action-grid">
           <button class="action-tile" onclick="go('comprar-pontos.html')">
             <div class="icon">+</div>
@@ -63,19 +64,81 @@
 
       <div class="grid cols-2 mt-8">
         <div class="card">
-          <div class="row between mb-4">
-            <h3 style="margin:0;">Últimas movimentações</h3>
+          <div class="section-head">
+            <h3>Campanhas ativas</h3>
+            <a class="btn link" onclick="go('campanhas.html')">Ver todas →</a>
+          </div>
+          <div class="tile-list">
+            <div class="tile-row" onclick="go('campanhas.html')">
+              <div class="tile-emoji">🎯</div>
+              <div class="tile-body">
+                <div class="tile-title">Dobro de pontos em viagens</div>
+                <div class="tile-sub">Até 30/06 · parceiros selecionados</div>
+              </div>
+              <div class="tile-meta">2x</div>
+            </div>
+            <div class="tile-row" onclick="go('campanhas.html')">
+              <div class="tile-emoji">🛍️</div>
+              <div class="tile-body">
+                <div class="tile-title">Cashback turbo no varejo</div>
+                <div class="tile-sub">Resgate via PIX em 6 meses</div>
+              </div>
+              <div class="tile-meta">+5%</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-head">
+            <h3>Parceiros em destaque</h3>
+            <a class="btn link" onclick="go('parceiros.html')">Ver todos →</a>
+          </div>
+          <div class="tile-list">
+            <div class="tile-row" onclick="go('parceiros.html')">
+              <div class="tile-emoji">✈️</div>
+              <div class="tile-body">
+                <div class="tile-title">BlaxX Travel</div>
+                <div class="tile-sub">Passagens e hotéis</div>
+              </div>
+              <div class="tile-meta">Trocar</div>
+            </div>
+            <div class="tile-row" onclick="go('parceiros.html')">
+              <div class="tile-emoji">☕</div>
+              <div class="tile-body">
+                <div class="tile-title">Café Premium</div>
+                <div class="tile-sub">Benefícios diários</div>
+              </div>
+              <div class="tile-meta">Trocar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid cols-2 mt-8" style="grid-template-columns: 1.6fr 1fr;">
+        <div class="card">
+          <div class="section-head">
+            <h3>Últimas movimentações</h3>
             <a class="btn link" onclick="go('extrato.html')">Ver extrato →</a>
           </div>
           <div id="recent">Carregando…</div>
         </div>
-        <div class="card lime">
-          <span class="eyebrow">Princípio regulatório</span>
-          <h3 style="margin-bottom:8px;">Pontos = créditos promocionais</h3>
-          <p class="muted" style="font-size:14px;line-height:1.6;color:var(--gray-800);">
-            Não são moeda, depósito ou investimento. Resgates por PIX classificam-se
-            como cashback e ficam disponíveis após 6 meses de programa. Cada operação
-            é registrada em ledger imutável.
+        <div class="card">
+          <div class="section-head">
+            <h3>Distribuição da carteira</h3>
+          </div>
+          <div class="dist-row">
+            <div class="dist-head"><span class="name">Pontos disponíveis</span><span class="pct">62%</span></div>
+            <div class="dist-track"><div class="dist-fill" style="width:62%;"></div></div>
+          </div>
+          <div class="dist-row">
+            <div class="dist-head"><span class="name">Cashback acumulado</span><span class="pct">24%</span></div>
+            <div class="dist-track"><div class="dist-fill alt2" style="width:24%;"></div></div>
+          </div>
+          <div class="dist-row">
+            <div class="dist-head"><span class="name">Bloqueados / pendentes</span><span class="pct">14%</span></div>
+            <div class="dist-track"><div class="dist-fill alt" style="width:14%;"></div></div>
+          </div>
+          <p class="muted" style="font-size:12px;margin-top:16px;line-height:1.5;">
+            Pontos são créditos promocionais — não são moeda, depósito ou investimento.
           </p>
         </div>
       </div>
@@ -86,7 +149,7 @@
   <script>
     if (!Session.requireAuth()) {} else {
       document.getElementById('side').outerHTML = renderSidebar('dashboard');
-      document.getElementById('top').outerHTML  = renderTopbar();
+      document.getElementById('top').outerHTML  = renderTopbar({ eyebrow: 'Visão geral', title: 'Resumo do seu patrimônio' });
       (async () => {
         try {
           const w = await api('/wallet/');

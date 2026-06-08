@@ -10,24 +10,19 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# psycopg precisa de libpq + build-essential temporariamente
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libpq5 \
-        build-essential \
-        libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
-# Dependências primeiro (cache de camada melhor)
+# Dependências primeiro (cache de camada melhor).
+# psycopg[binary]>=3.2 é self-contained: o wheel ja inclui libpq compilada,
+# então NÃO precisamos instalar libpq5/build-essential via apt — o que evita
+# depender de DNS pra deb.debian.org (que falha em alguns ambientes WSL2).
+# https://www.psycopg.org/psycopg3/docs/basic/install.html#binary-installation
 COPY requirements.txt .
 # Verifica imediatamente que google-auth foi instalado, falha o build se não.
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt \
-    && python -c "from google.oauth2 import id_token; from google.auth.transport import requests as gr; import requests; print('✓ Google OAuth stack OK')" \
-    && apt-get purge -y build-essential libpq-dev \
-    && apt-get autoremove -y
+    && python -c "from google.oauth2 import id_token; from google.auth.transport import requests as gr; import requests; print('OK Google OAuth stack')" \
+    && python -c "import psycopg; print('OK psycopg', psycopg.__version__)"
 
 # Código da aplicação
 COPY . .

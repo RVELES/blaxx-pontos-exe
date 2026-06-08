@@ -26,7 +26,10 @@ class Config:
 
     # ---------------- JWT ----------------
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", SECRET_KEY)
-    JWT_ACCESS_TOKEN_EXPIRES = 60 * 60 * 24       # 24 horas (afrouxa pra MVP)
+    # Sprint 1: access token reduzido de 24h para 30min (padrao fintech).
+    # Refresh token continua 30 dias. O frontend usa /auth/refresh para
+    # renovar silenciosamente. Sobrescrivivel via env BLAXX_JWT_ACCESS_MIN.
+    JWT_ACCESS_TOKEN_EXPIRES = int(os.environ.get("BLAXX_JWT_ACCESS_MIN", 30)) * 60
     JWT_REFRESH_TOKEN_EXPIRES = 60 * 60 * 24 * 30 # 30 dias
     JWT_TOKEN_LOCATION = ["headers"]
 
@@ -109,10 +112,17 @@ class Config:
     # Client IDs criados em https://console.cloud.google.com → Credenciais.
     # WEB: usado pelo site Netlify (Google Identity Services no browser).
     # IOS: usado pelo app Mac/iOS via ASWebAuthenticationSession.
-    # Backend valida o ID token contra QUALQUER um dos dois (aceita audiências
-    # dos clients confiáveis listados aqui). Não precisa secret pra validar
-    # id_tokens — só pra fluxo authorization-code (não usamos).
-    GOOGLE_WEB_CLIENT_ID = os.environ.get("GOOGLE_WEB_CLIENT_ID", "")
+    # Backend valida o ID token contra QUALQUER um dos clients confiáveis.
+    # Não precisa secret pra validar id_tokens — só pra fluxo authorization-code.
+    #
+    # Compat: aceita GOOGLE_CLIENT_ID (single) como fallback de
+    # GOOGLE_WEB_CLIENT_ID, pra simplificar setup em Render/Heroku/etc onde
+    # só queremos um nome de variável.
+    GOOGLE_WEB_CLIENT_ID = (
+        os.environ.get("GOOGLE_WEB_CLIENT_ID")
+        or os.environ.get("GOOGLE_CLIENT_ID")
+        or ""
+    )
     GOOGLE_IOS_CLIENT_ID = os.environ.get("GOOGLE_IOS_CLIENT_ID", "")
 
     @classmethod
@@ -124,9 +134,32 @@ class Config:
     # Segredo compartilhado com o gateway PIX para validar HMAC nos webhooks.
     # Cada provedor (Mercado Pago, Efí, Stark, etc) tem o seu próprio header e
     # algoritmo - aqui mantemos o esquema genérico HMAC-SHA256 do body.
+    # Sprint 4 (S4-10) · Versao atual dos documentos legais.
+    # Quando atualizar termos/privacidade/LGPD, bumpe TERMS_CURRENT_VERSION.
+    # No proximo login, usuarios com user.terms_accepted_version != atual
+    # serao redirecionados pra re-aceitar antes de continuar.
+    # Convencao: "1.0", "1.1" (patch sem mudanca material), "2.0" (mudanca
+    # material que exige re-aceite explicito).
+    TERMS_CURRENT_VERSION = os.environ.get("BLAXX_TERMS_VERSION", "1.0")
+
     PIX_WEBHOOK_SECRET = os.environ.get("PIX_WEBHOOK_SECRET", "")
-    # Lista de IPs permitidos. Em produção: IPs documentados do gateway.
-    # Vazio = aceita qualquer origem (apenas em DEV - jamais em prod).
+
+    # Sprint 3 (S3-9) · Lista de IPs permitidos para webhook PIX.
+    # Default = vazio = aceita qualquer origem (DEV apenas).
+    # PRODUCAO: setar PIX_WEBHOOK_ALLOWED_IPS com a lista oficial do PSP.
+    #
+    # Mercado Pago — IPs documentados (consulte
+    # https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+    # antes de deploy — MP pode trocar):
+    #   209.225.49.0/24      CIDR principal de webhooks
+    #   216.33.196.0/24      CIDR backup
+    #   34.195.33.241        Cluster MP-Argentina
+    #   34.195.183.18        idem
+    #
+    # Outros PSPs:
+    #   Asaas:   consultar https://docs.asaas.com/docs/webhooks
+    #   Stark:   consultar https://starkbank.com/docs (IPs por banco emissor)
+    #   Efi:     consultar https://dev.efipay.com.br/docs/api-pix/webhooks
     PIX_WEBHOOK_ALLOWED_IPS = [
         ip.strip() for ip in os.environ.get("PIX_WEBHOOK_ALLOWED_IPS", "").split(",") if ip.strip()
     ]
@@ -138,7 +171,7 @@ class Config:
         "start": {"price_brl": 180.00, "points": 2_000,  "label": "Start"},
         "plus":  {"price_brl": 470.00, "points": 5_500,  "label": "Plus"},   # ~5% bonus
         "prime": {"price_brl": 972.00, "points": 12_000, "label": "Prime"},  # ~10% bonus
-        "black": {"price_brl": 2142.00, "points": 28_000,"label": "Black"},  # ~15% bonus
+        "black": {"price_brl": 2142.00, "points": 28_000, "label": "Black"},  # ~15% bonus
     }
 
 

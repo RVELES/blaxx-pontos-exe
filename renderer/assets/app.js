@@ -433,11 +433,17 @@ function renderTopbar({ eyebrow = 'Bem-vindo de volta', title } = {}) {
         ${title ? `<h2>${title}</h2>` : ''}
       </div>
       <div class="actions">
-        <button class="btn ghost" onclick="go('central-notificacoes.html')" id="btn-notif">
-          Notificações <span id="notif-count" style="display:none;background:var(--blaxx-lime);color:var(--blaxx-black);padding:2px 8px;border-radius:999px;margin-left:6px;font-weight:700;font-size:11px;"></span>
-        </button>
-        <button class="btn ghost" onclick="go('perfil.html')" style="font-weight:600;">Olá, ${firstName}</button>
-        <div class="avatar">${initial}</div>
+        <div class="topbar-icon notif-btn" role="button" onclick="go('central-notificacoes.html')" id="btn-notif" title="Notificações">
+          🔔<span id="notif-count" class="notif-badge" style="display:none;"></span>
+        </div>
+        <div class="topbar-icon" role="button" onclick="go('seguranca.html')" title="Ajuda e segurança">❔</div>
+        <div class="user-chip" role="button" onclick="go('perfil.html')" title="${user.name || ''}">
+          <div class="avatar">${initial}</div>
+          <div class="user-meta">
+            <span class="user-name">${firstName || 'Você'}</span>
+            <span class="user-level">Nível Black</span>
+          </div>
+        </div>
       </div>
     </div>
   `;
