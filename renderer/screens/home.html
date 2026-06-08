@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Blaxx Pontos · Junte pontos e troque pelo que quiser</title>
+  <link rel="icon" type="image/png" href="../assets/blaxx-icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+  <style>
+    body { background: var(--bg); }
+    .lp-wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+    .lp-head { position: sticky; top: 0; z-index: 40; background: rgba(246,247,244,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .lp-head .lp-wrap { display: flex; align-items: center; justify-content: space-between; height: 66px; }
+    .lp-head img { height: 28px; display: block; }
+    .lp-nav { display: flex; gap: 26px; }
+    .lp-nav a { font-size: 14px; font-weight: 500; color: var(--text-secondary); text-decoration: none; }
+    .lp-nav a:hover { color: var(--text); }
+    .lp-actions { display: flex; gap: 10px; align-items: center; }
+
+    .lp-hero { padding: 64px 0 48px; }
+    .lp-hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+    .lp-hero h1 { font-family: var(--font-display); font-weight: 900; font-size: 52px; line-height: 1.0; letter-spacing: -0.02em; margin: 16px 0; }
+    .lp-hero h1 .lime { color: var(--blaxx-lime-dark); }
+    .lp-lead { font-size: 17px; color: var(--text-secondary); line-height: 1.55; max-width: 52ch; }
+    .lp-lead b { color: var(--text); font-weight: 600; }
+    .lp-cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 26px 0 16px; }
+    .lp-rating { font-size: 13px; color: var(--text-muted); }
+    .lp-rating .st { color: var(--blaxx-lime-dark); letter-spacing: 2px; }
+
+    .lp-wallet { background: var(--blaxx-black); color: var(--blaxx-white); border-radius: var(--radius-xl); padding: 30px; }
+    .lp-wallet .top { display: flex; justify-content: space-between; align-items: center; }
+    .lp-wallet .lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+    .lp-wallet .bal { font-family: var(--font-display); font-weight: 900; font-size: 54px; color: var(--blaxx-lime); margin: 16px 0 4px; }
+    .lp-wallet .bal small { font-size: 22px; color: rgba(255,255,255,.45); }
+    .lp-wallet .brl { font-size: 13px; color: rgba(255,255,255,.5); }
+    .lp-wallet .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 20px 0; padding: 16px 0; border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1); }
+    .lp-wallet .stats .n { font-family: var(--font-display); font-weight: 700; font-size: 19px; }
+    .lp-wallet .stats .k { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 2px; }
+
+    .lp-strip { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 26px 0; }
+    .lp-strip .cap { text-align: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+    .lp-strip .brands { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 32px; }
+    .lp-strip .brands span { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--text-muted); }
+
+    .lp-sec { padding: 72px 0; }
+    .lp-sec.alt { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .lp-sec .hd { text-align: center; max-width: 600px; margin: 0 auto 44px; }
+    .lp-sec .hd h2 { font-family: var(--font-display); font-weight: 900; font-size: 36px; letter-spacing: -0.02em; margin: 12px 0 10px; }
+    .lp-sec .hd p { color: var(--text-secondary); font-size: 16px; margin: 0; }
+
+    .lp-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+    .lp-step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+    .lp-step .num { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--blaxx-lime-dark); }
+    .lp-step h3 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 10px 0 8px; }
+    .lp-step p { color: var(--text-secondary); font-size: 14.5px; margin: 0; }
+
+    .lp-ways { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+    .lp-way { display: flex; gap: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
+    .lp-way .ic { flex: 0 0 44px; height: 44px; border-radius: var(--radius-sm); background: var(--blaxx-lime-light); display: grid; place-items: center; font-size: 21px; }
+    .lp-way h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 0 0 4px; }
+    .lp-way p { color: var(--text-secondary); font-size: 14px; margin: 0; }
+
+    .lp-cat { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
+    .lp-cat-i { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; text-align: center; }
+    .lp-cat-i .ic { font-size: 26px; }
+    .lp-cat-i h3 { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 10px 0 4px; }
+    .lp-cat-i p { color: var(--text-secondary); font-size: 13px; margin: 0; }
+
+    .lp-band { padding: 56px 0; }
+    .lp-band-in { background: var(--blaxx-black); border-radius: var(--radius-xl); padding: 48px 36px; }
+    .lp-band-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center; }
+    .lp-band-grid .n { font-family: var(--font-display); font-weight: 900; font-size: 42px; color: var(--blaxx-lime); }
+    .lp-band-grid .k { color: rgba(255,255,255,.55); font-size: 13.5px; margin-top: 6px; }
+
+    .lp-faq { max-width: 720px; margin: 0 auto; }
+    .lp-faq details { border-bottom: 1px solid var(--border); padding: 18px 4px; }
+    .lp-faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; font-family: var(--font-display); font-weight: 700; font-size: 17px; }
+    .lp-faq summary::-webkit-details-marker { display: none; }
+    .lp-faq summary::after { content: '+'; color: var(--blaxx-lime-dark); font-size: 20px; }
+    .lp-faq details[open] summary::after { content: '–'; }
+    .lp-faq p { color: var(--text-secondary); font-size: 14.5px; margin: 12px 0 0; }
+
+    .lp-final { background: var(--blaxx-black); border-radius: var(--radius-xl); padding: 56px 36px; text-align: center; }
+    .lp-final h2 { font-family: var(--font-display); font-weight: 900; font-size: 40px; color: var(--blaxx-white); margin: 0 0 12px; }
+    .lp-final p { color: rgba(255,255,255,.6); font-size: 16px; margin: 0 auto 26px; max-width: 46ch; }
+
+    .lp-foot { background: var(--blaxx-black); color: var(--blaxx-white); padding: 48px 0 28px; }
+    .lp-foot .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+    .lp-foot img { height: 26px; margin-bottom: 12px; }
+    .lp-foot .bl { color: rgba(255,255,255,.5); font-size: 13.5px; max-width: 32ch; }
+    .lp-foot h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.45); margin: 0 0 12px; }
+    .lp-foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+    .lp-foot a { color: var(--blaxx-white); font-size: 14px; text-decoration: none; }
+    .lp-foot a:hover { color: var(--blaxx-lime); }
+    .lp-foot .base { margin-top: 36px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.1); font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,.4); }
+
+    @media (max-width: 900px) {
+      .lp-hero-grid { grid-template-columns: 1fr; gap: 36px; }
+      .lp-nav { display: none; }
+      .lp-steps, .lp-cat { grid-template-columns: 1fr 1fr; }
+      .lp-ways, .lp-band-grid { grid-template-columns: 1fr 1fr; }
+      .lp-foot .cols { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="lp-head">
+    <div class="lp-wrap">
+      <a href="home.html"><img src="../assets/blaxx-logo-dark.png" alt="BLAXX Pontos" /></a>
+      <nav class="lp-nav">
+        <a href="#como">Como funciona</a>
+        <a href="#juntar">Juntar pontos</a>
+        <a href="#trocar">Trocar</a>
+        <a href="#parceiros">Parceiros</a>
+      </nav>
+      <div class="lp-actions">
+        <a href="login.html" class="btn ghost">Entrar</a>
+        <a href="cadastro.html" class="btn primary">Criar conta grátis</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="lp-hero">
+    <div class="lp-wrap lp-hero-grid">
+      <div>
+        <span class="eyebrow">Programa de pontos · sem mensalidade</span>
+        <h1>Junte pontos no dia a dia e troque pelo que <span class="lime">você quiser.</span></h1>
+        <p class="lp-lead">Compre nos parceiros, acumule pontos automaticamente e resgate por <b>vouchers, milhas, descontos e cashback no Pix</b>. Simples, gratuito e sem letras miúdas.</p>
+        <div class="lp-cta">
+          <a href="cadastro.html" class="btn primary lg">Criar conta e ganhar 500 pts →</a>
+          <a href="login.html" class="btn ghost lg">Já tenho conta · Entrar</a>
+        </div>
+        <div class="lp-rating"><span class="st">★★★★★</span> &nbsp;Mais de <b>1 milhão</b> de resgates realizados</div>
+      </div>
+      <div class="lp-wallet">
+        <div class="top">
+          <span class="lab">Saldo Blaxx</span>
+          <span class="chip">Plano Plus</span>
+        </div>
+        <div class="bal">32.480 <small>pts</small></div>
+        <div class="brl">≈ R$ 324,80 em resgates</div>
+        <div class="stats">
+          <div><div class="n">+1.250</div><div class="k">este mês</div></div>
+          <div><div class="n">4</div><div class="k">vouchers</div></div>
+          <div><div class="n">2</div><div class="k">campanhas</div></div>
+        </div>
+        <a href="login.html" class="btn primary block">Resgatar pontos →</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="lp-strip" id="parceiros">
+    <div class="lp-wrap">
+      <div class="cap">Acumule comprando em centenas de marcas</div>
+      <div class="brands">
+        <span>SuperMix</span><span>FarmaPlus</span><span>PostoVia</span><span>VocJá</span>
+        <span>ModaUrban</span><span>TechStore</span><span>CaféDoz</span><span>PetCare</span>
+        <span>EduMais</span><span>StreamGo</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="lp-sec" id="como">
+    <div class="lp-wrap">
+      <div class="hd">
+        <span class="eyebrow">Como funciona</span>
+        <h2>Três passos para começar a ganhar</h2>
+        <p>Sem complicação. Crie sua conta, compre normalmente e veja os pontos caírem.</p>
+      </div>
+      <div class="lp-steps">
+        <div class="lp-step"><div class="num">01</div><h3>Crie sua conta grátis</h3><p>Cadastro em menos de 1 minuto com seu e-mail. Ganhe 500 pontos de boas-vindas.</p></div>
+        <div class="lp-step"><div class="num">02</div><h3>Compre nos parceiros</h3><p>A cada compra nas marcas parceiras você acumula pontos automaticamente na carteira.</p></div>
+        <div class="lp-step"><div class="num">03</div><h3>Troque pelo que quiser</h3><p>Resgate por vouchers, milhas, descontos ou receba o valor de volta no seu Pix.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec alt" id="juntar">
+    <div class="lp-wrap">
+      <div class="hd">
+        <span class="eyebrow">Juntar pontos</span>
+        <h2>Acelere de 4 formas</h2>
+        <p>Quanto mais você usa o ecossistema Blaxx, mais rápido seus pontos crescem.</p>
+      </div>
+      <div class="lp-ways">
+        <div class="lp-way"><div class="ic">🛒</div><div><h3>Compras nos parceiros</h3><p>Acumule a cada real gasto nas marcas parceiras, online ou na loja.</p></div></div>
+        <div class="lp-way"><div class="ic">🎯</div><div><h3>Campanhas e missões</h3><p>Participe de desafios e ganhe pontos extras ao completar metas.</p></div></div>
+        <div class="lp-way"><div class="ic">👥</div><div><h3>Indique amigos</h3><p>Convide pessoas e ganhe pontos na primeira compra delas.</p></div></div>
+        <div class="lp-way"><div class="ic">⭐</div><div><h3>Suba de plano</h3><p>Plus, Prime e Black multiplicam seu acúmulo com bônus progressivo.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec" id="trocar">
+    <div class="lp-wrap">
+      <div class="hd">
+        <span class="eyebrow">Trocar pontos</span>
+        <h2>Resgate do seu jeito</h2>
+        <p>Seus pontos, suas regras. Escolha entre dezenas de opções de resgate.</p>
+      </div>
+      <div class="lp-cat">
+        <div class="lp-cat-i"><div class="ic">💸</div><h3>Cashback no Pix</h3><p>Receba o valor direto na conta.</p></div>
+        <div class="lp-cat-i"><div class="ic">🎟️</div><h3>Vouchers</h3><p>Vale-compras das principais marcas.</p></div>
+        <div class="lp-cat-i"><div class="ic">✈️</div><h3>Milhas</h3><p>Transfira para programas aéreos.</p></div>
+        <div class="lp-cat-i"><div class="ic">🏷️</div><h3>Descontos</h3><p>Abata pontos na próxima compra.</p></div>
+        <div class="lp-cat-i"><div class="ic">🎁</div><h3>Produtos</h3><p>Troque por itens do catálogo.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-band">
+    <div class="lp-wrap">
+      <div class="lp-band-in">
+        <div class="lp-band-grid">
+          <div><div class="n">1M+</div><div class="k">resgates realizados</div></div>
+          <div><div class="n">500+</div><div class="k">marcas parceiras</div></div>
+          <div><div class="n">R$ 0,09</div><div class="k">por ponto resgatado</div></div>
+          <div><div class="n">100%</div><div class="k">gratuito, sem mensalidade</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec alt">
+    <div class="lp-wrap">
+      <div class="hd">
+        <span class="eyebrow">Dúvidas</span>
+        <h2>Perguntas frequentes</h2>
+      </div>
+      <div class="lp-faq">
+        <details open><summary>Quanto custa participar?</summary><p>Nada. Criar conta e acumular pontos é totalmente gratuito, sem mensalidade ou anuidade.</p></details>
+        <details><summary>Quanto vale cada ponto?</summary><p>Cada ponto equivale a R$ 0,09 no resgate. O valor é transparente e exibido na hora da troca.</p></details>
+        <details><summary>Os pontos expiram?</summary><p>Seus pontos têm validade longa e você é avisado com antecedência antes de qualquer expiração.</p></details>
+        <details><summary>Como recebo o cashback?</summary><p>Direto no seu Pix, em poucos minutos após confirmar o resgate na sua carteira Blaxx.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec">
+    <div class="lp-wrap">
+      <div class="lp-final">
+        <h2>Comece a juntar pontos hoje</h2>
+        <p>Crie sua conta grátis e ganhe 500 pontos de boas-vindas. Leva menos de um minuto.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="cadastro.html" class="btn primary lg">Criar conta grátis →</a>
+          <a href="login.html" class="btn ghost lg">Entrar</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="lp-foot">
+    <div class="lp-wrap">
+      <div class="cols">
+        <div>
+          <img src="../assets/blaxx-logo.png" alt="BLAXX Pontos" />
+          <p class="bl">Plataforma de pontos que transforma suas compras do dia a dia em recompensas de verdade.</p>
+        </div>
+        <div>
+          <h4>Produto</h4>
+          <ul>
+            <li><a href="#como">Como funciona</a></li>
+            <li><a href="#juntar">Juntar pontos</a></li>
+            <li><a href="#trocar">Trocar pontos</a></li>
+            <li><a href="#parceiros">Parceiros</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Conta</h4>
+          <ul>
+            <li><a href="login.html">Entrar</a></li>
+            <li><a href="cadastro.html">Criar conta</a></li>
+            <li><a href="recuperar-senha.html">Esqueci a senha</a></li>
+            <li><a href="termos.html">Termos de uso</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="base">© 2026 BLAXX PONTOS · TODOS OS DIREITOS RESERVADOS · FEITO NO BRASIL</div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -8,14 +8,18 @@
 // URL do backend — resolução em ordem:
 //   1. localStorage (definido pelo main.py do app Windows a cada navegação)
 //   2. window.blaxx.backendUrl (injetado pelo preload Electron ou PyWebView)
-//   3. fallback localhost (modo dev)
+//   3. fallback: backend de PRODUÇÃO (mesmo banco Neon compartilhado por
+//      Web/Mac/iOS/Windows). Assim, mesmo abrindo o renderer fora do app
+//      empacotado, a base de dados é a mesma das outras plataformas.
+//      Use `--local` no app Windows (main.py) para apontar p/ Flask local.
+const PRODUCTION_API = 'https://blaxx-pontos-backend.onrender.com';
 const API = (() => {
   try {
     const saved = localStorage.getItem('blaxx_api_url');
     if (saved) return saved;
   } catch (_) { /* sandboxed / file:// pode bloquear localStorage */ }
   if (window.blaxx && window.blaxx.backendUrl) return window.blaxx.backendUrl;
-  return 'http://127.0.0.1:5050';
+  return PRODUCTION_API;
 })();
 
 // Sessão persistida em localStorage (sobrevive reabertura do app).

@@ -622,6 +622,64 @@ table.blaxx tbody tr:last-child td { border-bottom: 0; }
   margin-top: 4px;
 }
 
+/* ---- Login amigável: layout split (aside de boas-vindas + form) ---- */
+.auth-split {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  min-height: 100vh;
+  width: 100%;
+}
+.auth-aside {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(120% 120% at 0% 0%, #1c1c1c 0%, var(--blaxx-black) 55%);
+  color: #fff;
+  padding: 56px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.auth-aside::after {
+  content: "";
+  position: absolute;
+  right: -120px; bottom: -120px;
+  width: 360px; height: 360px;
+  background: var(--blaxx-lime);
+  filter: blur(8px);
+  opacity: .16;
+  border-radius: 50%;
+}
+.auth-aside .brand-logo { height: 34px; }
+.auth-aside h2 {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1.18;
+  margin: 0 0 14px;
+  max-width: 18ch;
+}
+.auth-aside .aside-lead { color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.6; max-width: 34ch; }
+.auth-aside .aside-feats { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 14px; position: relative; z-index: 1; }
+.auth-aside .aside-feats li { display: flex; align-items: center; gap: 12px; font-size: 14px; color: rgba(255,255,255,.9); }
+.auth-aside .aside-feats .ic {
+  width: 36px; height: 36px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  background: rgba(198,244,50,.16);
+  border-radius: 10px;
+}
+.auth-aside .aside-foot { font-size: 12px; color: rgba(255,255,255,.5); position: relative; z-index: 1; }
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--blaxx-white);
+}
+@media (max-width: 880px) {
+  .auth-split { grid-template-columns: 1fr; }
+  .auth-aside { display: none; }
+}
+
 /* utilitários */
 .row { display: flex; gap: var(--space-3); align-items: center; }
 .row.between { justify-content: space-between; }

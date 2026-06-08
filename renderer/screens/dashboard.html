@@ -38,28 +38,43 @@
       </div>
 
       <div class="mt-8">
-        <div class="action-grid">
-          <button class="action-tile" onclick="go('comprar-pontos.html')">
-            <div class="icon">+</div>
-            <div class="label">Compra</div>
-            <div class="name">Comprar pontos via PIX</div>
-          </button>
-          <button class="action-tile" onclick="go('enviar-pontos.html')">
-            <div class="icon">↗</div>
-            <div class="label">Presente</div>
-            <div class="name">Enviar pontos a outro cliente</div>
-          </button>
-          <button class="action-tile" onclick="go('vender-pontos.html')">
-            <div class="icon">↙</div>
-            <div class="label">Cashback</div>
-            <div class="name">Resgatar via PIX</div>
-          </button>
-          <button class="action-tile" onclick="go('parceiros.html')">
-            <div class="icon">◯</div>
-            <div class="label">Marketplace</div>
-            <div class="name">Parceiros e benefícios</div>
-          </button>
+        <div class="section-head">
+          <h3>O que fazer com seus pontos</h3>
         </div>
+        <div class="action-grid">
+          <div class="action-tile">
+            <div class="icon">🎁</div>
+            <div class="label">Trocar</div>
+            <div class="name">Troque pontos por benefícios nos parceiros</div>
+            <button class="btn primary block mt-4" onclick="go('parceiros.html')">Trocar pontos</button>
+          </div>
+          <div class="action-tile">
+            <div class="icon">＋</div>
+            <div class="label">Comprar</div>
+            <div class="name">Compre pontos via PIX em segundos</div>
+            <button class="btn primary block mt-4" onclick="go('comprar-pontos.html')">Comprar pontos</button>
+          </div>
+          <div class="action-tile">
+            <div class="icon">↙</div>
+            <div class="label">Vender</div>
+            <div class="name">Converta pontos em cashback no PIX</div>
+            <button class="btn primary block mt-4" onclick="go('vender-pontos.html')">Vender pontos</button>
+          </div>
+          <div class="action-tile">
+            <div class="icon">↗</div>
+            <div class="label">Presentear</div>
+            <div class="name">Envie pontos de presente a alguém</div>
+            <button class="btn primary block mt-4" onclick="go('enviar-pontos.html')">Enviar presente</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <div class="section-head">
+          <h3>Parceiros para trocar seus pontos</h3>
+          <a class="btn link" onclick="go('parceiros.html')">Ver todos →</a>
+        </div>
+        <div id="partners-showcase" class="grid cols-4">Carregando parceiros…</div>
       </div>
 
       <div class="grid cols-2 mt-8">
@@ -89,25 +104,24 @@
         </div>
         <div class="card">
           <div class="section-head">
-            <h3>Parceiros em destaque</h3>
-            <a class="btn link" onclick="go('parceiros.html')">Ver todos →</a>
+            <h3>Como seus pontos rendem</h3>
           </div>
           <div class="tile-list">
             <div class="tile-row" onclick="go('parceiros.html')">
-              <div class="tile-emoji">✈️</div>
+              <div class="tile-emoji">🛍️</div>
               <div class="tile-body">
-                <div class="tile-title">BlaxX Travel</div>
-                <div class="tile-sub">Passagens e hotéis</div>
+                <div class="tile-title">+ de 250 parceiros</div>
+                <div class="tile-sub">Troque por benefícios em várias categorias</div>
               </div>
               <div class="tile-meta">Trocar</div>
             </div>
-            <div class="tile-row" onclick="go('parceiros.html')">
-              <div class="tile-emoji">☕</div>
+            <div class="tile-row" onclick="go('comprar-pontos.html')">
+              <div class="tile-emoji">⚡</div>
               <div class="tile-body">
-                <div class="tile-title">Café Premium</div>
-                <div class="tile-sub">Benefícios diários</div>
+                <div class="tile-title">Pontos na hora</div>
+                <div class="tile-sub">Compre via PIX e use na sequência</div>
               </div>
-              <div class="tile-meta">Trocar</div>
+              <div class="tile-meta">Comprar</div>
             </div>
           </div>
         </div>
@@ -150,6 +164,28 @@
     if (!Session.requireAuth()) {} else {
       document.getElementById('side').outerHTML = renderSidebar('dashboard');
       document.getElementById('top').outerHTML  = renderTopbar({ eyebrow: 'Visão geral', title: 'Resumo do seu patrimônio' });
+      // Vitrine de parceiros reais (mesma base de produção das outras plataformas).
+      (async () => {
+        const box = document.getElementById('partners-showcase');
+        try {
+          const data = await api('/partners/');
+          const items = (data.items || []).slice(0, 8);
+          if (!items.length) { box.innerHTML = '<p class="muted">Nenhum parceiro disponível agora.</p>'; return; }
+          box.innerHTML = items.map(p => `
+            <div class="card" style="display:flex;flex-direction:column;gap:6px;">
+              <div class="chip dark" style="align-self:flex-start;">${p.category || 'Parceiro'}</div>
+              <h3 style="margin:6px 0 0;display:flex;align-items:center;gap:8px;font-size:16px;">
+                <span style="font-size:22px;">${p.logo_emoji || '◯'}</span>${p.name}
+              </h3>
+              <p class="muted" style="font-size:12px;margin:0;flex:1;">${p.accrual_rule || ''}</p>
+              <button class="btn primary block mt-4" onclick="go('detalhe-parceiro.html?id=${p.id}')">Trocar pontos</button>
+            </div>
+          `).join('');
+        } catch (e) {
+          box.innerHTML = `<p class="muted">Não foi possível carregar os parceiros: ${e.message}</p>`;
+        }
+      })();
+
       (async () => {
         try {
           const w = await api('/wallet/');

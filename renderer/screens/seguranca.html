@@ -54,7 +54,7 @@
             </div>
             <div class="field">
               <label for="senha-nova">Nova senha</label>
-              <input id="senha-nova" type="password" autocomplete="new-password" minlength="8" required />
+              <input id="senha-nova" type="password" autocomplete="new-password" minlength="7" required />
               <span class="hint" id="bx-strength">Use maiúscula, minúscula, número e caractere especial.</span>
             </div>
             <div class="field">
@@ -135,14 +135,10 @@
       // ===== util: força de senha =====
       function passwordStrength(pwd) {
         pwd = pwd || '';
-        let score = 0; const hints = [];
-        if (pwd.length >= 10) score++; else hints.push('10+ caracteres');
-        if (/[a-z]/.test(pwd)) score++; else hints.push('minúscula');
-        if (/[A-Z]/.test(pwd)) score++; else hints.push('maiúscula');
-        if (/\d/.test(pwd)) score++; else hints.push('número');
-        if (/[^A-Za-z0-9\s]/.test(pwd)) score++; else hints.push('caractere especial');
-        const labels = ['muito fraca','fraca','razoável','boa','forte'];
-        return { score, label: labels[Math.max(0,score-1)] || 'muito fraca', hints, ok: score === 5 };
+        // Política (spec do user): senha livre, mínimo 7 caracteres.
+        const ok = pwd.length >= 7;
+        const hints = ok ? [] : ['7+ caracteres'];
+        return { score: ok ? 5 : Math.min(4, pwd.length), label: ok ? 'ok' : 'mínimo 7 caracteres', hints, ok };
       }
       const COLORS = ['#ff6b6b','#ff6b6b','#ffb74d','#a4d65e','#a4d65e'];
       const senhaNova = document.getElementById('senha-nova');
