@@ -389,7 +389,7 @@ function renderSidebar(active) {
 
   return `
     <aside class="sidebar">
-      <div class="logo logo-blaxx"><img class="brand-logo" src="../assets/blaxx-logo-dark.svg" alt="BLAXX Pontos" /></div>
+      <div class="logo logo-blaxx"><img class="brand-logo" src="../assets/blaxx-logo-dark.png" alt="BLAXX Pontos" /></div>
 
       <div class="section-label">Programa</div>
       ${items.map(it => `
