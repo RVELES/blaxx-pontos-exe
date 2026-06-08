@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Blaxx">
+  <title>Blaxx app icon</title>
+  <!--
+    Ícone Blaxx: quadrado preto arredondado + marca "XX" em chevrons
+    sobrepostos (X esquerdo branco, X direito verde-limão). Desenhado com
+    traços vetoriais (sem dependência de fonte) para rasterizar via qlmanage.
+    Cores: preto #0A0A0A, branco #FFFFFF, verde-limão #C6F432.
+  -->
+  <defs>
+    <clipPath id="r"><rect width="1024" height="1024" rx="224" ry="224"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="1024" height="1024" fill="#0A0A0A"/>
+    <!-- X esquerdo (branco), pontas cortadas retas -->
+    <g stroke="#FFFFFF" stroke-width="92" stroke-linecap="butt">
+      <line x1="286" y1="346" x2="556" y2="678"/>
+      <line x1="556" y1="346" x2="286" y2="678"/>
+    </g>
+    <!-- X direito (verde-limão), entrelaçado à frente -->
+    <g stroke="#C6F432" stroke-width="92" stroke-linecap="butt">
+      <line x1="468" y1="346" x2="738" y2="678"/>
+      <line x1="738" y1="346" x2="468" y2="678"/>
+    </g>
+  </g>
+</svg>
