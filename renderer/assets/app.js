@@ -12,7 +12,7 @@
 //      Web/Mac/iOS/Windows). Assim, mesmo abrindo o renderer fora do app
 //      empacotado, a base de dados é a mesma das outras plataformas.
 //      Use `--local` no app Windows (main.py) para apontar p/ Flask local.
-const PRODUCTION_API = 'https://blaxx-pontos-backend.onrender.com';
+const PRODUCTION_API = 'https://blaxx-pontos-exe.onrender.com';
 const API = (() => {
   try {
     const saved = localStorage.getItem('blaxx_api_url');
