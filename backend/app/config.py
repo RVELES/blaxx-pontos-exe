@@ -1,6 +1,8 @@
 """Configuracoes do app."""
 from __future__ import annotations
 import os
+import re
+import sys
 
 
 def _normalize_db_url(url: str) -> str:
@@ -21,25 +23,65 @@ def _normalize_db_url(url: str) -> str:
 _DEFAULT_DB_URL = "sqlite:///blaxx.db"
 
 
+def _clean_pasted_db_url(raw: str) -> str:
+    """Remove sujeira comum de colagem no painel (Render/Neon/etc).
+
+    Casos que vimos derrubar o boot ("Could not parse SQLAlchemy URL"):
+      * espaço/quebra-de-linha nas pontas → strip;
+      * aspas/crase/<> envolvendo o valor inteiro;
+      * prefixo de comando colado por engano: `psql 'postgres://...'`;
+      * prefixo `DATABASE_URL=` colado junto do valor;
+      * QUEBRA DE LINHA OU ESPAÇO NO MEIO da string (colagem multi-linha no
+        textarea do painel) — uma URL nunca contém whitespace, então qualquer
+        whitespace interno é lixo e é removido.
+    """
+    s = raw.strip().strip("'\"`")
+    if s.startswith("<") and s.endswith(">"):
+        s = s[1:-1].strip()
+    if s.lower().startswith("psql "):
+        s = s[5:].strip().strip("'\"`")
+    if s.lower().startswith("database_url="):
+        s = s.split("=", 1)[1].strip().strip("'\"`")
+    # URLs não têm espaços/\n/\t: remove qualquer whitespace interno residual.
+    s = re.sub(r"\s+", "", s)
+    return s
+
+
 def _resolve_db_url() -> str:
     """Lê DATABASE_URL tolerando erros comuns de colagem no painel (Render/etc).
 
     Causa real de boot-crash em prod ("Could not parse SQLAlchemy URL"): a
-    variável existe mas vem com espaço/quebra-de-linha ou aspas em volta — aí
-    o default de os.environ.get() NÃO entra (a chave não está "ausente") e o
-    make_url() recebe lixo. Aqui limpamos antes de usar:
-      * strip() remove espaços/\\n/\\t acidentais;
-      * remove aspas simples/duplas que envolvam todo o valor;
-      * string vazia ⇒ cai no SQLite default (boot não quebra).
-    Valor genuinamente malformado (ex.: token colado no campo errado) ainda
-    falha — o que é correto: erro alto em vez de banco silenciosamente errado.
+    variável existe mas vem com espaço/quebra-de-linha/aspas — aí o default de
+    os.environ.get() NÃO entra (a chave não está "ausente") e o make_url()
+    recebe lixo. Limpamos antes de usar (ver _clean_pasted_db_url):
+      * string vazia após limpeza ⇒ cai no SQLite default (boot não quebra);
+      * valor não-vazio é validado com make_url() AQUI, com mensagem clara e
+        acionável — melhor que o traceback opaco do SQLAlchemy lá no boot.
     """
-    raw = (os.environ.get("DATABASE_URL") or "").strip()
-    if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in ("'", '"'):
-        raw = raw[1:-1].strip()
-    if not raw:
-        raw = _DEFAULT_DB_URL
-    return _normalize_db_url(raw)
+    raw = os.environ.get("DATABASE_URL") or ""
+    cleaned = _clean_pasted_db_url(raw)
+    if not cleaned:
+        return _DEFAULT_DB_URL
+    url = _normalize_db_url(cleaned)
+    try:
+        from sqlalchemy.engine.url import make_url
+        make_url(url)
+    except Exception as exc:  # noqa: BLE001 — diagnóstico de boot
+        # Diagnóstico SEM vazar o valor (pode conter senha): só metadados.
+        had_ws = bool(re.search(r"\s", raw.strip()))
+        scheme = url.split("://", 1)[0] if "://" in url else "(sem ://)"
+        print(
+            "[config] DATABASE_URL inválida após limpeza — boot vai abortar. "
+            f"len_bruto={len(raw)} len_limpo={len(cleaned)} "
+            f"tinha_whitespace_interno={had_ws} scheme={scheme!r}. "
+            "Verifique o valor no painel: deve ser "
+            "postgresql://USUARIO:SENHA@HOST/BANCO?sslmode=require "
+            "(sem aspas, sem espaços, em uma única linha).",
+            file=sys.stderr,
+            flush=True,
+        )
+        raise
+    return url
 
 
 class Config:
