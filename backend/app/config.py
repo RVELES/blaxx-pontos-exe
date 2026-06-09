@@ -17,10 +17,33 @@ def _normalize_db_url(url: str) -> str:
     return url
 
 
+# Fallback padrão quando DATABASE_URL não está configurada (dev/local).
+_DEFAULT_DB_URL = "sqlite:///blaxx.db"
+
+
+def _resolve_db_url() -> str:
+    """Lê DATABASE_URL tolerando erros comuns de colagem no painel (Render/etc).
+
+    Causa real de boot-crash em prod ("Could not parse SQLAlchemy URL"): a
+    variável existe mas vem com espaço/quebra-de-linha ou aspas em volta — aí
+    o default de os.environ.get() NÃO entra (a chave não está "ausente") e o
+    make_url() recebe lixo. Aqui limpamos antes de usar:
+      * strip() remove espaços/\\n/\\t acidentais;
+      * remove aspas simples/duplas que envolvam todo o valor;
+      * string vazia ⇒ cai no SQLite default (boot não quebra).
+    Valor genuinamente malformado (ex.: token colado no campo errado) ainda
+    falha — o que é correto: erro alto em vez de banco silenciosamente errado.
+    """
+    raw = (os.environ.get("DATABASE_URL") or "").strip()
+    if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in ("'", '"'):
+        raw = raw[1:-1].strip()
+    if not raw:
+        raw = _DEFAULT_DB_URL
+    return _normalize_db_url(raw)
+
+
 class Config:
-    SQLALCHEMY_DATABASE_URI = _normalize_db_url(
-        os.environ.get("DATABASE_URL", "sqlite:///blaxx.db")
-    )
+    SQLALCHEMY_DATABASE_URI = _resolve_db_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
