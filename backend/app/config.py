@@ -188,6 +188,95 @@ class Config:
         ip.strip() for ip in os.environ.get("PIX_WEBHOOK_ALLOWED_IPS", "").split(",") if ip.strip()
     ]
 
+    # ---------------- Níveis de cliente (loyalty tiers) ----------------
+    # Nível por PONTOS ACUMULADOS (lifetime) = soma de todos os créditos
+    # confirmados no ledger (nunca cai por gastar/resgatar). 4 categorias
+    # progressivas. Faixas em pontos (min inclusivo). Sobrescrivível por env.
+    #   Bronze 0+ · Prata 5.000+ · Ouro 20.000+ · Black 50.000+
+    TIER_BRONZE_MIN = int(os.environ.get("BLAXX_TIER_BRONZE_MIN", 0))
+    TIER_PRATA_MIN = int(os.environ.get("BLAXX_TIER_PRATA_MIN", 5_000))
+    TIER_OURO_MIN = int(os.environ.get("BLAXX_TIER_OURO_MIN", 20_000))
+    TIER_BLACK_MIN = int(os.environ.get("BLAXX_TIER_BLACK_MIN", 50_000))
+
+    @classmethod
+    def tiers(cls) -> list[dict]:
+        """Definição canônica dos 4 níveis (ordem crescente)."""
+        return [
+            {"key": "bronze", "label": "Bronze", "min_points": cls.TIER_BRONZE_MIN,
+             "color": "#CD7F32", "text_color": "#FFFFFF",
+             "perks": "Acesso ao programa, catálogo de benefícios e PIX."},
+            {"key": "prata", "label": "Prata", "min_points": cls.TIER_PRATA_MIN,
+             "color": "#9AA0A6", "text_color": "#0B0B0C",
+             "perks": "Ofertas exclusivas Prata + atendimento prioritário."},
+            {"key": "ouro", "label": "Ouro", "min_points": cls.TIER_OURO_MIN,
+             "color": "#D4AF37", "text_color": "#0B0B0C",
+             "perks": "Bônus em campanhas + benefícios premium."},
+            {"key": "black", "label": "Black", "min_points": cls.TIER_BLACK_MIN,
+             "color": "#0B0B0C", "text_color": "#C6F432",
+             "perks": "Tudo do Ouro + experiências Black e limites VIP."},
+        ]
+
+    @classmethod
+    def tier_for_points(cls, lifetime_points: int) -> dict:
+        """Retorna o nível atual para um total de pontos acumulados."""
+        current = cls.tiers()[0]
+        for t in cls.tiers():
+            if lifetime_points >= t["min_points"]:
+                current = t
+        return current
+
+    @classmethod
+    def tier_progress(cls, lifetime_points: int) -> dict:
+        """Nível atual + próximo + quanto falta (pontos e %)."""
+        tiers = cls.tiers()
+        current = cls.tier_for_points(lifetime_points)
+        idx = next(i for i, t in enumerate(tiers) if t["key"] == current["key"])
+        nxt = tiers[idx + 1] if idx + 1 < len(tiers) else None
+        if nxt is None:
+            return {
+                "lifetime_points": lifetime_points,
+                "current": current, "next": None,
+                "points_to_next": 0, "progress_pct": 100,
+            }
+        span = nxt["min_points"] - current["min_points"]
+        gained = lifetime_points - current["min_points"]
+        pct = 100 if span <= 0 else max(0, min(100, int(gained * 100 / span)))
+        return {
+            "lifetime_points": lifetime_points,
+            "current": current, "next": nxt,
+            "points_to_next": max(0, nxt["min_points"] - lifetime_points),
+            "progress_pct": pct,
+        }
+
+    # ---------------- Apple Wallet (PassKit) ----------------
+    # Geração do cartão Blaxx como .pkpass para a carteira do iPhone.
+    # O .pkpass precisa ser ASSINADO com um certificado Pass Type ID emitido
+    # pela Apple (conta Apple Developer). Enquanto os certificados não forem
+    # configurados, o backend monta o pass mas NÃO assina — o endpoint
+    # /card/pass responde 503 com instrução clara (frontends mostram "em breve").
+    #
+    # Para ativar, configure no Render (Environment) e suba os arquivos:
+    #   APPLE_PASS_TYPE_ID        = pass.com.blaxx.cartao   (Identifier do Pass Type ID)
+    #   APPLE_TEAM_ID             = ABCDE12345              (Apple Developer Team ID)
+    #   APPLE_PASS_CERT_PATH      = /etc/secrets/pass.p12   (cert + chave privada, formato PKCS#12)
+    #   APPLE_PASS_CERT_PASSWORD  = ********                (senha do .p12)
+    #   APPLE_WWDR_CERT_PATH      = /etc/secrets/wwdr.pem   (Apple WWDR intermediate G4, PEM)
+    #   APPLE_PASS_ORG_NAME       = Blaxx Pontos
+    APPLE_PASS_TYPE_ID = os.environ.get("APPLE_PASS_TYPE_ID", "")
+    APPLE_TEAM_ID = os.environ.get("APPLE_TEAM_ID", "")
+    APPLE_PASS_CERT_PATH = os.environ.get("APPLE_PASS_CERT_PATH", "")
+    APPLE_PASS_CERT_PASSWORD = os.environ.get("APPLE_PASS_CERT_PASSWORD", "")
+    APPLE_WWDR_CERT_PATH = os.environ.get("APPLE_WWDR_CERT_PATH", "")
+    APPLE_PASS_ORG_NAME = os.environ.get("APPLE_PASS_ORG_NAME", "Blaxx Pontos")
+
+    @classmethod
+    def apple_pass_configured(cls) -> bool:
+        """True quando todos os segredos p/ assinar o .pkpass estão presentes."""
+        return all([
+            cls.APPLE_PASS_TYPE_ID, cls.APPLE_TEAM_ID,
+            cls.APPLE_PASS_CERT_PATH, cls.APPLE_WWDR_CERT_PATH,
+        ])
+
     # Pacotes — pts mantidos, precos recalculados ao novo rate (R$ 0,09/pt).
     # Plus/Prime/Black mantem um pequeno desconto progressivo embutido
     # (~5%/10%/15% de bonus implicito sobre o preco face).

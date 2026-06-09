@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Cartão Blaxx · Blaxx Pontos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/design-system.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <div id="side"></div>
+    <main class="main">
+      <div id="top"></div>
+
+      <div class="grid cols-2" style="grid-template-columns: 1.4fr 1fr;">
+        <div class="col">
+          <div id="cartao" class="balance-card">
+            <div class="label">Carregando cartão…</div>
+          </div>
+          <button id="btn-wallet" class="btn primary mt-6" style="width:100%;" disabled
+                  onclick="addToWallet()"> Adicionar à Apple Wallet</button>
+          <p id="wallet-note" class="muted" style="font-size:12px;margin-top:6px;display:none;">
+            O cartão na carteira do iPhone será habilitado assim que o
+            certificado da Apple for configurado no servidor.
+          </p>
+        </div>
+
+        <div class="card">
+          <span class="eyebrow">Programa de níveis</span>
+          <h3 style="margin-top:2px;">Como você evolui</h3>
+          <p class="muted" style="font-size:13px;">
+            Seu nível é definido pelos pontos acumulados (vitalício) e nunca
+            cai ao resgatar.
+          </p>
+          <div id="tiers" class="col" style="gap:10px;margin-top:8px;"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/app.js"></script>
+  <script>
+    let WALLET_OK = false;
+
+    async function addToWallet() {
+      if (!WALLET_OK) { toast('Apple Wallet ainda não disponível — em breve.', ''); return; }
+      const btn = document.getElementById('btn-wallet');
+      btn.disabled = true; const prev = btn.textContent; btn.textContent = 'Gerando…';
+      try {
+        const token = Session.token();
+        const res = await fetch(API + '/card/pass', {
+          headers: token ? { Authorization: 'Bearer ' + token } : {},
+        });
+        if (!res.ok) {
+          if (res.status === 503) { toast('Apple Wallet ainda não disponível — em breve.', ''); return; }
+          throw new Error('HTTP ' + res.status);
+        }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'cartao-blaxx.pkpass';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        toast('Cartão gerado.', 'success');
+      } catch (e) {
+        toast('Falha ao gerar o cartão: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = prev;
+      }
+    }
+
+    function fmtNum(n) { return Number(n || 0).toLocaleString('pt-BR'); }
+
+    if (Session.requireAuth()) {
+      document.getElementById('side').outerHTML = renderSidebar('cartao');
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Seu cartão', title:'Cartão Blaxx'});
+      (async () => {
+        try {
+          const c = await api('/card/');
+          const tier = c.tier || {};
+          WALLET_OK = !!c.wallet_pass_available;
+
+          // Cartão visual com a cor do nível
+          const progress = c.next_tier ? `
+            <div style="margin-top:18px;">
+              <div class="row between" style="font-size:12px;color:${tier.text_color};opacity:.9;">
+                <span>Acumulado: ${fmtNum(c.lifetime_points)} pts</span>
+                <span>Faltam ${fmtNum(c.points_to_next)} p/ ${c.next_tier.label}</span>
+              </div>
+              <div style="height:8px;border-radius:99px;background:rgba(255,255,255,.22);margin-top:6px;overflow:hidden;">
+                <div style="width:${c.progress_pct}%;height:100%;border-radius:99px;background:${tier.text_color};"></div>
+              </div>
+            </div>` : `
+            <div style="margin-top:18px;font-size:12px;color:${tier.text_color};opacity:.9;">
+              Nível máximo · ${fmtNum(c.lifetime_points)} pts acumulados
+            </div>`;
+
+          document.getElementById('cartao').outerHTML = `
+            <div class="balance-card" style="background:${tier.color||'#0B0B0C'};color:${tier.text_color||'#fff'};">
+              <div class="row between">
+                <div class="label" style="color:${tier.text_color};opacity:.85;">Blaxx Pontos</div>
+                <div class="chip" style="background:rgba(255,255,255,.14);color:${tier.text_color};border:1px solid rgba(255,255,255,.25);">${tier.label||''}</div>
+              </div>
+              <div class="amount" style="margin-top:18px;"><span>${fmtNum(c.balance_pts)}</span><span class="unit" style="color:${tier.text_color};">pts</span></div>
+              <div class="equiv" style="color:${tier.text_color};opacity:.85;">${c.member.name} · ID ${c.member.id}</div>
+              ${progress}
+            </div>`;
+
+          // Botão wallet
+          const btn = document.getElementById('btn-wallet');
+          if (WALLET_OK) {
+            btn.disabled = false;
+            btn.textContent = ' Adicionar à Apple Wallet';
+          } else {
+            btn.disabled = true;
+            btn.textContent = 'Apple Wallet · em breve';
+            document.getElementById('wallet-note').style.display = 'block';
+          }
+
+          // Níveis
+          document.getElementById('tiers').innerHTML = (c.tiers || []).map(t => {
+            const active = t.key === tier.key;
+            return `
+              <div class="row" style="align-items:center;gap:12px;padding:10px 12px;border-radius:12px;
+                   border:1px solid ${active ? 'var(--lime,#C6F432)' : 'rgba(255,255,255,.08)'};
+                   background:${active ? 'rgba(198,244,50,.06)' : 'transparent'};">
+                <span style="width:14px;height:14px;border-radius:99px;background:${t.color};border:1px solid rgba(255,255,255,.3);flex:0 0 auto;"></span>
+                <div style="flex:1;">
+                  <div class="row between"><strong>${t.label}</strong><span class="muted" style="font-size:12px;">${fmtNum(t.min_points)}+ pts</span></div>
+                  ${t.perks ? `<div class="muted" style="font-size:12px;">${t.perks}</div>` : ''}
+                </div>
+                ${active ? '<span class="chip success">atual</span>' : ''}
+              </div>`;
+          }).join('');
+        } catch (e) {
+          toast('Falha ao carregar o cartão: ' + e.message, 'error');
+        }
+      })();
+    }
+  </script>
+</body>
+</html>

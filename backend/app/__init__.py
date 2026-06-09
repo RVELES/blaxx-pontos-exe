@@ -239,6 +239,7 @@ def create_app(config: type[Config] | None = None, pix_provider=None) -> Flask:
     # Blueprints
     from .api.auth import bp as auth_bp
     from .api.wallet import bp as wallet_bp
+    from .api.card import bp as card_bp
     from .api.pix import bp as pix_bp
     from .api.transfer import bp as transfer_bp
     from .api.redeem import bp as redeem_bp
@@ -256,6 +257,7 @@ def create_app(config: type[Config] | None = None, pix_provider=None) -> Flask:
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(wallet_bp, url_prefix="/wallet")
+    app.register_blueprint(card_bp, url_prefix="/card")
     app.register_blueprint(pix_bp, url_prefix="/pix")
     app.register_blueprint(transfer_bp, url_prefix="/transfer")
     app.register_blueprint(redeem_bp, url_prefix="/redeem")

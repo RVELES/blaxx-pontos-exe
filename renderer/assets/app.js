@@ -380,6 +380,7 @@ function renderSidebar(active) {
   const items = [
     { id: 'dashboard',     icon: '🏠', label: 'Início',         href: 'dashboard.html' },
     { id: 'carteira',      icon: '💳', label: 'Carteira',       href: 'carteira.html' },
+    { id: 'cartao',        icon: '🪪', label: 'Cartão Blaxx',   href: 'cartao.html' },
     { id: 'extrato',       icon: '📊', label: 'Extrato',        href: 'extrato.html' },
     { id: 'comprar',       icon: '💰', label: 'Comprar pontos', href: 'comprar-pontos.html' },
     { id: 'enviar',        icon: '📤', label: 'Enviar pontos',  href: 'enviar-pontos.html' },
