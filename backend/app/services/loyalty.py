@@ -39,6 +39,19 @@ def tier_state(user) -> dict:
     wallet = db.session.query(Wallet).filter_by(user_id=user.id).one()
     lifetime = lifetime_points(wallet.id)
     progress = Config.tier_progress(lifetime)
+
+    # BlaXx VIP é por convite (admin seta is_vip): sobrepõe a escala por
+    # pontos. É a categoria máxima — sem "próximo nível".
+    if getattr(user, "is_vip", False):
+        return {
+            "balance_pts": wallet.balance_pts,
+            "lifetime_points": lifetime,
+            "tier": Config.VIP_TIER,
+            "next_tier": None,
+            "points_to_next": 0,
+            "progress_pct": 100,
+        }
+
     return {
         "balance_pts": wallet.balance_pts,
         "lifetime_points": lifetime,

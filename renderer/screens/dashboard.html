@@ -3,8 +3,102 @@
 <head>
   <meta charset="utf-8" />
   <title>Início · Blaxx Pontos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/design-system.css" />
+  <style>
+    /* ===== Command Center — dashboard premium (dados reais + showcase) ===== */
+    .cc-grid { display:grid; grid-template-columns: minmax(0,1.55fr) minmax(300px,.9fr); gap:20px; }
+    .cc-stack { display:flex; flex-direction:column; gap:20px; }
+    .cc-panel { position:relative; border-radius:24px; overflow:hidden; }
+    .cc-demo { position:absolute; top:14px; right:14px; z-index:3; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--blaxx-black); background:var(--blaxx-lime); padding:3px 9px; border-radius:999px; }
+    .cc-lime { color:var(--blaxx-lime-dark); font-weight:800; cursor:pointer; }
+    .cc-section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .cc-section-head h3 { margin:0; font-size:17px; }
+
+    .cc-hero { padding:28px; color:#fff; background:radial-gradient(circle at 84% 24%, rgba(198,244,50,.2), transparent 28%), linear-gradient(140deg,#06080A,#0D1217); }
+    .cc-hero-row { display:grid; grid-template-columns:1fr .9fr; gap:18px; align-items:center; }
+    .cc-eyebrow { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.6); font-weight:600; }
+    .cc-balance { font-size:52px; font-weight:900; letter-spacing:-.03em; line-height:.95; margin:16px 0 4px; }
+    .cc-balance small { font-size:16px; color:rgba(255,255,255,.6); margin-left:8px; font-weight:600; }
+    .cc-money { color:var(--blaxx-lime); font-size:20px; font-weight:800; }
+    .cc-hero-sub { color:rgba(255,255,255,.6); font-size:13px; margin-top:8px; }
+    .cc-chart { height:135px; position:relative; }
+    .cc-chart svg { width:100%; height:100%; }
+    .cc-gain { position:absolute; right:6px; top:50px; color:var(--blaxx-lime); font-weight:800; text-align:right; line-height:1.15; }
+    .cc-gain small { color:rgba(255,255,255,.6); font-size:11px; }
+    .cc-quick { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:22px; }
+    .cc-q { border:0; border-radius:15px; height:72px; background:var(--surface); color:var(--text); font-weight:800; font-size:13px; box-shadow:0 12px 24px rgba(0,0,0,.2); cursor:pointer; transition:transform .16s ease; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+    .cc-q:hover { transform:translateY(-3px); }
+    .cc-q.primary { background:var(--blaxx-lime); }
+    .cc-q i { font-size:20px; font-style:normal; }
+
+    .cc-oppo { min-height:210px; padding:30px; color:#fff; background:linear-gradient(120deg, rgba(7,10,12,.95), rgba(7,10,12,.5)), linear-gradient(135deg,#1a1030,#0b1230); }
+    .cc-oppo h2 { font-size:30px; margin:20px 0 6px; line-height:1.05; }
+    .cc-pill { display:inline-flex; align-items:center; background:#6d35b9; color:#fff; border-radius:999px; font-weight:800; font-size:11px; padding:6px 11px; margin-left:8px; }
+
+    .cc-market { padding:24px; background:#06080A; color:#fff; }
+    .cc-exps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .cc-exp { text-align:left; border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:16px; background:rgba(255,255,255,.03); cursor:pointer; transition:transform .18s ease, border-color .18s ease; color:#fff; }
+    .cc-exp:hover { transform:translateY(-4px); border-color:rgba(198,244,50,.4); }
+    .cc-exp .em { font-size:32px; }
+    .cc-exp strong { display:block; font-size:15px; margin-top:10px; }
+    .cc-exp span { color:var(--blaxx-lime); font-weight:800; font-size:12px; }
+
+    .cc-map { padding:22px; background:#06080A; color:#fff; }
+    .cc-map-canvas { height:220px; border-radius:18px; position:relative; overflow:hidden; background:radial-gradient(circle at 22% 42%, rgba(198,244,50,.7), transparent 2.3%), radial-gradient(circle at 50% 36%, rgba(198,244,50,.65), transparent 3%), radial-gradient(circle at 72% 50%, rgba(198,244,50,.5), transparent 2.5%), radial-gradient(circle at 39% 64%, rgba(198,244,50,.3), transparent 2%), linear-gradient(135deg,#151a1f,#06080A); }
+    .cc-legend { position:absolute; left:18px; bottom:16px; display:flex; gap:10px; flex-wrap:wrap; }
+    .cc-legend span { background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:7px 11px; font-size:12px; font-weight:700; }
+
+    .cc-levels { padding:22px; background:var(--surface); border:1px solid var(--gray-200); }
+    .cc-level-card { height:118px; border-radius:18px; color:#fff; padding:20px; margin:14px 0; background:radial-gradient(circle at 80% 40%, rgba(198,244,50,.2), transparent 24%), linear-gradient(135deg,#101318,#010101); }
+    .cc-level-card h2 { margin:0; font-size:28px; letter-spacing:-1px; }
+    .cc-level-card small { opacity:.82; }
+    .cc-prog-head { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-secondary); }
+    .cc-progress { height:10px; background:var(--gray-200); border-radius:999px; overflow:hidden; margin-top:6px; }
+    .cc-progress span { display:block; height:100%; background:linear-gradient(90deg,var(--blaxx-lime-dark),var(--blaxx-lime)); width:0; transition:width 1.1s cubic-bezier(.16,1,.3,1); }
+
+    .cc-transfer { padding:22px; background:var(--surface); border:1px solid var(--gray-200); }
+    .cc-tbal { background:var(--bg); border:1px solid var(--gray-200); border-radius:16px; padding:14px 16px; margin:14px 0; }
+    .cc-tbal small { color:var(--text-muted); }
+    .cc-tamount { font-size:26px; font-weight:900; letter-spacing:-1px; }
+    .cc-tamount span { font-size:14px; color:var(--text-muted); }
+    .cc-send { width:100%; height:50px; border:0; border-radius:14px; background:var(--blaxx-lime); color:var(--blaxx-black); font-weight:900; cursor:pointer; transition:transform .16s ease; }
+    .cc-send:hover { transform:translateY(-2px); }
+
+    .cc-score { padding:24px; text-align:center; color:#fff; background:linear-gradient(140deg,#07090b,#11151a); }
+    .cc-score h3 { margin:0 0 6px; }
+    .cc-ring { width:170px; height:170px; border-radius:50%; margin:16px auto; background:conic-gradient(var(--blaxx-lime) 0 89%, rgba(198,244,50,.22) 89% 100%); display:grid; place-items:center; }
+    .cc-ring-inner { width:128px; height:128px; border-radius:50%; background:#07090b; display:grid; place-items:center; }
+    .cc-ring b { font-size:46px; }
+    .cc-score h2 { margin:6px 0; }
+
+    .cc-exchange { padding:22px; color:#fff; background:linear-gradient(140deg,#07090b,#11151a); }
+    .cc-row { display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,.1); padding:13px 0; }
+    .cc-row:last-child { border-bottom:0; }
+    .cc-coin { display:flex; align-items:center; gap:12px; }
+    .cc-icon { width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(135deg,var(--blaxx-lime),var(--blaxx-lime-dark)); color:var(--blaxx-black); font-weight:900; }
+    .cc-coin small, .cc-price small { display:block; color:#cfd5db; font-size:12px; }
+    .cc-price { text-align:right; }
+
+    .cc-bottom { display:grid; grid-template-columns:1.1fr 1.1fr .8fr; gap:20px; margin-top:20px; }
+    .cc-light { background:var(--surface); border:1px solid var(--gray-200); padding:22px; border-radius:24px; position:relative; }
+    .cc-tiles { display:flex; flex-direction:column; gap:6px; }
+    .cc-tile { display:flex; align-items:center; gap:12px; padding:11px; border-radius:14px; cursor:pointer; transition:background .16s ease; }
+    .cc-tile:hover { background:var(--bg); }
+    .cc-tile .em { width:38px; height:38px; border-radius:11px; display:grid; place-items:center; font-size:17px; background:var(--gray-100); flex-shrink:0; }
+    .cc-tile .bd { flex:1; min-width:0; }
+    .cc-tile .tt { font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cc-tile .ss { color:var(--text-muted); font-size:12px; }
+    .cc-tile .mt { font-weight:800; font-size:13px; }
+    .cc-tile .mt.pos { color:#0a7d32; } .cc-tile .mt.neg { color:#b42318; }
+    .cc-mini { display:flex; gap:12px; align-items:center; background:var(--surface); border:1px solid var(--gray-200); border-radius:16px; padding:13px; margin-top:10px; box-shadow:var(--shadow-sm); }
+    .cc-mini small { display:block; color:var(--text-muted); font-size:11px; }
+    .cc-mini b { font-size:15px; }
+    .cc-mini .cc-icon { width:34px; height:34px; }
+    .cc-disclaimer { color:var(--text-muted); font-size:12px; margin:22px 2px 0; line-height:1.5; }
+
+    @media (max-width: 1280px) { .cc-grid, .cc-bottom { grid-template-columns:1fr; } .cc-hero-row { grid-template-columns:1fr; } .cc-exps { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -12,212 +106,188 @@
     <main class="main">
       <div id="top"></div>
 
-      <div class="grid cols-3" style="grid-template-columns: 1.4fr 1fr 1fr;">
-        <div class="balance-card">
-          <div class="row between" style="align-items:flex-start;">
-            <div class="label">Valor total estimado</div>
-            <span class="growth-pill on-dark">▲ +8,42%</span>
-          </div>
-          <div class="amount" style="font-size:44px;margin-top:8px;"><span id="equiv">R$ —</span></div>
-          <div class="equiv"><span id="balance">—</span> pontos · Validade FIFO</div>
-          <div class="row mt-6">
-            <button class="btn primary" onclick="go('comprar-pontos.html')">Comprar pontos</button>
-            <button class="btn ghost" style="border-color:rgba(255,255,255,.18);color:#fff;" onclick="go('carteira.html')">Ver carteira</button>
-          </div>
+      <div class="cc-grid">
+        <div class="cc-stack">
+          <!-- HERO (REAL) -->
+          <article class="cc-panel cc-hero">
+            <div class="cc-hero-row">
+              <div>
+                <div class="cc-eyebrow">Patrimônio em Rewards 👁</div>
+                <div class="cc-balance"><span id="cc-balance">—</span><small>pts</small></div>
+                <div class="cc-money">≈ <span id="cc-brl">R$ —</span></div>
+                <div class="cc-hero-sub" id="cc-pending">—</div>
+              </div>
+              <div class="cc-chart">
+                <svg viewBox="0 0 500 180" preserveAspectRatio="none">
+                  <path d="M20 140 C80 105, 95 120, 130 88 S195 70, 220 88 S280 130, 320 80 S390 48, 470 20" fill="none" stroke="var(--blaxx-lime)" stroke-width="7" stroke-linecap="round"/>
+                  <path d="M20 140 C80 105, 95 120, 130 88 S195 70, 220 88 S280 130, 320 80 S390 48, 470 20 L470 180 L20 180 Z" fill="rgba(198,244,50,.15)"/>
+                </svg>
+                <div class="cc-gain"><span id="cc-month">+0</span><br><small>pts este mês</small></div>
+              </div>
+            </div>
+            <div class="cc-quick">
+              <button class="cc-q primary" onclick="go('comprar-pontos.html')"><i>🛒</i>Comprar</button>
+              <button class="cc-q" onclick="go('enviar-pontos.html')"><i>✈</i>Transferir</button>
+              <button class="cc-q" onclick="go('vender-pontos.html')"><i>⇄</i>Resgatar</button>
+              <button class="cc-q" onclick="go('parceiros.html')"><i>🎁</i>Parceiros</button>
+            </div>
+          </article>
+
+          <!-- OPORTUNIDADE (showcase) -->
+          <article class="cc-panel cc-oppo">
+            <div class="cc-demo">demo</div>
+            <div class="cc-eyebrow" style="color:var(--blaxx-lime)">Oportunidade detectada <span class="cc-pill">🔥 EXCLUSIVO</span></div>
+            <h2>LATAM PASS<br><span style="color:var(--blaxx-lime)">Bônus 85%</span></h2>
+            <p>Potencial ganho: <b style="color:var(--blaxx-lime);font-size:20px">+ 122.000 pontos</b></p>
+            <button class="cc-send" style="width:auto;padding:12px 28px;margin-top:14px" onclick="go('parceiros.html')">Explorar parceiros</button>
+          </article>
+
+          <!-- MARKETPLACE (parceiros REAIS) -->
+          <article class="cc-panel cc-market">
+            <div class="cc-section-head"><h3>Marketplace de experiências</h3><a class="cc-lime" style="color:var(--blaxx-lime)" onclick="go('parceiros.html')">Ver tudo →</a></div>
+            <div class="cc-exps" id="cc-exps"><p class="muted">Carregando parceiros…</p></div>
+          </article>
+
+          <!-- MAP (showcase) -->
+          <article class="cc-panel cc-map">
+            <div class="cc-demo">demo</div>
+            <div class="cc-section-head"><h3>Rewards Map™</h3><span style="color:var(--blaxx-lime)">Em breve</span></div>
+            <div class="cc-map-canvas"><div class="cc-legend"><span>🟢 Parceiros</span><span>🔵 Promoções</span><span>🟣 Hotéis</span><span>🟠 Cias aéreas</span></div></div>
+          </article>
         </div>
-        <div class="card metric">
-          <span class="label">Próxima expiração</span>
-          <div class="value">7 dias</div>
-          <div class="muted" style="font-size:12px;margin-top:6px;">2.000 pts vencem em 30/05</div>
-        </div>
-        <div class="card metric">
-          <span class="label">Mês atual</span>
-          <div class="value">+<span id="month-in">—</span></div>
-          <div class="muted" style="font-size:12px;margin-top:6px;">pontos creditados</div>
+
+        <div class="cc-stack">
+          <!-- NÍVEIS (REAL) -->
+          <article class="cc-panel cc-levels">
+            <div class="cc-section-head"><h3>Níveis Blaxx</h3><a class="cc-lime" onclick="go('cartao.html')">Cartão →</a></div>
+            <div class="cc-level-card" id="cc-level-card"><h2 id="cc-tier">—</h2><small id="cc-tier-sub">Programa de pontos</small></div>
+            <div class="cc-prog-head"><small id="cc-next-label">Progresso</small><b id="cc-progress-pct">0%</b></div>
+            <div class="cc-progress"><span id="cc-progress-fill"></span></div>
+            <p class="muted" id="cc-next-hint" style="margin-top:10px;font-size:13px"></p>
+          </article>
+
+          <!-- TRANSFERIR (REAL) -->
+          <article class="cc-panel cc-transfer">
+            <h3 style="margin:0">Transferir pontos</h3>
+            <p class="muted" style="margin:6px 0 0">Envie pontos a outro cliente Blaxx, sem taxa.</p>
+            <div class="cc-tbal"><small>Saldo disponível</small><div class="cc-tamount"><span id="cc-tbal">—</span> <span>pts</span></div></div>
+            <button class="cc-send" onclick="go('enviar-pontos.html')">Enviar agora →</button>
+          </article>
+
+          <!-- WEALTH SCORE (showcase) -->
+          <article class="cc-panel cc-score">
+            <div class="cc-demo">demo</div>
+            <h3>Rewards Wealth Score™</h3>
+            <div class="cc-ring"><div class="cc-ring-inner"><div><b>8.9</b><br><span style="color:#cfd5db">/10</span></div></div></div>
+            <h2 style="color:var(--blaxx-lime)">Elite</h2>
+            <p class="muted" style="color:#cfd5db">Indicador ilustrativo de performance.</p>
+          </article>
+
+          <!-- EXCHANGE (showcase) -->
+          <article class="cc-panel cc-exchange">
+            <div class="cc-demo">demo</div>
+            <div class="cc-section-head"><h3>Rewards Exchange™</h3><span style="color:var(--blaxx-lime)">Ilustrativo</span></div>
+            <div class="cc-row"><div class="cc-coin"><span class="cc-icon">S</span><div><b>SMILES</b><small>Compra 0,021</small></div></div><div class="cc-price"><small>Venda 0,024</small></div></div>
+            <div class="cc-row"><div class="cc-coin"><span class="cc-icon">L</span><div><b>LIVELO</b><small>Compra 0,034</small></div></div><div class="cc-price"><small>Venda 0,037</small></div></div>
+            <div class="cc-row"><div class="cc-coin"><span class="cc-icon">A</span><div><b>AZUL</b><small>Compra 0,019</small></div></div><div class="cc-price"><small>Venda 0,022</small></div></div>
+            <div class="cc-row"><div class="cc-coin"><span class="cc-icon">T</span><div><b>LATAM</b><small>Compra 0,023</small></div></div><div class="cc-price"><small>Venda 0,026</small></div></div>
+          </article>
         </div>
       </div>
 
-      <div class="mt-8">
-        <div class="section-head">
-          <h3>O que fazer com seus pontos</h3>
-        </div>
-        <div class="action-grid">
-          <div class="action-tile">
-            <div class="icon">🎁</div>
-            <div class="label">Trocar</div>
-            <div class="name">Troque pontos por benefícios nos parceiros</div>
-            <button class="btn primary block mt-4" onclick="go('parceiros.html')">Trocar pontos</button>
-          </div>
-          <div class="action-tile">
-            <div class="icon">＋</div>
-            <div class="label">Comprar</div>
-            <div class="name">Compre pontos via PIX em segundos</div>
-            <button class="btn primary block mt-4" onclick="go('comprar-pontos.html')">Comprar pontos</button>
-          </div>
-          <div class="action-tile">
-            <div class="icon">↙</div>
-            <div class="label">Vender</div>
-            <div class="name">Converta pontos em cashback no PIX</div>
-            <button class="btn primary block mt-4" onclick="go('vender-pontos.html')">Vender pontos</button>
-          </div>
-          <div class="action-tile">
-            <div class="icon">↗</div>
-            <div class="label">Presentear</div>
-            <div class="name">Envie pontos de presente a alguém</div>
-            <button class="btn primary block mt-4" onclick="go('enviar-pontos.html')">Enviar presente</button>
-          </div>
-        </div>
+      <div class="cc-bottom">
+        <article class="cc-light">
+          <div class="cc-section-head"><h3>Campanhas ativas</h3><a class="cc-lime" onclick="go('campanhas.html')">Ver todas →</a></div>
+          <div class="cc-tiles" id="cc-campaigns"><p class="muted">Carregando…</p></div>
+        </article>
+        <article class="cc-light">
+          <div class="cc-section-head"><h3>Últimas movimentações</h3><a class="cc-lime" onclick="go('extrato.html')">Ver extrato →</a></div>
+          <div class="cc-tiles" id="cc-activity"><p class="muted">Carregando…</p></div>
+        </article>
+        <article class="cc-light">
+          <div class="cc-demo" style="background:var(--blaxx-lime-light);color:var(--blaxx-lime-dark)">demo</div>
+          <h3 style="margin:0 0 6px">Intelligence Center™</h3>
+          <div class="cc-mini"><span class="cc-icon">S</span><div><small>Melhor transferência hoje</small><b>SMILES +80%</b><small>Prazo: 48 horas</small></div></div>
+          <div class="cc-mini"><span class="cc-icon">✈</span><div><small>Melhor resgate</small><b>Business Class</b><small>São Paulo → Londres</small></div></div>
+          <p class="muted" style="font-size:12px;margin-top:10px">Recomendações ilustrativas — em breve com dados reais.</p>
+        </article>
       </div>
 
-      <div class="mt-8">
-        <div class="section-head">
-          <h3>Parceiros para trocar seus pontos</h3>
-          <a class="btn link" onclick="go('parceiros.html')">Ver todos →</a>
-        </div>
-        <div id="partners-showcase" class="grid cols-4">Carregando parceiros…</div>
-      </div>
-
-      <div class="grid cols-2 mt-8">
-        <div class="card">
-          <div class="section-head">
-            <h3>Campanhas ativas</h3>
-            <a class="btn link" onclick="go('campanhas.html')">Ver todas →</a>
-          </div>
-          <div class="tile-list">
-            <div class="tile-row" onclick="go('campanhas.html')">
-              <div class="tile-emoji">🎯</div>
-              <div class="tile-body">
-                <div class="tile-title">Dobro de pontos em viagens</div>
-                <div class="tile-sub">Até 30/06 · parceiros selecionados</div>
-              </div>
-              <div class="tile-meta">2x</div>
-            </div>
-            <div class="tile-row" onclick="go('campanhas.html')">
-              <div class="tile-emoji">🛍️</div>
-              <div class="tile-body">
-                <div class="tile-title">Cashback turbo no varejo</div>
-                <div class="tile-sub">Resgate via PIX em 6 meses</div>
-              </div>
-              <div class="tile-meta">+5%</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="section-head">
-            <h3>Como seus pontos rendem</h3>
-          </div>
-          <div class="tile-list">
-            <div class="tile-row" onclick="go('parceiros.html')">
-              <div class="tile-emoji">🛍️</div>
-              <div class="tile-body">
-                <div class="tile-title">+ de 250 parceiros</div>
-                <div class="tile-sub">Troque por benefícios em várias categorias</div>
-              </div>
-              <div class="tile-meta">Trocar</div>
-            </div>
-            <div class="tile-row" onclick="go('comprar-pontos.html')">
-              <div class="tile-emoji">⚡</div>
-              <div class="tile-body">
-                <div class="tile-title">Pontos na hora</div>
-                <div class="tile-sub">Compre via PIX e use na sequência</div>
-              </div>
-              <div class="tile-meta">Comprar</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid cols-2 mt-8" style="grid-template-columns: 1.6fr 1fr;">
-        <div class="card">
-          <div class="section-head">
-            <h3>Últimas movimentações</h3>
-            <a class="btn link" onclick="go('extrato.html')">Ver extrato →</a>
-          </div>
-          <div id="recent">Carregando…</div>
-        </div>
-        <div class="card">
-          <div class="section-head">
-            <h3>Distribuição da carteira</h3>
-          </div>
-          <div class="dist-row">
-            <div class="dist-head"><span class="name">Pontos disponíveis</span><span class="pct">62%</span></div>
-            <div class="dist-track"><div class="dist-fill" style="width:62%;"></div></div>
-          </div>
-          <div class="dist-row">
-            <div class="dist-head"><span class="name">Cashback acumulado</span><span class="pct">24%</span></div>
-            <div class="dist-track"><div class="dist-fill alt2" style="width:24%;"></div></div>
-          </div>
-          <div class="dist-row">
-            <div class="dist-head"><span class="name">Bloqueados / pendentes</span><span class="pct">14%</span></div>
-            <div class="dist-track"><div class="dist-fill alt" style="width:14%;"></div></div>
-          </div>
-          <p class="muted" style="font-size:12px;margin-top:16px;line-height:1.5;">
-            Pontos são créditos promocionais — não são moeda, depósito ou investimento.
-          </p>
-        </div>
-      </div>
+      <p class="cc-disclaimer">Pontos são créditos promocionais — não são moeda, depósito ou investimento. Seções marcadas “demo” são ilustrativas e ainda não refletem dados reais.</p>
     </main>
   </div>
 
   <script src="../assets/app.js"></script>
   <script>
-    if (!Session.requireAuth()) {} else {
+    if (Session.requireAuth()) {
       document.getElementById('side').outerHTML = renderSidebar('dashboard');
-      document.getElementById('top').outerHTML  = renderTopbar({ eyebrow: 'Visão geral', title: 'Resumo do seu patrimônio' });
-      // Vitrine de parceiros reais (mesma base de produção das outras plataformas).
-      (async () => {
-        const box = document.getElementById('partners-showcase');
-        try {
-          const data = await api('/partners/');
-          const items = (data.items || []).slice(0, 8);
-          if (!items.length) { box.innerHTML = '<p class="muted">Nenhum parceiro disponível agora.</p>'; return; }
-          box.innerHTML = items.map(p => `
-            <div class="card" style="display:flex;flex-direction:column;gap:6px;">
-              <div class="chip dark" style="align-self:flex-start;">${p.category || 'Parceiro'}</div>
-              <h3 style="margin:6px 0 0;display:flex;align-items:center;gap:8px;font-size:16px;">
-                <span style="font-size:22px;">${p.logo_emoji || '◯'}</span>${p.name}
-              </h3>
-              <p class="muted" style="font-size:12px;margin:0;flex:1;">${p.accrual_rule || ''}</p>
-              <button class="btn primary block mt-4" onclick="go('detalhe-parceiro.html?id=${p.id}')">Trocar pontos</button>
-            </div>
-          `).join('');
-        } catch (e) {
-          box.innerHTML = `<p class="muted">Não foi possível carregar os parceiros: ${e.message}</p>`;
-        }
-      })();
+      const u = Session.user();
+      const firstName = (u && u.name ? u.name.split(' ')[0] : 'cliente');
+      const greet = (() => { const h=new Date().getHours(); return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'; })();
+      document.getElementById('top').outerHTML = renderTopbar({ eyebrow: 'Command Center', title: `${greet}, ${firstName} 👋` });
+
+      const fmt = n => Number(n||0).toLocaleString('pt-BR');
+      const setText = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+      const safe = async (p) => { try { return await api(p); } catch { return null; } };
 
       (async () => {
-        try {
-          const w = await api('/wallet/');
-          document.getElementById('balance').textContent = Number(w.balance_pts).toLocaleString('pt-BR');
-          document.getElementById('equiv').textContent = fmtBRL(w.balance_brl_equiv);
-          const txs = await api('/wallet/transactions?limit=5');
-          const items = (txs.transactions || txs.items || txs || []).slice(0,5);
-          const monthIn = items.filter(t => t.amount_pts > 0).reduce((s,t)=>s+t.amount_pts,0);
-          document.getElementById('month-in').textContent = monthIn.toLocaleString('pt-BR');
-          if (!items.length) {
-            document.getElementById('recent').innerHTML =
-              '<p class="muted">Nenhuma movimentação ainda. Comece comprando ou enviando pontos.</p>';
-          } else {
-            document.getElementById('recent').innerHTML = `
-              <table class="blaxx">
-                <thead><tr><th>Tipo</th><th>Descrição</th><th style="text-align:right;">Pontos</th><th>Quando</th></tr></thead>
-                <tbody>
-                  ${items.map(t => `
-                    <tr>
-                      <td><span class="chip ${t.amount_pts > 0 ? 'success' : ''}">${t.type}</span></td>
-                      <td>${t.description || '—'}</td>
-                      <td style="text-align:right;" class="${t.amount_pts>0?'amount-pos':'amount-neg'}">${t.amount_pts>0?'+':''}${Number(t.amount_pts).toLocaleString('pt-BR')}</td>
-                      <td class="muted">${fmtDateTime(t.created_at)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            `;
-          }
-        } catch (e) {
-          toast('Falha ao carregar carteira: ' + e.message, 'error', 3200);
+        const [w, c, p, cm, tx] = await Promise.all([
+          safe('/wallet/'), safe('/card/'), safe('/partners/'), safe('/campaigns/'), safe('/wallet/transactions?limit=6')
+        ]);
+        const txItems = (tx && (tx.transactions || tx.items || tx)) || [];
+
+        // Carteira (REAL)
+        if (w) {
+          setText('cc-balance', fmt(w.balance_pts));
+          setText('cc-brl', fmtBRL(w.balance_brl_equiv));
+          setText('cc-tbal', fmt(w.balance_pts));
+          const pend = Number(w.pending_pts||0);
+          setText('cc-pending', pend>0 ? fmt(pend)+' pts em processamento' : 'Nenhum ponto pendente');
         }
+        const monthIn = txItems.filter(t=>Number(t.amount_pts)>0).reduce((s,t)=>s+Number(t.amount_pts),0);
+        setText('cc-month', '+'+fmt(monthIn));
+
+        // Nível (REAL)
+        if (c && c.tier) {
+          setText('cc-tier', (c.tier.label||'—').toUpperCase());
+          const card = document.getElementById('cc-level-card');
+          if (card && c.tier.color) { card.style.background = c.tier.color; card.style.color = c.tier.text_color || '#fff'; }
+          setText('cc-tier-sub', c.lifetime_points>0 ? fmt(c.lifetime_points)+' pts acumulados' : 'Programa de pontos');
+          const pct = Number(c.progress_pct||0);
+          setText('cc-progress-pct', pct+'%');
+          const fill = document.getElementById('cc-progress-fill'); if(fill) requestAnimationFrame(()=>fill.style.width=pct+'%');
+          if (c.next_tier) {
+            setText('cc-next-label', 'Progresso para '+c.next_tier.label);
+            setText('cc-next-hint', 'Faltam '+fmt(c.points_to_next)+' pts para '+c.next_tier.label+'.');
+          } else { setText('cc-next-label','Nível máximo'); setText('cc-next-hint','Você atingiu o nível máximo.'); }
+        }
+
+        // Marketplace (parceiros REAIS)
+        const exps = document.getElementById('cc-exps');
+        const partners = (p && (p.items||p) || []).slice(0,3);
+        exps.innerHTML = partners.length ? partners.map(pt => `
+          <div class="cc-exp" onclick="go('detalhe-parceiro.html?id=${pt.id}')">
+            <div class="em">${pt.logo_emoji||'🎁'}</div><strong>${pt.name}</strong>
+            <span>${pt.accrual_rule || pt.category || ''}</span>
+          </div>`).join('') : '<p class="muted">Sem parceiros no momento.</p>';
+
+        // Campanhas (REAL)
+        const camps = document.getElementById('cc-campaigns');
+        const cItems = (cm && (cm.items||cm) || []).slice(0,3);
+        camps.innerHTML = cItems.length ? cItems.map(c => `
+          <div class="cc-tile" onclick="go('campanhas.html')"><span class="em">🎯</span>
+            <span class="bd"><span class="tt">${c.name}</span><span class="ss">${c.description||c.mechanic||'Campanha ativa'}</span></span>
+            <span class="mt">+${fmt(c.reward_pts)}</span></div>`).join('') : '<p class="muted">Nenhuma campanha ativa.</p>';
+
+        // Atividade (REAL)
+        const act = document.getElementById('cc-activity');
+        const aItems = txItems.slice(0,5);
+        act.innerHTML = aItems.length ? aItems.map(t => {
+          const pos = Number(t.amount_pts)>0;
+          return `<div class="cc-tile"><span class="em">${pos?'↘':'↗'}</span>
+            <span class="bd"><span class="tt">${t.description||t.type}</span><span class="ss">${t.type}</span></span>
+            <span class="mt ${pos?'pos':'neg'}">${pos?'+':''}${fmt(t.amount_pts)}</span></div>`;
+        }).join('') : '<p class="muted">Nenhuma movimentação ainda.</p>';
       })();
     }
   </script>

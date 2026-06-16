@@ -2,284 +2,197 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Blaxx Pontos · Junte pontos e troque pelo que quiser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blaxx Pontos · Transforme pontos em experiência global</title>
   <link rel="icon" type="image/png" href="../assets/blaxx-icon.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/design-system.css" />
   <style>
-    body { background: var(--bg); }
-    .lp-wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+    .gh { --gl:#C6F432; }
+    .gh-wrap { width:min(1180px,92vw); margin:0 auto; }
+    .gh-head { position:sticky; top:0; z-index:50; backdrop-filter:blur(16px); background:rgba(246,247,244,.82); border-bottom:1px solid var(--gray-200); }
+    .gh-head .gh-wrap { display:flex; align-items:center; justify-content:space-between; height:64px; }
+    .gh-logo { font-weight:900; font-size:22px; letter-spacing:-.04em; color:var(--text); text-decoration:none; }
+    .gh-logo span { color:var(--blaxx-lime-dark); }
+    .gh-nav { display:flex; gap:22px; font-size:14px; font-weight:700; color:var(--text-muted); }
+    .gh-nav a { text-decoration:none; color:inherit; } .gh-nav a:hover { color:var(--text); }
+    .gh-actions { display:flex; gap:10px; }
 
-    .lp-head { position: sticky; top: 0; z-index: 40; background: rgba(246,247,244,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
-    .lp-head .lp-wrap { display: flex; align-items: center; justify-content: space-between; height: 66px; }
-    .lp-head img { height: 28px; display: block; }
-    .lp-nav { display: flex; gap: 26px; }
-    .lp-nav a { font-size: 14px; font-weight: 500; color: var(--text-secondary); text-decoration: none; }
-    .lp-nav a:hover { color: var(--text); }
-    .lp-actions { display: flex; gap: 10px; align-items: center; }
+    .gh-hero { padding:60px 0 40px; background:radial-gradient(circle at 78% 12%, rgba(198,244,50,.16), transparent 34%); }
+    .gh-hero-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:36px; align-items:center; }
+    .gh-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--gray-200); border-radius:999px; padding:8px 13px; font-size:12px; font-weight:800; color:var(--text); box-shadow:var(--shadow-sm); }
+    .gh-eyebrow .pd { width:8px; height:8px; border-radius:99px; background:var(--gl); box-shadow:0 0 14px var(--gl); }
+    .gh h1 { font-size:clamp(40px,6vw,72px); letter-spacing:-.04em; line-height:.95; margin:22px 0 18px; color:var(--text); }
+    .gh h1 .lime { color:var(--blaxx-lime-dark); }
+    .gh-lead { font-size:clamp(16px,1.7vw,20px); color:var(--text-muted); max-width:560px; line-height:1.5; }
+    .gh-cta { display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
+    .gh-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:32px; max-width:560px; }
+    .gh-metric { background:var(--surface); border:1px solid var(--gray-200); border-radius:18px; padding:16px; box-shadow:var(--shadow-sm); }
+    .gh-metric strong { display:block; font-size:24px; letter-spacing:-.02em; font-weight:900; }
+    .gh-metric small { color:var(--text-muted); font-weight:700; font-size:12px; }
 
-    .lp-hero { padding: 64px 0 48px; }
-    .lp-hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
-    .lp-hero h1 { font-family: var(--font-display); font-weight: 900; font-size: 52px; line-height: 1.0; letter-spacing: -0.02em; margin: 16px 0; }
-    .lp-hero h1 .lime { color: var(--blaxx-lime-dark); }
-    .lp-lead { font-size: 17px; color: var(--text-secondary); line-height: 1.55; max-width: 52ch; }
-    .lp-lead b { color: var(--text); font-weight: 600; }
-    .lp-cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 26px 0 16px; }
-    .lp-rating { font-size: 13px; color: var(--text-muted); }
-    .lp-rating .st { color: var(--blaxx-lime-dark); letter-spacing: 2px; }
+    .gh-appcard { position:relative; background:linear-gradient(145deg,#07090b,#11181f 55%,#050607); border-radius:30px; border:1px solid rgba(255,255,255,.12); box-shadow:0 40px 100px rgba(0,0,0,.3); padding:24px; color:#fff; overflow:hidden; }
+    .gh-appcard:before { content:""; position:absolute; right:-90px; top:-90px; width:280px; height:280px; background:radial-gradient(circle,rgba(198,244,50,.34),transparent 64%); }
+    .gh-ac-top { display:flex; align-items:center; justify-content:space-between; position:relative; }
+    .gh-ac-bal { margin:24px 0; position:relative; }
+    .gh-ac-bal small { color:#aeb7c2; font-weight:700; }
+    .gh-ac-bal h2 { font-size:46px; letter-spacing:-.04em; margin:6px 0; font-weight:900; }
+    .gh-ac-bal b { color:var(--gl); font-size:19px; }
+    .gh-ac-quick { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; position:relative; }
+    .gh-ac-quick span { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:13px 6px; text-align:center; font-size:12px; font-weight:800; }
+    .gh-ac-quick span:first-child { background:var(--gl); color:#050607; }
+    .gh-ac-opp { margin-top:14px; background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.12); border-radius:22px; padding:18px; }
+    .gh-ac-opp .tag { display:inline-flex; background:rgba(198,244,50,.14); color:var(--gl); padding:5px 9px; font-size:11px; font-weight:900; border-radius:999px; }
+    .gh-ac-opp h3 { font-size:26px; margin:10px 0 2px; } .gh-ac-opp h3 span { color:var(--gl); }
 
-    .lp-wallet { background: var(--blaxx-black); color: var(--blaxx-white); border-radius: var(--radius-xl); padding: 30px; }
-    .lp-wallet .top { display: flex; justify-content: space-between; align-items: center; }
-    .lp-wallet .lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.45); }
-    .lp-wallet .bal { font-family: var(--font-display); font-weight: 900; font-size: 54px; color: var(--blaxx-lime); margin: 16px 0 4px; }
-    .lp-wallet .bal small { font-size: 22px; color: rgba(255,255,255,.45); }
-    .lp-wallet .brl { font-size: 13px; color: rgba(255,255,255,.5); }
-    .lp-wallet .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 20px 0; padding: 16px 0; border-top: 1px solid rgba(255,255,255,.1); border-bottom: 1px solid rgba(255,255,255,.1); }
-    .lp-wallet .stats .n { font-family: var(--font-display); font-weight: 700; font-size: 19px; }
-    .lp-wallet .stats .k { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 2px; }
+    .gh-sec { padding:60px 0; }
+    .gh-sec-head { margin-bottom:28px; }
+    .gh-sec-head .k { font-size:12px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:var(--blaxx-lime-dark); }
+    .gh-sec-head h2 { font-size:clamp(30px,4.4vw,50px); letter-spacing:-.04em; line-height:1; margin:10px 0 8px; color:var(--text); }
+    .gh-sec-head p { color:var(--text-muted); max-width:580px; font-size:16px; line-height:1.55; }
 
-    .lp-strip { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 26px 0; }
-    .lp-strip .cap { text-align: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
-    .lp-strip .brands { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 32px; }
-    .lp-strip .brands span { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--text-muted); }
+    .gh-net { display:grid; grid-template-columns:1.15fr .85fr; gap:22px; }
+    .gh-globe-card { background:linear-gradient(145deg,#06080a,#10161d); border:1px solid rgba(255,255,255,.1); border-radius:28px; padding:26px; color:#fff; position:relative; overflow:hidden; }
+    .gh-globe-card h3 { font-size:24px; } .gh-globe-card p { color:#aeb7c2; font-size:14px; margin-top:6px; }
+    .gh-globe { width:100%; height:340px; display:block; margin-top:8px; }
+    .gh-pin { fill:var(--gl); }
+    .gh-pin-glow { fill:var(--gl); animation:ghpulse 2.6s ease-in-out infinite; }
+    @keyframes ghpulse { 0%,100%{opacity:.15;r:3;} 50%{opacity:.55;r:9;} }
+    .gh-arc { fill:none; stroke:var(--gl); stroke-width:1.2; stroke-dasharray:3 4; opacity:.5; }
+    .gh-net-legend { position:absolute; left:26px; bottom:18px; display:flex; gap:10px; flex-wrap:wrap; }
+    .gh-net-legend span { background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:6px 11px; font-size:12px; font-weight:700; }
 
-    .lp-sec { padding: 72px 0; }
-    .lp-sec.alt { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .lp-sec .hd { text-align: center; max-width: 600px; margin: 0 auto 44px; }
-    .lp-sec .hd h2 { font-family: var(--font-display); font-weight: 900; font-size: 36px; letter-spacing: -0.02em; margin: 12px 0 10px; }
-    .lp-sec .hd p { color: var(--text-secondary); font-size: 16px; margin: 0; }
+    .gh-hotels { background:var(--surface); border:1px solid var(--gray-200); border-radius:28px; padding:24px; box-shadow:var(--shadow); }
+    .gh-hotels h3 { font-size:20px; } .gh-hotels .sub { color:var(--text-muted); font-size:13px; margin:4px 0 14px; }
+    .gh-hotel { display:flex; align-items:center; gap:13px; padding:13px 0; border-bottom:1px solid var(--gray-200); }
+    .gh-hotel:last-child { border-bottom:0; }
+    .gh-hotel .logo { width:44px; height:44px; border-radius:13px; display:grid; place-items:center; font-weight:900; font-size:15px; color:#fff; flex-shrink:0; }
+    .gh-hotel .nm { font-weight:800; font-size:14.5px; } .gh-hotel .rt { font-size:12px; color:var(--text-muted); }
+    .gh-hotel .mult { margin-left:auto; font-weight:800; font-size:13px; color:var(--blaxx-black); background:var(--blaxx-lime); padding:5px 10px; border-radius:8px; }
+    .gh-demo { font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--blaxx-lime-dark); background:rgba(198,244,50,.12); border:1px solid rgba(198,244,50,.3); padding:3px 8px; border-radius:999px; }
 
-    .lp-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
-    .lp-step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
-    .lp-step .num { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--blaxx-lime-dark); }
-    .lp-step h3 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 10px 0 8px; }
-    .lp-step p { color: var(--text-secondary); font-size: 14.5px; margin: 0; }
+    .gh-tiers { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+    .gh-tier { border:1px solid var(--gray-200); border-radius:22px; padding:22px 18px; background:var(--surface); box-shadow:var(--shadow-sm); }
+    .gh-tier .dot { width:30px; height:30px; border-radius:9px; display:block; }
+    .gh-tier h4 { font-size:19px; margin:14px 0 4px; } .gh-tier .min { font-size:12px; color:var(--text-muted); }
+    .gh-tier p { font-size:12.5px; color:var(--text-muted); margin-top:8px; line-height:1.5; }
+    .gh-tier.vip { background:linear-gradient(145deg,#0A0A0A,#16181c); color:#fff; border-color:rgba(198,244,50,.4); }
+    .gh-tier.vip h4 { color:var(--gl); } .gh-tier.vip p { color:#c7cdd6; } .gh-tier.vip .min { color:var(--gl); }
 
-    .lp-ways { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
-    .lp-way { display: flex; gap: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
-    .lp-way .ic { flex: 0 0 44px; height: 44px; border-radius: var(--radius-sm); background: var(--blaxx-lime-light); display: grid; place-items: center; font-size: 21px; }
-    .lp-way h3 { font-family: var(--font-display); font-weight: 700; font-size: 17px; margin: 0 0 4px; }
-    .lp-way p { color: var(--text-secondary); font-size: 14px; margin: 0; }
+    .gh-foot { background:#050607; color:#fff; padding:54px 0; }
+    .gh-foot-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:24px; align-items:center; }
+    .gh-foot h2 { font-size:40px; letter-spacing:-.03em; } .gh-foot h2 span { color:var(--gl); }
+    .gh-foot p { color:#aab3bf; line-height:1.6; } .gh-foot .disc { font-size:12px; color:#6c757f; margin-top:14px; }
 
-    .lp-cat { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
-    .lp-cat-i { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; text-align: center; }
-    .lp-cat-i .ic { font-size: 26px; }
-    .lp-cat-i h3 { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin: 10px 0 4px; }
-    .lp-cat-i p { color: var(--text-secondary); font-size: 13px; margin: 0; }
-
-    .lp-band { padding: 56px 0; }
-    .lp-band-in { background: var(--blaxx-black); border-radius: var(--radius-xl); padding: 48px 36px; }
-    .lp-band-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center; }
-    .lp-band-grid .n { font-family: var(--font-display); font-weight: 900; font-size: 42px; color: var(--blaxx-lime); }
-    .lp-band-grid .k { color: rgba(255,255,255,.55); font-size: 13.5px; margin-top: 6px; }
-
-    .lp-faq { max-width: 720px; margin: 0 auto; }
-    .lp-faq details { border-bottom: 1px solid var(--border); padding: 18px 4px; }
-    .lp-faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; font-family: var(--font-display); font-weight: 700; font-size: 17px; }
-    .lp-faq summary::-webkit-details-marker { display: none; }
-    .lp-faq summary::after { content: '+'; color: var(--blaxx-lime-dark); font-size: 20px; }
-    .lp-faq details[open] summary::after { content: '–'; }
-    .lp-faq p { color: var(--text-secondary); font-size: 14.5px; margin: 12px 0 0; }
-
-    .lp-final { background: var(--blaxx-black); border-radius: var(--radius-xl); padding: 56px 36px; text-align: center; }
-    .lp-final h2 { font-family: var(--font-display); font-weight: 900; font-size: 40px; color: var(--blaxx-white); margin: 0 0 12px; }
-    .lp-final p { color: rgba(255,255,255,.6); font-size: 16px; margin: 0 auto 26px; max-width: 46ch; }
-
-    .lp-foot { background: var(--blaxx-black); color: var(--blaxx-white); padding: 48px 0 28px; }
-    .lp-foot .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
-    .lp-foot img { height: 26px; margin-bottom: 12px; }
-    .lp-foot .bl { color: rgba(255,255,255,.5); font-size: 13.5px; max-width: 32ch; }
-    .lp-foot h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.45); margin: 0 0 12px; }
-    .lp-foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
-    .lp-foot a { color: var(--blaxx-white); font-size: 14px; text-decoration: none; }
-    .lp-foot a:hover { color: var(--blaxx-lime); }
-    .lp-foot .base { margin-top: 36px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.1); font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,.4); }
-
-    @media (max-width: 900px) {
-      .lp-hero-grid { grid-template-columns: 1fr; gap: 36px; }
-      .lp-nav { display: none; }
-      .lp-steps, .lp-cat { grid-template-columns: 1fr 1fr; }
-      .lp-ways, .lp-band-grid { grid-template-columns: 1fr 1fr; }
-      .lp-foot .cols { grid-template-columns: 1fr 1fr; }
-    }
+    @media (max-width:960px){ .gh-hero-grid,.gh-net,.gh-foot-grid{grid-template-columns:1fr;} .gh-tiers{grid-template-columns:repeat(2,1fr);} .gh-nav{display:none;} .gh-metrics{grid-template-columns:1fr 1fr;} }
+    @media (max-width:520px){ .gh-tiers{grid-template-columns:1fr;} .gh-metrics{grid-template-columns:1fr;} }
   </style>
 </head>
-<body>
-
-  <header class="lp-head">
-    <div class="lp-wrap">
-      <a href="home.html"><img src="../assets/blaxx-logo-dark.png" alt="BLAXX Pontos" /></a>
-      <nav class="lp-nav">
-        <a href="#como">Como funciona</a>
-        <a href="#juntar">Juntar pontos</a>
-        <a href="#trocar">Trocar</a>
-        <a href="#parceiros">Parceiros</a>
+<body class="gh">
+  <header class="gh-head">
+    <div class="gh-wrap">
+      <a class="gh-logo" href="home.html">BLA<span>XX</span></a>
+      <nav class="gh-nav">
+        <a href="#network">Rede Global</a><a href="#hotels">Hotéis</a><a href="#tiers">Níveis</a><a href="login.html">Entrar</a>
       </nav>
-      <div class="lp-actions">
+      <div class="gh-actions">
         <a href="login.html" class="btn ghost">Entrar</a>
         <a href="cadastro.html" class="btn primary">Criar conta grátis</a>
       </div>
     </div>
   </header>
 
-  <section class="lp-hero">
-    <div class="lp-wrap lp-hero-grid">
+  <section class="gh-hero">
+    <div class="gh-wrap gh-hero-grid">
       <div>
-        <span class="eyebrow">Programa de pontos · sem mensalidade</span>
-        <h1>Junte pontos no dia a dia e troque pelo que <span class="lime">você quiser.</span></h1>
-        <p class="lp-lead">Compre nos parceiros, acumule pontos automaticamente e resgate por <b>vouchers, milhas, descontos e cashback no Pix</b>. Simples, gratuito e sem letras miúdas.</p>
-        <div class="lp-cta">
+        <span class="gh-eyebrow"><span class="pd"></span> The Global Rewards Operating System</span>
+        <h1>Transforme pontos em <span class="lime">experiência global.</span></h1>
+        <p class="gh-lead">A BlaXx consolida pontos, milhas, cashback e experiências premium em uma só plataforma — com exchange, inteligência de oportunidades e uma rede global de hotéis e companhias que aceitam seus pontos.</p>
+        <div class="gh-cta">
           <a href="cadastro.html" class="btn primary lg">Criar conta e ganhar 500 pts →</a>
-          <a href="login.html" class="btn ghost lg">Já tenho conta · Entrar</a>
+          <a href="#network" class="btn ghost lg">Ver rede global</a>
         </div>
-        <div class="lp-rating"><span class="st">★★★★★</span> &nbsp;Mais de <b>1 milhão</b> de resgates realizados</div>
-      </div>
-      <div class="lp-wallet">
-        <div class="top">
-          <span class="lab">Saldo Blaxx</span>
-          <span class="chip">Plano Plus</span>
+        <div class="gh-metrics">
+          <div class="gh-metric"><strong>+1.200</strong><small>parceiros conectados</small></div>
+          <div class="gh-metric"><strong>40+</strong><small>destinos na rede</small></div>
+          <div class="gh-metric"><strong>5</strong><small>níveis · até BlaXx VIP</small></div>
         </div>
-        <div class="bal">32.480 <small>pts</small></div>
-        <div class="brl">≈ R$ 324,80 em resgates</div>
-        <div class="stats">
-          <div><div class="n">+1.250</div><div class="k">este mês</div></div>
-          <div><div class="n">4</div><div class="k">vouchers</div></div>
-          <div><div class="n">2</div><div class="k">campanhas</div></div>
+      </div>
+      <div class="gh-appcard">
+        <div class="gh-ac-top"><b style="font-size:22px">BLA<span style="color:var(--gl)">XX</span></b><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#fff,#d9d9d9);display:block"></span></div>
+        <div class="gh-ac-bal"><small>Patrimônio em Rewards</small><h2>1.254.890 pts</h2><b>≈ R$ 12.548,90</b></div>
+        <div class="gh-ac-quick"><span>Comprar</span><span>Transferir</span><span>Converter</span><span>Resgatar</span></div>
+        <div class="gh-ac-opp"><span class="tag">OPORTUNIDADE DETECTADA</span><h3>LATAM PASS <span>Bônus 85%</span></h3><p style="color:#aeb7c2;font-size:13px;margin-top:2px">Potencial ganho: <b style="color:var(--gl)">+122.000 pontos</b></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gh-sec" id="network">
+    <div class="gh-wrap">
+      <div class="gh-sec-head">
+        <div class="k">BlaXx Global Network™</div>
+        <h2>Seus pontos viajam o mundo.</h2>
+        <p>Uma rede viva de destinos, companhias aéreas e hotéis premium onde seus pontos viram estadia, voo e experiência — em mais de 40 destinos.</p>
+      </div>
+      <div class="gh-net">
+        <div class="gh-globe-card">
+          <h3>Rede global de experiências</h3>
+          <p>Hotéis, companhias aéreas, lounges e parceiros premium conectados.</p>
+          <svg class="gh-globe" viewBox="0 0 520 340" role="img" aria-label="Mapa-múndi da rede Blaxx">
+            <defs><radialGradient id="ghg" cx="42%" cy="38%" r="70%"><stop offset="0%" stop-color="#16202a"/><stop offset="100%" stop-color="#070b0f"/></radialGradient></defs>
+            <circle cx="260" cy="170" r="150" fill="url(#ghg)" stroke="rgba(198,244,50,.25)" stroke-width="1"/>
+            <ellipse cx="260" cy="170" rx="50" ry="150" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+            <ellipse cx="260" cy="170" rx="100" ry="150" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>
+            <line x1="260" y1="20" x2="260" y2="320" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+            <line x1="110" y1="170" x2="410" y2="170" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+            <path d="M124 110 Q260 92 396 110" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>
+            <path d="M124 230 Q260 248 396 230" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>
+            <path class="gh-arc" d="M150 150 Q230 70 330 120"/><path class="gh-arc" d="M330 120 Q420 150 360 210"/>
+            <path class="gh-arc" d="M150 150 Q180 250 250 240"/><path class="gh-arc" d="M250 240 Q330 270 360 210"/>
+            <g><circle class="gh-pin-glow" cx="150" cy="150" r="3"/><circle class="gh-pin" cx="150" cy="150" r="3.5"/></g>
+            <g><circle class="gh-pin-glow" cx="330" cy="120" r="3"/><circle class="gh-pin" cx="330" cy="120" r="3.5"/></g>
+            <g><circle class="gh-pin-glow" cx="360" cy="210" r="3"/><circle class="gh-pin" cx="360" cy="210" r="3.5"/></g>
+            <g><circle class="gh-pin-glow" cx="250" cy="240" r="3"/><circle class="gh-pin" cx="250" cy="240" r="3.5"/></g>
+            <g><circle class="gh-pin-glow" cx="210" cy="120" r="3"/><circle class="gh-pin" cx="210" cy="120" r="3.5"/></g>
+          </svg>
+          <div class="gh-net-legend"><span>🟢 Hotéis</span><span>🔵 Cias aéreas</span><span>🟣 Lounges</span><span>🟠 Experiências</span></div>
         </div>
-        <a href="login.html" class="btn primary block">Resgatar pontos →</a>
-      </div>
-    </div>
-  </section>
-
-  <div class="lp-strip" id="parceiros">
-    <div class="lp-wrap">
-      <div class="cap">Acumule comprando em centenas de marcas</div>
-      <div class="brands">
-        <span>SuperMix</span><span>FarmaPlus</span><span>PostoVia</span><span>VocJá</span>
-        <span>ModaUrban</span><span>TechStore</span><span>CaféDoz</span><span>PetCare</span>
-        <span>EduMais</span><span>StreamGo</span>
-      </div>
-    </div>
-  </div>
-
-  <section class="lp-sec" id="como">
-    <div class="lp-wrap">
-      <div class="hd">
-        <span class="eyebrow">Como funciona</span>
-        <h2>Três passos para começar a ganhar</h2>
-        <p>Sem complicação. Crie sua conta, compre normalmente e veja os pontos caírem.</p>
-      </div>
-      <div class="lp-steps">
-        <div class="lp-step"><div class="num">01</div><h3>Crie sua conta grátis</h3><p>Cadastro em menos de 1 minuto com seu e-mail. Ganhe 500 pontos de boas-vindas.</p></div>
-        <div class="lp-step"><div class="num">02</div><h3>Compre nos parceiros</h3><p>A cada compra nas marcas parceiras você acumula pontos automaticamente na carteira.</p></div>
-        <div class="lp-step"><div class="num">03</div><h3>Troque pelo que quiser</h3><p>Resgate por vouchers, milhas, descontos ou receba o valor de volta no seu Pix.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-sec alt" id="juntar">
-    <div class="lp-wrap">
-      <div class="hd">
-        <span class="eyebrow">Juntar pontos</span>
-        <h2>Acelere de 4 formas</h2>
-        <p>Quanto mais você usa o ecossistema Blaxx, mais rápido seus pontos crescem.</p>
-      </div>
-      <div class="lp-ways">
-        <div class="lp-way"><div class="ic">🛒</div><div><h3>Compras nos parceiros</h3><p>Acumule a cada real gasto nas marcas parceiras, online ou na loja.</p></div></div>
-        <div class="lp-way"><div class="ic">🎯</div><div><h3>Campanhas e missões</h3><p>Participe de desafios e ganhe pontos extras ao completar metas.</p></div></div>
-        <div class="lp-way"><div class="ic">👥</div><div><h3>Indique amigos</h3><p>Convide pessoas e ganhe pontos na primeira compra delas.</p></div></div>
-        <div class="lp-way"><div class="ic">⭐</div><div><h3>Suba de plano</h3><p>Plus, Prime e Black multiplicam seu acúmulo com bônus progressivo.</p></div></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-sec" id="trocar">
-    <div class="lp-wrap">
-      <div class="hd">
-        <span class="eyebrow">Trocar pontos</span>
-        <h2>Resgate do seu jeito</h2>
-        <p>Seus pontos, suas regras. Escolha entre dezenas de opções de resgate.</p>
-      </div>
-      <div class="lp-cat">
-        <div class="lp-cat-i"><div class="ic">💸</div><h3>Cashback no Pix</h3><p>Receba o valor direto na conta.</p></div>
-        <div class="lp-cat-i"><div class="ic">🎟️</div><h3>Vouchers</h3><p>Vale-compras das principais marcas.</p></div>
-        <div class="lp-cat-i"><div class="ic">✈️</div><h3>Milhas</h3><p>Transfira para programas aéreos.</p></div>
-        <div class="lp-cat-i"><div class="ic">🏷️</div><h3>Descontos</h3><p>Abata pontos na próxima compra.</p></div>
-        <div class="lp-cat-i"><div class="ic">🎁</div><h3>Produtos</h3><p>Troque por itens do catálogo.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-band">
-    <div class="lp-wrap">
-      <div class="lp-band-in">
-        <div class="lp-band-grid">
-          <div><div class="n">1M+</div><div class="k">resgates realizados</div></div>
-          <div><div class="n">500+</div><div class="k">marcas parceiras</div></div>
-          <div><div class="n">R$ 0,09</div><div class="k">por ponto resgatado</div></div>
-          <div><div class="n">100%</div><div class="k">gratuito, sem mensalidade</div></div>
+        <div class="gh-hotels" id="hotels">
+          <div style="display:flex;align-items:center;justify-content:space-between"><h3>Hotéis que aceitam pontos</h3><span class="gh-demo">rede em expansão</span></div>
+          <div class="sub">Converta pontos Blaxx em diárias nas maiores redes do mundo.</div>
+          <div class="gh-hotel"><span class="logo" style="background:#7B1E3B">M</span><div><div class="nm">Marriott Bonvoy</div><div class="rt">8.500+ hotéis · 139 países</div></div><span class="mult">Estadia</span></div>
+          <div class="gh-hotel"><span class="logo" style="background:#104C97">H</span><div><div class="nm">Hilton Honors</div><div class="rt">7.000+ hotéis · 122 países</div></div><span class="mult">Estadia</span></div>
+          <div class="gh-hotel"><span class="logo" style="background:#C8102E">A</span><div><div class="nm">Accor ALL</div><div class="rt">5.500+ hotéis · 110 países</div></div><span class="mult">Estadia</span></div>
+          <div class="gh-hotel"><span class="logo" style="background:#0B3D2E">I</span><div><div class="nm">IHG One Rewards</div><div class="rt">6.000+ hotéis · 100 países</div></div><span class="mult">Estadia</span></div>
+          <div class="gh-hotel"><span class="logo" style="background:#7A5Cff">Y</span><div><div class="nm">World of Hyatt</div><div class="rt">1.300+ hotéis · 75 países</div></div><span class="mult">Estadia</span></div>
+          <div class="gh-hotel"><span class="logo" style="background:#1F6F5C">ML</span><div><div class="nm">Meliá Rewards</div><div class="rt">380+ hotéis · 40 países</div></div><span class="mult">Estadia</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="lp-sec alt">
-    <div class="lp-wrap">
-      <div class="hd">
-        <span class="eyebrow">Dúvidas</span>
-        <h2>Perguntas frequentes</h2>
+  <section class="gh-sec" id="tiers" style="background:radial-gradient(circle at 20% 0%,rgba(198,244,50,.08),transparent 30%)">
+    <div class="gh-wrap">
+      <div class="gh-sec-head">
+        <div class="k">Níveis Blaxx</div>
+        <h2>Quanto mais você usa, mais alto você chega.</h2>
+        <p>Seu nível sobe com os pontos acumulados (vitalício) e nunca cai ao resgatar. No topo, o <b>BlaXx VIP</b> — exclusivo, apenas por convite.</p>
       </div>
-      <div class="lp-faq">
-        <details open><summary>Quanto custa participar?</summary><p>Nada. Criar conta e acumular pontos é totalmente gratuito, sem mensalidade ou anuidade.</p></details>
-        <details><summary>Quanto vale cada ponto?</summary><p>Cada ponto equivale a R$ 0,09 no resgate. O valor é transparente e exibido na hora da troca.</p></details>
-        <details><summary>Os pontos expiram?</summary><p>Seus pontos têm validade longa e você é avisado com antecedência antes de qualquer expiração.</p></details>
-        <details><summary>Como recebo o cashback?</summary><p>Direto no seu Pix, em poucos minutos após confirmar o resgate na sua carteira Blaxx.</p></details>
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-sec">
-    <div class="lp-wrap">
-      <div class="lp-final">
-        <h2>Comece a juntar pontos hoje</h2>
-        <p>Crie sua conta grátis e ganhe 500 pontos de boas-vindas. Leva menos de um minuto.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <a href="cadastro.html" class="btn primary lg">Criar conta grátis →</a>
-          <a href="login.html" class="btn ghost lg">Entrar</a>
-        </div>
+      <div class="gh-tiers">
+        <div class="gh-tier"><span class="dot" style="background:#CD7F32"></span><h4>Bronze</h4><div class="min">0+ pts</div><p>Acesso ao programa, catálogo e PIX.</p></div>
+        <div class="gh-tier"><span class="dot" style="background:#9AA0A6"></span><h4>Prata</h4><div class="min">5.000+ pts</div><p>Ofertas exclusivas + atendimento prioritário.</p></div>
+        <div class="gh-tier"><span class="dot" style="background:#D4AF37"></span><h4>Ouro</h4><div class="min">20.000+ pts</div><p>Bônus em campanhas + benefícios premium.</p></div>
+        <div class="gh-tier"><span class="dot" style="background:#0B0B0C"></span><h4>Black</h4><div class="min">50.000+ pts</div><p>Experiências Black e limites ampliados.</p></div>
+        <div class="gh-tier vip"><span class="dot" style="background:var(--gl)"></span><h4>BlaXx VIP</h4><div class="min">Por convite</div><p>Compras de pontos ilimitadas, exchange preferencial e concierge dedicado.</p></div>
       </div>
     </div>
   </section>
 
-  <footer class="lp-foot">
-    <div class="lp-wrap">
-      <div class="cols">
-        <div>
-          <img src="../assets/blaxx-logo.png" alt="BLAXX Pontos" />
-          <p class="bl">Plataforma de pontos que transforma suas compras do dia a dia em recompensas de verdade.</p>
-        </div>
-        <div>
-          <h4>Produto</h4>
-          <ul>
-            <li><a href="#como">Como funciona</a></li>
-            <li><a href="#juntar">Juntar pontos</a></li>
-            <li><a href="#trocar">Trocar pontos</a></li>
-            <li><a href="#parceiros">Parceiros</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Conta</h4>
-          <ul>
-            <li><a href="login.html">Entrar</a></li>
-            <li><a href="cadastro.html">Criar conta</a></li>
-            <li><a href="recuperar-senha.html">Esqueci a senha</a></li>
-            <li><a href="termos.html">Termos de uso</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="base">© 2026 BLAXX PONTOS · TODOS OS DIREITOS RESERVADOS · FEITO NO BRASIL</div>
+  <footer class="gh-foot">
+    <div class="gh-wrap gh-foot-grid">
+      <div><h2>BLA<span>XX</span> Rewards</h2><p>The Global Rewards Operating System. Acumule, compre, envie, troque e viaje com seus pontos.</p></div>
+      <div><a href="cadastro.html" class="btn primary lg">Começar agora →</a><p class="disc">Os pontos Blaxx não são moeda, depósito, investimento ou criptoativo — são créditos promocionais de uso restrito. Rede de hotéis/companhias ilustrativa (em expansão).</p></div>
     </div>
   </footer>
-
 </body>
 </html>

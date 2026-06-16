@@ -3,83 +3,272 @@
 <head>
   <meta charset="utf-8" />
   <title>Parceiros · Blaxx Pontos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/design-system.css" />
+  <style>
+    /* ===== Parceiros — redesign premium (Nubank/XP/Livelo/Apple-like) ===== */
+    .pz-metrics { display:grid; grid-template-columns: repeat(5,1fr); gap:14px; margin: 4px 0 24px; }
+    .pz-metric { display:flex; flex-direction:column; gap:6px; padding:18px; }
+    .pz-metric__label { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color: var(--text-muted); font-weight:600; }
+    .pz-metric__value { font-size:25px; font-weight:900; letter-spacing:-.02em; line-height:1.05; color: var(--text); }
+    .pz-metric__value small { font-size:13px; font-weight:700; color: var(--text-secondary); }
+    .pz-metric__cta { margin-top:auto; font-weight:600; font-size:13px; color: var(--text); cursor:pointer; display:inline-flex; gap:5px; align-items:center; transition: gap .18s ease; }
+    .pz-metric__cta:hover { gap:9px; }
+    .pz-metric__hint { font-size:12px; font-weight:600; color: var(--text-secondary); }
+    .pz-track { height:8px; border-radius:999px; background: var(--gray-100); overflow:hidden; margin-top:2px; }
+    .pz-fill { height:100%; border-radius:999px; background: linear-gradient(90deg,var(--blaxx-lime-dark),var(--blaxx-lime)); width:0; transition: width 1s cubic-bezier(.16,1,.3,1); }
+    .pz-tier { align-self:flex-start; font-weight:800; font-size:12px; padding:5px 12px; border-radius:999px; letter-spacing:.04em; }
+
+    /* Banner */
+    .pz-banner { position:relative; height:184px; border-radius:24px; overflow:hidden; margin-bottom:24px; background:var(--blaxx-black); }
+    .pz-slide { position:absolute; inset:0; display:grid; grid-template-columns:1.4fr .9fr; opacity:0; transition:opacity .6s ease; pointer-events:none; }
+    .pz-slide.on { opacity:1; pointer-events:auto; }
+    .pz-slide__body { padding:30px 34px; display:flex; flex-direction:column; justify-content:center; gap:8px; color:#fff; }
+    .pz-slide__tag { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--blaxx-lime); font-weight:700; }
+    .pz-slide__title { font-size:30px; font-weight:900; letter-spacing:-.02em; }
+    .pz-slide__sub { color:rgba(255,255,255,.72); font-size:14px; max-width:42ch; }
+    .pz-slide__cta { margin-top:8px; align-self:flex-start; background:var(--blaxx-lime); color:var(--blaxx-black); border:none; border-radius:12px; padding:11px 18px; font-weight:700; font-size:14px; cursor:pointer; text-decoration:none; display:inline-block; }
+    .pz-slide__art { display:grid; place-items:center; background:radial-gradient(120% 120% at 80% 20%, rgba(198,244,50,.22), transparent 62%); }
+    .pz-slide__art span { font-size:78px; filter:drop-shadow(0 12px 28px rgba(0,0,0,.4)); }
+    .pz-dots { position:absolute; left:34px; bottom:16px; display:flex; gap:7px; z-index:3; }
+    .pz-dots button { width:8px; height:8px; border-radius:999px; border:none; background:rgba(255,255,255,.32); cursor:pointer; transition:all .2s ease; padding:0; }
+    .pz-dots button.on { background:var(--blaxx-lime); width:22px; }
+    .pz-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:3; width:38px; height:38px; border-radius:999px; border:none; background:rgba(255,255,255,.10); color:#fff; cursor:pointer; display:grid; place-items:center; font-size:18px; transition:background .2s ease; }
+    .pz-arrow:hover { background:rgba(255,255,255,.22); }
+    .pz-arrow.prev { left:14px; } .pz-arrow.next { right:14px; }
+
+    /* Busca + favoritos */
+    .pz-searchrow { display:flex; gap:12px; margin-bottom:16px; }
+    .pz-search { position:relative; flex:1; }
+    .pz-search input { width:100%; height:56px; border-radius:18px; border:1px solid var(--gray-200); background:var(--blaxx-white); padding:0 18px 0 50px; font-size:15px; font-family:inherit; color:var(--text); transition:border-color .18s ease, box-shadow .18s ease; }
+    .pz-search input:focus { outline:none; border-color:var(--blaxx-lime-dark); box-shadow:0 0 0 4px rgba(198,244,50,.25); }
+    .pz-search .ico { position:absolute; left:18px; top:50%; transform:translateY(-50%); color:var(--text-muted); }
+    .pz-favbtn { height:56px; padding:0 22px; border-radius:18px; border:1px solid var(--gray-200); background:var(--blaxx-white); font-weight:600; font-size:14px; color:var(--text); cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all .18s ease; white-space:nowrap; }
+    .pz-favbtn:hover { border-color:var(--gray-400); }
+    .pz-favbtn.on { background:var(--blaxx-black); color:var(--blaxx-lime); border-color:var(--blaxx-black); }
+
+    /* Pills */
+    .pz-pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+    .pz-pill { border:1px solid var(--gray-200); background:var(--blaxx-white); color:var(--text-secondary); font-weight:600; font-size:13px; padding:9px 17px; border-radius:999px; transition:all .16s ease; cursor:pointer; }
+    .pz-pill.on { background:var(--blaxx-lime); border-color:var(--blaxx-lime); color:var(--blaxx-black); }
+    .pz-pill:hover:not(.on) { border-color:var(--gray-400); color:var(--text); }
+
+    /* Grid */
+    .pz-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; }
+    .pz-card { position:relative; padding:20px; display:flex; flex-direction:column; gap:10px; cursor:pointer; transition:transform .22s ease, box-shadow .22s ease; animation:pzfade .4s ease both; }
+    .pz-card:hover { transform:translateY(-4px) scale(1.03); box-shadow:var(--shadow-lg); }
+    .pz-card__logo { width:54px; height:54px; border-radius:16px; display:grid; place-items:center; font-size:28px; background:var(--gray-50); }
+    .pz-card__name { font-weight:800; font-size:16px; letter-spacing:-.01em; color:var(--text); }
+    .pz-card__cat { font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); margin-top:-6px; font-weight:600; }
+    .pz-card__pts { font-weight:800; font-size:12px; color:var(--blaxx-black); background:var(--blaxx-lime); padding:5px 10px; border-radius:8px; align-self:flex-start; }
+    .pz-card__city { font-size:12px; font-weight:600; color:var(--blaxx-lime-dark); }
+    .pz-card__buy { margin-top:auto; font-weight:700; font-size:13px; color:var(--text); display:inline-flex; gap:5px; align-items:center; transition:gap .18s ease; }
+    .pz-card:hover .pz-card__buy { gap:9px; }
+    .pz-fav { position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:999px; border:1px solid var(--gray-200); background:var(--blaxx-white); cursor:pointer; display:grid; place-items:center; font-size:15px; color:var(--text-muted); transition:all .18s ease; z-index:2; }
+    .pz-fav:hover { border-color:var(--gray-400); transform:scale(1.1); }
+    .pz-fav.on { color:#E0483D; border-color:rgba(224,72,61,.3); background:rgba(224,72,61,.06); }
+    .pz-empty { grid-column:1/-1; text-align:center; padding:48px; color:var(--text-muted); }
+
+    /* Skeleton */
+    .pz-sk { background:linear-gradient(100deg,var(--gray-100) 30%, rgba(255,255,255,.5) 50%, var(--gray-100) 70%); background-size:200% 100%; animation:pzshim 1.2s infinite; border-radius:8px; }
+    .pz-card--sk { pointer-events:none; } .pz-card--sk .pz-card__logo { background:var(--gray-100); }
+
+    /* Benefícios */
+    .pz-benefits { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:32px 0 8px; }
+    .pz-benefit { padding:22px; }
+    .pz-benefit__ico { font-size:26px; }
+    .pz-benefit__t { font-weight:800; font-size:15px; margin:10px 0 5px; color:var(--text); }
+    .pz-benefit__d { font-size:13px; color:var(--text-secondary); line-height:1.5; }
+
+    @keyframes pzfade { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    @keyframes pzshim { to { background-position:-200% 0; } }
+
+    @media (max-width:1240px){ .pz-metrics{grid-template-columns:repeat(3,1fr);} .pz-grid{grid-template-columns:repeat(3,1fr);} .pz-benefits{grid-template-columns:repeat(2,1fr);} }
+    @media (max-width:820px){ .pz-grid{grid-template-columns:1fr 1fr;} .pz-slide__art{display:none;} }
+  </style>
 </head>
 <body>
   <div class="app-shell">
     <div id="side"></div>
     <main class="main">
       <div id="top"></div>
-      <span class="eyebrow">Marketplace</span>
-      <h3 class="mb-4">Parceiros credenciados</h3>
 
-      <div class="row mb-6" style="gap:8px;flex-wrap:wrap;" id="filters">
-        <button class="chip" data-cat="">Todos</button>
+      <!-- Métricas -->
+      <section class="pz-metrics" id="metrics">
+        <div class="card pz-metric"><span class="pz-metric__label">Saldo atual</span><span class="pz-metric__value" id="m-balance">—</span><span class="pz-metric__cta" onclick="go('carteira.html')">Ver carteira →</span></div>
+        <div class="card pz-metric"><span class="pz-metric__label">Valor estimado</span><span class="pz-metric__value" id="m-brl">—</span><span class="pz-metric__cta" onclick="go('resgates.html')">Resgatar agora →</span></div>
+        <div class="card pz-metric"><span class="pz-metric__label">Pontos pendentes</span><span class="pz-metric__value" id="m-pending">—</span><span class="pz-metric__hint" id="m-pending-hint">Em processamento</span></div>
+        <div class="card pz-metric"><span class="pz-metric__label">Nível atual</span><span class="pz-tier" id="m-tier">—</span><span class="pz-metric__cta" onclick="go('cartao.html')">Ver benefícios →</span></div>
+        <div class="card pz-metric"><span class="pz-metric__label">Progresso</span><span class="pz-metric__value" id="m-progress">—</span><div class="pz-track"><div class="pz-fill" id="m-fill"></div></div><span class="pz-metric__hint" id="m-next"></span></div>
+      </section>
+
+      <!-- Banner -->
+      <section class="pz-banner" id="banner">
+        <div id="slides"></div>
+        <button class="pz-arrow prev" id="bprev" aria-label="Anterior">‹</button>
+        <button class="pz-arrow next" id="bnext" aria-label="Próximo">›</button>
+        <div class="pz-dots" id="bdots"></div>
+      </section>
+
+      <!-- Busca -->
+      <div class="pz-searchrow">
+        <div class="pz-search">
+          <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="search" type="text" placeholder="Buscar parceiro ou loja" autocomplete="off">
+        </div>
+        <button class="pz-favbtn" id="favBtn">♡ Meus Favoritos</button>
       </div>
 
-      <div id="grid" class="grid cols-3">Carregando…</div>
+      <!-- Filtros -->
+      <div class="pz-pills" id="pills"></div>
+
+      <!-- Grid -->
+      <div class="pz-grid" id="grid"></div>
+
+      <!-- Benefícios -->
+      <section class="pz-benefits">
+        <div class="card pz-benefit"><div class="pz-benefit__ico">📈</div><div class="pz-benefit__t">Acumule Mais</div><div class="pz-benefit__d">Compre nas melhores lojas e acumule até 12 pts por real.</div></div>
+        <div class="card pz-benefit"><div class="pz-benefit__ico">💵</div><div class="pz-benefit__t">Cashback</div><div class="pz-benefit__d">Receba parte do valor de volta em pontos ou saldo.</div></div>
+        <div class="card pz-benefit"><div class="pz-benefit__ico">⭐</div><div class="pz-benefit__t">Parceiros Exclusivos</div><div class="pz-benefit__d">Benefícios reservados para clientes Black.</div></div>
+        <div class="card pz-benefit"><div class="pz-benefit__ico">🔒</div><div class="pz-benefit__t">Segurança</div><div class="pz-benefit__d">Ambiente protegido e monitorado de ponta a ponta.</div></div>
+      </section>
     </main>
   </div>
+
   <script src="../assets/app.js"></script>
   <script>
-    let all = [];
-    let currentCat = '';
+    const FAV_KEY = 'blaxx_fav_partners';
+    const PRIMARY = ['Viagens','Tecnologia','Moda','Casa','Supermercado','Saúde'];
+    let PARTNERS = [], CATS = [], query = '', activeCat = '', favOnly = false, showAll = false, slide = 0, timer = null;
+    let favs = new Set();
+    try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]')); } catch {}
+    function saveFavs(){ try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch {} }
+    const ptsLabel = p => (p && p.accrual_rule) ? p.accrual_rule : 'Pontos por compra';
 
-    function render() {
-      const items = currentCat ? all.filter(p => p.category === currentCat) : all;
-      if (!items.length) {
-        document.getElementById('grid').innerHTML =
-          '<p class="muted">Nenhum parceiro nesta categoria.</p>';
-        return;
+    function skeleton(){
+      document.getElementById('grid').innerHTML = Array.from({length:10}).map(()=>`
+        <div class="card pz-card pz-card--sk">
+          <div class="pz-card__logo"></div>
+          <div class="pz-sk" style="height:16px;width:70%"></div>
+          <div class="pz-sk" style="height:11px;width:40%"></div>
+          <div class="pz-sk" style="height:22px;width:50%;border-radius:8px"></div>
+        </div>`).join('');
+    }
+
+    function renderMetrics(wallet, card){
+      document.getElementById('m-balance').innerHTML = wallet ? (Number(wallet.balance_pts||0).toLocaleString('pt-BR')+' <small>pts</small>') : '—';
+      document.getElementById('m-brl').textContent = wallet ? fmtBRL(wallet.balance_brl_equiv) : '—';
+      const pend = wallet ? Number(wallet.pending_pts||0) : 0;
+      document.getElementById('m-pending').innerHTML = pend.toLocaleString('pt-BR')+' <small>pts</small>';
+      document.getElementById('m-pending-hint').textContent = pend>0 ? 'Em processamento' : 'Nada pendente';
+      if (card && card.tier){
+        const t = document.getElementById('m-tier');
+        t.textContent = (card.tier.label||'').toUpperCase();
+        t.style.background = card.tier.color || 'var(--blaxx-black)';
+        t.style.color = card.tier.text_color || '#fff';
       }
-      document.getElementById('grid').innerHTML = items.map(p => `
-        <div class="card" style="cursor:pointer;" onclick="openPartner('${p.id}')">
-          <div class="chip dark">${p.category}</div>
-          <h3 style="margin-top:8px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:22px;">${p.logo_emoji || '◯'}</span>
-            ${p.name}
-          </h3>
-          <p class="muted" style="font-size:13px;margin:4px 0 8px;">${p.description || ''}</p>
-          <span class="chip success">${p.accrual_rule || ''}</span>
-        </div>
-      `).join('');
+      const pct = card ? Number(card.progress_pct||0) : 0;
+      document.getElementById('m-progress').textContent = pct + '%';
+      requestAnimationFrame(()=>{ document.getElementById('m-fill').style.width = pct + '%'; });
+      document.getElementById('m-next').textContent = (card && card.next_tier)
+        ? `Faltam ${Number(card.points_to_next||0).toLocaleString('pt-BR')} pts para ${card.next_tier.label}`
+        : 'Nível máximo atingido';
     }
 
-    function openPartner(id) {
-      // Em produção: navegação para detalhe do parceiro
-      go('detalhe-parceiro.html?id=' + id);
+    function renderBanner(){
+      const slides = PARTNERS.slice(0,4);
+      if (!slides.length){ document.getElementById('banner').style.display='none'; return; }
+      document.getElementById('slides').innerHTML = slides.map((p,i)=>`
+        <div class="pz-slide ${i===0?'on':''}">
+          <div class="pz-slide__body">
+            <span class="pz-slide__tag">CAMPANHA EM DESTAQUE</span>
+            <span class="pz-slide__title">${p.name}</span>
+            <span class="pz-slide__sub">${p.description || ptsLabel(p)}</span>
+            <span class="pz-slide__cta" onclick="go('detalhe-parceiro.html?id=${encodeURIComponent(p.id)}')">Ir para ${p.name} →</span>
+          </div>
+          <div class="pz-slide__art"><span>${p.logo_emoji || '🏷️'}</span></div>
+        </div>`).join('');
+      document.getElementById('bdots').innerHTML = slides.map((_,i)=>`<button data-i="${i}" class="${i===0?'on':''}"></button>`).join('');
+      const total = slides.length;
+      document.getElementById('bprev').onclick = ()=>{ goSlide(slide-1,total); restartTimer(total); };
+      document.getElementById('bnext').onclick = ()=>{ goSlide(slide+1,total); restartTimer(total); };
+      document.querySelectorAll('#bdots button').forEach(b=> b.onclick = ()=>{ goSlide(+b.dataset.i,total); restartTimer(total); });
+      restartTimer(total);
     }
+    function goSlide(n,total){ slide=(n+total)%total;
+      document.querySelectorAll('.pz-slide').forEach((el,i)=>el.classList.toggle('on',i===slide));
+      document.querySelectorAll('#bdots button').forEach((el,i)=>el.classList.toggle('on',i===slide));
+    }
+    function restartTimer(total){ if(timer) clearInterval(timer); if(total>1) timer=setInterval(()=>goSlide(slide+1,total),6000); }
 
-    function renderFilters(categories) {
-      const html = ['<button class="chip ' + (currentCat===''?'success':'') + '" data-cat="">Todos</button>']
-        .concat(categories.map(c =>
-          `<button class="chip ${currentCat===c?'success':''}" data-cat="${c}">${c}</button>`
-        )).join('');
-      document.getElementById('filters').innerHTML = html;
-      document.getElementById('filters').querySelectorAll('button').forEach(btn => {
-        btn.style.cursor = 'pointer';
-        btn.addEventListener('click', () => {
-          currentCat = btn.dataset.cat;
-          renderFilters(categories);
-          render();
-        });
+    function renderPills(){
+      const ordered = [...PRIMARY.filter(c=>CATS.includes(c)), ...CATS.filter(c=>!PRIMARY.includes(c))];
+      const shown = showAll ? ordered : ordered.slice(0,6);
+      const base = [{k:'',l:'Todos'},{k:'__fav__',l:'Favoritos'}];
+      let html = base.concat(shown.map(c=>({k:c,l:c}))).map(o=>
+        `<button class="pz-pill ${o.k===activeCat?'on':''}" data-c="${o.k}">${o.l}</button>`).join('');
+      if (!showAll && ordered.length>6) html += `<button class="pz-pill" data-more="1">Mais ▼</button>`;
+      document.getElementById('pills').innerHTML = html;
+      document.querySelectorAll('#pills .pz-pill').forEach(b=>{
+        b.onclick = ()=>{
+          if (b.dataset.more){ showAll=true; renderPills(); return; }
+          const k=b.dataset.c;
+          if (k==='__fav__'){ favOnly=true; activeCat='__fav__'; } else { favOnly=false; activeCat=k; }
+          syncFavBtn(); renderPills(); renderGrid();
+        };
+      });
+    }
+    function syncFavBtn(){ const f=document.getElementById('favBtn'); const on=favOnly||activeCat==='__fav__'; f.classList.toggle('on',on); f.textContent = on?'♥ Meus Favoritos':'♡ Meus Favoritos'; }
+
+    function filtered(){
+      const q = query.trim().toLowerCase();
+      return PARTNERS.filter(p=>{
+        if (activeCat==='__fav__'){ if(!favs.has(String(p.id))) return false; }
+        else if (activeCat){ if((p.category||'')!==activeCat) return false; }
+        if (q){ const hay=((p.name||'')+' '+(p.description||'')+' '+(p.category||'')).toLowerCase(); if(!hay.includes(q)) return false; }
+        return true;
+      });
+    }
+    function renderGrid(){
+      const list = filtered();
+      const grid = document.getElementById('grid');
+      if (!list.length){ grid.innerHTML = `<div class="pz-empty">Nenhum parceiro encontrado.</div>`; return; }
+      grid.innerHTML = list.map((p,i)=>{
+        const fav = favs.has(String(p.id));
+        return `<div class="card pz-card" data-id="${p.id}" style="animation-delay:${Math.min(i*30,300)}ms">
+          <button class="pz-fav ${fav?'on':''}" data-fav="${p.id}" aria-label="Favoritar">${fav?'♥':'♡'}</button>
+          <div class="pz-card__logo">${p.logo_emoji || '🏷️'}</div>
+          <div class="pz-card__name">${p.name}</div>
+          <div class="pz-card__cat">${p.category || 'Parceiro'}</div>
+          <span class="pz-card__pts">${ptsLabel(p)}</span>
+          ${p.city?`<div class="pz-card__city">📍 ${p.city}</div>`:''}
+          <span class="pz-card__buy">Comprar →</span>
+        </div>`;
+      }).join('');
+      grid.querySelectorAll('.pz-card').forEach(c=>{
+        c.onclick = (e)=>{ if(e.target.closest('.pz-fav')) return; go('detalhe-parceiro.html?id='+encodeURIComponent(c.dataset.id)); };
+      });
+      grid.querySelectorAll('.pz-fav').forEach(b=>{
+        b.onclick = (e)=>{ e.stopPropagation(); const id=String(b.dataset.fav); favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); renderGrid(); if(activeCat==='__fav__') renderPills(); };
       });
     }
 
     if (Session.requireAuth()) {
       document.getElementById('side').outerHTML = renderSidebar('parceiros');
-      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Rede Blaxx', title:'Parceiros'});
+      document.getElementById('top').outerHTML = renderTopbar({eyebrow:'Programa de pontos', title:'Parceiros Blaxx'});
+      document.getElementById('search').addEventListener('input', e=>{ query=e.target.value; renderGrid(); });
+      document.getElementById('favBtn').onclick = ()=>{ favOnly=!favOnly; activeCat=favOnly?'__fav__':''; syncFavBtn(); renderPills(); renderGrid(); };
+      skeleton();
       (async () => {
-        try {
-          const data = await api('/partners/');
-          all = data.items || [];
-          const cats = await api('/partners/categories');
-          renderFilters(cats.items || []);
-          render();
-        } catch (e) {
-          document.getElementById('grid').innerHTML = `<p class="muted">Erro: ${e.message}</p>`;
-        }
+        const safe = async p => { try { return await api(p); } catch { return null; } };
+        const [wallet, card, pres, cres] = await Promise.all([
+          safe('/wallet/'), safe('/card/'), safe('/partners/'), safe('/partners/categories')
+        ]);
+        PARTNERS = (pres && pres.items ? pres.items : []).map(p=>({ ...p, id:String(p.id) }));
+        CATS = (cres && cres.items) ? cres.items : [...new Set(PARTNERS.map(p=>p.category).filter(Boolean))];
+        renderMetrics(wallet, card);
+        renderBanner(); renderPills(); syncFavBtn(); renderGrid();
+        if (!PARTNERS.length) document.getElementById('grid').innerHTML = `<div class="pz-empty">Nenhum parceiro disponível no momento.</div>`;
       })();
     }
   </script>

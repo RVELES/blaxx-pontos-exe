@@ -126,7 +126,7 @@
                    background:${active ? 'rgba(198,244,50,.06)' : 'transparent'};">
                 <span style="width:14px;height:14px;border-radius:99px;background:${t.color};border:1px solid rgba(255,255,255,.3);flex:0 0 auto;"></span>
                 <div style="flex:1;">
-                  <div class="row between"><strong>${t.label}</strong><span class="muted" style="font-size:12px;">${fmtNum(t.min_points)}+ pts</span></div>
+                  <div class="row between"><strong>${t.label}</strong><span class="muted" style="font-size:12px;">${t.key === 'vip' ? 'Por convite' : fmtNum(t.min_points) + '+ pts'}</span></div>
                   ${t.perks ? `<div class="muted" style="font-size:12px;">${t.perks}</div>` : ''}
                 </div>
                 ${active ? '<span class="chip success">atual</span>' : ''}

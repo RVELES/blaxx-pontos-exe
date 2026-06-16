@@ -281,6 +281,25 @@ class Config:
              "perks": "Tudo do Ouro + experiências Black e limites VIP."},
         ]
 
+    # BlaXx VIP — categoria FORA da escala por pontos (não é atingida
+    # acumulando pontos). É concedida apenas por convite (admin seta is_vip).
+    # Benefícios: compras de pontos SEM limite (vide services/purchase.py),
+    # exchange preferencial e concierge. min_points é um sentinela alto só
+    # para manter o tipo Int nos clientes (SwiftUI/JSON); a UI mostra
+    # "Por convite" para a chave 'vip'.
+    VIP_TIER = {
+        "key": "vip", "label": "BlaXx VIP", "min_points": 999_999_999,
+        "color": "#0A0A0A", "text_color": "#C6F432", "invite_only": True,
+        "perks": "Compras de pontos ilimitadas, exchange preferencial e "
+                 "concierge dedicado — exclusivo, apenas por convite.",
+    }
+
+    @classmethod
+    def tiers_catalog(cls) -> list[dict]:
+        """Catálogo COMPLETO de categorias para exibição: os 4 níveis por
+        pontos + BlaXx VIP (por convite) no topo."""
+        return cls.tiers() + [cls.VIP_TIER]
+
     @classmethod
     def tier_for_points(cls, lifetime_points: int) -> dict:
         """Retorna o nível atual para um total de pontos acumulados."""

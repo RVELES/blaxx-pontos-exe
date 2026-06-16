@@ -38,7 +38,7 @@ def get_card():
         "next_tier": state["next_tier"],
         "points_to_next": state["points_to_next"],
         "progress_pct": state["progress_pct"],
-        "tiers": Config.tiers(),
+        "tiers": Config.tiers_catalog(),
         "wallet_pass_available": Config.apple_pass_configured(),
     })
 
@@ -46,7 +46,7 @@ def get_card():
 @bp.get("/tiers")
 def list_tiers():
     """Catálogo público dos níveis (usado em telas de marketing/onboarding)."""
-    return jsonify({"tiers": Config.tiers()})
+    return jsonify({"tiers": Config.tiers_catalog()})
 
 
 @bp.get("/pass/status")
