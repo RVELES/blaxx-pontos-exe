@@ -1,198 +1,614 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Blaxx Pontos · Transforme pontos em experiência global</title>
-  <link rel="icon" type="image/png" href="../assets/blaxx-icon.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/design-system.css" />
-  <style>
-    .gh { --gl:#C6F432; }
-    .gh-wrap { width:min(1180px,92vw); margin:0 auto; }
-    .gh-head { position:sticky; top:0; z-index:50; backdrop-filter:blur(16px); background:rgba(246,247,244,.82); border-bottom:1px solid var(--gray-200); }
-    .gh-head .gh-wrap { display:flex; align-items:center; justify-content:space-between; height:64px; }
-    .gh-logo { font-weight:900; font-size:22px; letter-spacing:-.04em; color:var(--text); text-decoration:none; }
-    .gh-logo span { color:var(--blaxx-lime-dark); }
-    .gh-nav { display:flex; gap:22px; font-size:14px; font-weight:700; color:var(--text-muted); }
-    .gh-nav a { text-decoration:none; color:inherit; } .gh-nav a:hover { color:var(--text); }
-    .gh-actions { display:flex; gap:10px; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlaXx Pontos — Compre. Ganhe. Troque. Envie.</title>
+<meta name="description" content="Transforme seus pontos em Pix, milhas, hotéis e salas VIP — com os melhores parceiros do Brasil e do mundo.">
 
-    .gh-hero { padding:60px 0 40px; background:radial-gradient(circle at 78% 12%, rgba(198,244,50,.16), transparent 34%); }
-    .gh-hero-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:36px; align-items:center; }
-    .gh-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--gray-200); border-radius:999px; padding:8px 13px; font-size:12px; font-weight:800; color:var(--text); box-shadow:var(--shadow-sm); }
-    .gh-eyebrow .pd { width:8px; height:8px; border-radius:99px; background:var(--gl); box-shadow:0 0 14px var(--gl); }
-    .gh h1 { font-size:clamp(40px,6vw,72px); letter-spacing:-.04em; line-height:.95; margin:22px 0 18px; color:var(--text); }
-    .gh h1 .lime { color:var(--blaxx-lime-dark); }
-    .gh-lead { font-size:clamp(16px,1.7vw,20px); color:var(--text-muted); max-width:560px; line-height:1.5; }
-    .gh-cta { display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
-    .gh-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:32px; max-width:560px; }
-    .gh-metric { background:var(--surface); border:1px solid var(--gray-200); border-radius:18px; padding:16px; box-shadow:var(--shadow-sm); }
-    .gh-metric strong { display:block; font-size:24px; letter-spacing:-.02em; font-weight:900; }
-    .gh-metric small { color:var(--text-muted); font-weight:700; font-size:12px; }
+<!-- ============================================================= -->
+<!-- DEPENDÊNCIAS EXTERNAS (CDN) — necessárias para o globo e fontes -->
+<!-- ============================================================= -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
 
-    .gh-appcard { position:relative; background:linear-gradient(145deg,#07090b,#11181f 55%,#050607); border-radius:30px; border:1px solid rgba(255,255,255,.12); box-shadow:0 40px 100px rgba(0,0,0,.3); padding:24px; color:#fff; overflow:hidden; }
-    .gh-appcard:before { content:""; position:absolute; right:-90px; top:-90px; width:280px; height:280px; background:radial-gradient(circle,rgba(198,244,50,.34),transparent 64%); }
-    .gh-ac-top { display:flex; align-items:center; justify-content:space-between; position:relative; }
-    .gh-ac-bal { margin:24px 0; position:relative; }
-    .gh-ac-bal small { color:#aeb7c2; font-weight:700; }
-    .gh-ac-bal h2 { font-size:46px; letter-spacing:-.04em; margin:6px 0; font-weight:900; }
-    .gh-ac-bal b { color:var(--gl); font-size:19px; }
-    .gh-ac-quick { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; position:relative; }
-    .gh-ac-quick span { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:13px 6px; text-align:center; font-size:12px; font-weight:800; }
-    .gh-ac-quick span:first-child { background:var(--gl); color:#050607; }
-    .gh-ac-opp { margin-top:14px; background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.04)); border:1px solid rgba(255,255,255,.12); border-radius:22px; padding:18px; }
-    .gh-ac-opp .tag { display:inline-flex; background:rgba(198,244,50,.14); color:var(--gl); padding:5px 9px; font-size:11px; font-weight:900; border-radius:999px; }
-    .gh-ac-opp h3 { font-size:26px; margin:10px 0 2px; } .gh-ac-opp h3 span { color:var(--gl); }
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 80% -10%, rgba(182,242,61,.10), transparent 60%),
+      radial-gradient(900px 600px at -10% 30%, rgba(120,90,240,.07), transparent 60%),
+      #08080b;
+    color:#ece8e0;
+    font-family:'Manrope',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  a{color:inherit}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  ::selection{background:rgba(182,242,61,.30)}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
 
-    .gh-sec { padding:60px 0; }
-    .gh-sec-head { margin-bottom:28px; }
-    .gh-sec-head .k { font-size:12px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:var(--blaxx-lime-dark); }
-    .gh-sec-head h2 { font-size:clamp(30px,4.4vw,50px); letter-spacing:-.04em; line-height:1; margin:10px 0 8px; color:var(--text); }
-    .gh-sec-head p { color:var(--text-muted); max-width:580px; font-size:16px; line-height:1.55; }
-
-    .gh-net { display:grid; grid-template-columns:1.15fr .85fr; gap:22px; }
-    .gh-globe-card { background:linear-gradient(145deg,#06080a,#10161d); border:1px solid rgba(255,255,255,.1); border-radius:28px; padding:26px; color:#fff; position:relative; overflow:hidden; }
-    .gh-globe-card h3 { font-size:24px; } .gh-globe-card p { color:#aeb7c2; font-size:14px; margin-top:6px; }
-    .gh-globe { width:100%; height:340px; display:block; margin-top:8px; }
-    .gh-pin { fill:var(--gl); }
-    .gh-pin-glow { fill:var(--gl); animation:ghpulse 2.6s ease-in-out infinite; }
-    @keyframes ghpulse { 0%,100%{opacity:.15;r:3;} 50%{opacity:.55;r:9;} }
-    .gh-arc { fill:none; stroke:var(--gl); stroke-width:1.2; stroke-dasharray:3 4; opacity:.5; }
-    .gh-net-legend { position:absolute; left:26px; bottom:18px; display:flex; gap:10px; flex-wrap:wrap; }
-    .gh-net-legend span { background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:6px 11px; font-size:12px; font-weight:700; }
-
-    .gh-hotels { background:var(--surface); border:1px solid var(--gray-200); border-radius:28px; padding:24px; box-shadow:var(--shadow); }
-    .gh-hotels h3 { font-size:20px; } .gh-hotels .sub { color:var(--text-muted); font-size:13px; margin:4px 0 14px; }
-    .gh-hotel { display:flex; align-items:center; gap:13px; padding:13px 0; border-bottom:1px solid var(--gray-200); }
-    .gh-hotel:last-child { border-bottom:0; }
-    .gh-hotel .logo { width:44px; height:44px; border-radius:13px; display:grid; place-items:center; font-weight:900; font-size:15px; color:#fff; flex-shrink:0; }
-    .gh-hotel .nm { font-weight:800; font-size:14.5px; } .gh-hotel .rt { font-size:12px; color:var(--text-muted); }
-    .gh-hotel .mult { margin-left:auto; font-weight:800; font-size:13px; color:var(--blaxx-black); background:var(--blaxx-lime); padding:5px 10px; border-radius:8px; }
-    .gh-demo { font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--blaxx-lime-dark); background:rgba(198,244,50,.12); border:1px solid rgba(198,244,50,.3); padding:3px 8px; border-radius:999px; }
-
-    .gh-tiers { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
-    .gh-tier { border:1px solid var(--gray-200); border-radius:22px; padding:22px 18px; background:var(--surface); box-shadow:var(--shadow-sm); }
-    .gh-tier .dot { width:30px; height:30px; border-radius:9px; display:block; }
-    .gh-tier h4 { font-size:19px; margin:14px 0 4px; } .gh-tier .min { font-size:12px; color:var(--text-muted); }
-    .gh-tier p { font-size:12.5px; color:var(--text-muted); margin-top:8px; line-height:1.5; }
-    .gh-tier.vip { background:linear-gradient(145deg,#0A0A0A,#16181c); color:#fff; border-color:rgba(198,244,50,.4); }
-    .gh-tier.vip h4 { color:var(--gl); } .gh-tier.vip p { color:#c7cdd6; } .gh-tier.vip .min { color:var(--gl); }
-
-    .gh-foot { background:#050607; color:#fff; padding:54px 0; }
-    .gh-foot-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:24px; align-items:center; }
-    .gh-foot h2 { font-size:40px; letter-spacing:-.03em; } .gh-foot h2 span { color:var(--gl); }
-    .gh-foot p { color:#aab3bf; line-height:1.6; } .gh-foot .disc { font-size:12px; color:#6c757f; margin-top:14px; }
-
-    @media (max-width:960px){ .gh-hero-grid,.gh-net,.gh-foot-grid{grid-template-columns:1fr;} .gh-tiers{grid-template-columns:repeat(2,1fr);} .gh-nav{display:none;} .gh-metrics{grid-template-columns:1fr 1fr;} }
-    @media (max-width:520px){ .gh-tiers{grid-template-columns:1fr;} .gh-metrics{grid-template-columns:1fr;} }
-  </style>
+  .wrap{max-width:1240px;margin:0 auto}
+  .navlink{color:#b5afa3;font-size:14.5px;text-decoration:none}
+  .navlink:hover{color:#ece8e0}
+  .logocell{display:flex;align-items:center;justify-content:center;gap:12px;height:84px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.02);padding:14px;transition:all .2s}
+  .logocell:hover{background:rgba(255,255,255,.05);border-color:rgba(182,242,61,.3)}
+  .logocell img{width:30px;height:30px;object-fit:contain;border-radius:7px;flex:none}
+  .logocell span{font-family:'Sora',sans-serif;font-weight:700;font-size:15.5px;color:#d8d2c6;letter-spacing:-.3px;white-space:nowrap}
+  .chip{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:13px;cursor:pointer;user-select:none;transition:all .2s;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
+  @media(max-width:900px){
+    .grid2{grid-template-columns:1fr !important}
+    .grid4{grid-template-columns:1fr 1fr !important}
+    .grid3{grid-template-columns:1fr !important}
+    .grid5{grid-template-columns:1fr 1fr !important}
+    h1.hero{font-size:42px !important}
+    nav .menu{display:none !important}
+  }
+</style>
 </head>
-<body class="gh">
-  <header class="gh-head">
-    <div class="gh-wrap">
-      <a class="gh-logo" href="home.html">BLA<span>XX</span></a>
-      <nav class="gh-nav">
-        <a href="#network">Rede Global</a><a href="#hotels">Hotéis</a><a href="#tiers">Níveis</a><a href="login.html">Entrar</a>
-      </nav>
-      <div class="gh-actions">
-        <a href="login.html" class="btn ghost">Entrar</a>
-        <a href="cadastro.html" class="btn primary">Criar conta grátis</a>
+<body>
+<div id="app">
+
+  <!-- ============ NAV ============ -->
+  <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,8,11,.72);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.07)">
+    <div style="display:flex;align-items:center;gap:42px">
+      <div style="display:flex;align-items:baseline;gap:2px;font-family:'Sora',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.5px">
+        <span style="color:#fff">Bla</span><span style="color:var(--accent)">Xx</span><span style="font-weight:500;color:#8b867b;font-size:15px;margin-left:6px;letter-spacing:1px">PONTOS</span>
+      </div>
+      <div class="menu" style="display:flex;gap:30px">
+        <a class="navlink" href="#como">Como funciona</a>
+        <a class="navlink" href="#mapa">Mapa global</a>
+        <a class="navlink" href="#parceiros">Parceiros</a>
+        <a class="navlink" href="#vantagens">Vantagens</a>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <button style="background:none;border:none;color:#cfc9bd;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;padding:10px 8px" onclick="location.href='login.html'">Entrar</button>
+      <button style="background:var(--accent);color:#14210a;border:none;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;padding:11px 20px;border-radius:11px;box-shadow:0 8px 26px rgba(182,242,61,.22)" onclick="location.href='cadastro.html'">Criar conta grátis</button>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <header class="wrap grid2" style="padding:72px 40px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center">
+    <div>
+      <div style="display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);border:1px solid rgba(182,242,61,.3);border-radius:100px;padding:7px 16px;margin-bottom:26px">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)"></span>PONTOS · PIX · VANTAGENS
+      </div>
+      <h1 class="hero" style="font-family:'Sora',sans-serif;font-weight:800;font-size:60px;line-height:1.02;letter-spacing:-2px;margin:0 0 22px">
+        <span style="color:#fff">Compre.</span> <span style="color:#fff">Ganhe.</span><br>
+        <span style="color:var(--accent)">Troque.</span> <span style="color:#fff">Envie.</span>
+      </h1>
+      <p style="font-size:18px;line-height:1.6;color:#aaa498;max-width:480px;margin:0 0 34px">
+        A plataforma que transforma seus pontos em <strong style="color:#ece8e0;font-weight:600">Pix na hora</strong>, milhas, diárias de hotel e salas VIP — com os melhores parceiros do Brasil e do mundo.
+      </p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:40px">
+        <button style="background:var(--accent);color:#14210a;border:none;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;padding:15px 28px;border-radius:13px;box-shadow:0 12px 34px rgba(182,242,61,.24)" onclick="location.href='cadastro.html'">Começar agora</button>
+        <a href="#como" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:#ece8e0;font-size:15.5px;font-weight:600;padding:15px 26px;border-radius:13px;border:1px solid rgba(255,255,255,.14)">Ver como funciona →</a>
+      </div>
+      <div id="heroStats" style="display:flex;gap:34px"></div>
+    </div>
+
+    <!-- balance card -->
+    <div style="position:relative">
+      <div style="position:relative;z-index:2;background:linear-gradient(160deg,rgba(28,28,36,.9),rgba(16,16,22,.92));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.5)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+          <span style="font-size:13.5px;color:#8b867b">Seu saldo BlaXx</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);border:1px solid rgba(182,242,61,.3);border-radius:6px;padding:3px 8px">PRO</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+          <span id="heroBalance" style="font-family:'Sora',sans-serif;font-weight:800;font-size:42px;color:#fff;letter-spacing:-1px">128.450</span>
+          <span style="font-size:15px;color:#8b867b">pontos</span>
+        </div>
+        <div id="heroBalancePix" style="font-size:13.5px;color:#5fcf8a;margin-bottom:24px">≈ R$ 2.312,10 disponíveis em Pix</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px"><div style="font-size:12px;color:#8b867b;margin-bottom:6px">Trocar por</div><div style="font-weight:700;color:#fff">Pix instantâneo</div></div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px"><div style="font-size:12px;color:#8b867b;margin-bottom:6px">ou Enviar</div><div style="font-weight:700;color:#fff">Para alguém</div></div>
+        </div>
+        <button style="width:100%;background:var(--accent);color:#14210a;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;padding:14px;border-radius:13px" onclick="location.href='login.html'">Resgatar agora</button>
+      </div>
+      <div style="position:absolute;top:-26px;right:14px;z-index:3;background:#14141a;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 16px 40px rgba(0,0,0,.45);animation:floaty 5s ease-in-out infinite">
+        <span style="width:9px;height:9px;border-radius:50%;background:#5fcf8a;box-shadow:0 0 10px #5fcf8a"></span>
+        <span style="font-size:13px;color:#ece8e0;font-weight:600">+1.250 pts hoje</span>
+      </div>
+      <div style="position:absolute;bottom:-22px;left:-18px;z-index:3;background:#14141a;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 16px 40px rgba(0,0,0,.45);animation:floaty 6s ease-in-out infinite .8s">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">✈ Sala VIP liberada</span>
       </div>
     </div>
   </header>
 
-  <section class="gh-hero">
-    <div class="gh-wrap gh-hero-grid">
+  <!-- ============ TRUST STRIP ============ -->
+  <div class="wrap" style="margin-top:30px;padding:0 40px">
+    <div id="trustStrip" class="grid4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden"></div>
+  </div>
+
+  <!-- ============ COMO FUNCIONA ============ -->
+  <section id="como" class="wrap" style="padding:96px 40px 40px">
+    <div style="text-align:center;margin-bottom:54px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">COMO FUNCIONA</div>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:40px;letter-spacing:-1px;margin:0 0 14px;color:#fff">Quatro passos. Zero complicação.</h2>
+      <p style="font-size:17px;color:#aaa498;max-width:540px;margin:0 auto">Do dia a dia ao mundo: acumule, multiplique e use seus pontos do jeito que fizer sentido pra você.</p>
+    </div>
+    <div id="stepsGrid" class="grid4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px"></div>
+  </section>
+
+  <!-- ============ MAPA GLOBAL (GLOBE) ============ -->
+  <section id="mapa" style="background:#0b0b10;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);margin-top:60px">
+    <div class="wrap" style="padding:90px 40px">
+      <div class="grid2" style="display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center">
+        <!-- globe -->
+        <div id="globeWrap" style="position:relative;width:100%;height:560px;cursor:grab">
+          <canvas id="globe" style="width:100%;height:100%;display:block"></canvas>
+          <div id="globeTip" style="display:none;position:absolute;background:#16161c;border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:9px 13px;pointer-events:none;white-space:nowrap;z-index:6;box-shadow:0 14px 38px rgba(0,0,0,.55)"></div>
+          <div style="position:absolute;bottom:6px;left:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a554c;letter-spacing:.5px">arraste para girar · passe o mouse nos pontos</div>
+        </div>
+        <!-- legend + filters -->
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">MAPA DE CALOR GLOBAL</div>
+          <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:38px;letter-spacing:-1px;margin:0 0 14px;color:#fff">Onde seus pontos te levam</h2>
+          <p style="font-size:16px;line-height:1.6;color:#aaa498;margin:0 0 24px">Hotéis e salas VIP de cada parceiro, mapeados sobre o globo. Toque para filtrar por fornecedor.</p>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:22px">
+            <span id="totalActive" style="font-family:'Sora',sans-serif;font-weight:800;font-size:34px;color:var(--accent)">0</span>
+            <span style="font-size:14px;color:#8b867b">destinos ativos no mapa</span>
+          </div>
+          <div id="legend" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px"></div>
+          <div id="locList" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:6px 14px;max-height:168px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PARCEIROS ============ -->
+  <section id="parceiros" class="wrap" style="padding:90px 40px 30px">
+    <div style="text-align:center;margin-bottom:46px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">REDE DE PARCEIROS</div>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:40px;letter-spacing:-1px;margin:0 0 12px;color:#fff">Os maiores programas, num lugar só</h2>
+      <p style="font-size:16px;color:#aaa498;margin:0">Conecte e transfira entre os principais programas de milhas, redes de hotéis e clubes de salas VIP.</p>
+    </div>
+    <div style="margin-bottom:30px"><div style="font-size:13px;color:#8b867b;margin-bottom:14px;font-family:'JetBrains Mono',monospace;letter-spacing:1px">MILHAS &amp; PONTOS</div><div id="brandsMiles" class="grid5" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px"></div></div>
+    <div style="margin-bottom:30px"><div style="font-size:13px;color:#8b867b;margin-bottom:14px;font-family:'JetBrains Mono',monospace;letter-spacing:1px">REDES DE HOTÉIS</div><div id="brandsHotels" class="grid5" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px"></div></div>
+    <div><div style="font-size:13px;color:#8b867b;margin-bottom:14px;font-family:'JetBrains Mono',monospace;letter-spacing:1px">SALAS VIP &amp; BANCOS</div><div id="brandsVip" class="grid5" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px"></div></div>
+    <p style="text-align:center;font-size:12px;color:#5a554c;margin-top:24px;font-family:'JetBrains Mono',monospace">logos carregados via serviço de terceiros — no deploy, substitua pelos arquivos oficiais dos seus parceiros</p>
+  </section>
+
+  <!-- ============ VANTAGENS ============ -->
+  <section id="vantagens" class="wrap" style="padding:80px 40px 40px">
+    <div style="margin-bottom:46px;max-width:620px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">POR QUE BLAXX</div>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:40px;letter-spacing:-1px;margin:0;color:#fff">Vantagens que cabem no seu bolso e no seu mundo</h2>
+    </div>
+    <div id="perksGrid" class="grid3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px"></div>
+  </section>
+
+  <!-- ============ CALCULADORA ============ -->
+  <section class="wrap" style="margin-top:50px;padding:0 40px">
+    <div class="grid2" style="background:linear-gradient(150deg,rgba(22,30,10,.9),rgba(13,13,18,.95));border:1px solid rgba(182,242,61,.2);border-radius:26px;padding:48px;display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center">
       <div>
-        <span class="gh-eyebrow"><span class="pd"></span> The Global Rewards Operating System</span>
-        <h1>Transforme pontos em <span class="lime">experiência global.</span></h1>
-        <p class="gh-lead">A BlaXx consolida pontos, milhas, cashback e experiências premium em uma só plataforma — com exchange, inteligência de oportunidades e uma rede global de hotéis e companhias que aceitam seus pontos.</p>
-        <div class="gh-cta">
-          <a href="cadastro.html" class="btn primary lg">Criar conta e ganhar 500 pts →</a>
-          <a href="#network" class="btn ghost lg">Ver rede global</a>
-        </div>
-        <div class="gh-metrics">
-          <div class="gh-metric"><strong>+1.200</strong><small>parceiros conectados</small></div>
-          <div class="gh-metric"><strong>40+</strong><small>destinos na rede</small></div>
-          <div class="gh-metric"><strong>5</strong><small>níveis · até BlaXx VIP</small></div>
-        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">SIMULADOR</div>
+        <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:34px;letter-spacing:-1px;margin:0 0 14px;color:#fff">Quanto valem seus pontos?</h2>
+        <p style="font-size:15.5px;line-height:1.6;color:#aaa498;margin:0 0 28px">Arraste e veja, em tempo real, o que seus pontos rendem em Pix, milhas e diárias de hotel.</p>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:40px;color:#fff;letter-spacing:-1px;margin-bottom:18px"><span id="calcPoints">50.000</span> <span style="font-size:18px;color:#8b867b;font-weight:500">pontos</span></div>
+        <input id="calcRange" type="range" min="1000" max="500000" step="1000" value="50000" style="width:100%;accent-color:#b6f23d;height:6px;cursor:pointer">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#5a554c;margin-top:8px;font-family:'JetBrains Mono',monospace"><span>1k</span><span>500k</span></div>
       </div>
-      <div class="gh-appcard">
-        <div class="gh-ac-top"><b style="font-size:22px">BLA<span style="color:var(--gl)">XX</span></b><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#fff,#d9d9d9);display:block"></span></div>
-        <div class="gh-ac-bal"><small>Patrimônio em Rewards</small><h2>1.254.890 pts</h2><b>≈ R$ 12.548,90</b></div>
-        <div class="gh-ac-quick"><span>Comprar</span><span>Transferir</span><span>Converter</span><span>Resgatar</span></div>
-        <div class="gh-ac-opp"><span class="tag">OPORTUNIDADE DETECTADA</span><h3>LATAM PASS <span>Bônus 85%</span></h3><p style="color:#aeb7c2;font-size:13px;margin-top:2px">Potencial ganho: <b style="color:var(--gl)">+122.000 pontos</b></p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="gh-sec" id="network">
-    <div class="gh-wrap">
-      <div class="gh-sec-head">
-        <div class="k">BlaXx Global Network™</div>
-        <h2>Seus pontos viajam o mundo.</h2>
-        <p>Uma rede viva de destinos, companhias aéreas e hotéis premium onde seus pontos viram estadia, voo e experiência — em mais de 40 destinos.</p>
-      </div>
-      <div class="gh-net">
-        <div class="gh-globe-card">
-          <h3>Rede global de experiências</h3>
-          <p>Hotéis, companhias aéreas, lounges e parceiros premium conectados.</p>
-          <svg class="gh-globe" viewBox="0 0 520 340" role="img" aria-label="Mapa-múndi da rede Blaxx">
-            <defs><radialGradient id="ghg" cx="42%" cy="38%" r="70%"><stop offset="0%" stop-color="#16202a"/><stop offset="100%" stop-color="#070b0f"/></radialGradient></defs>
-            <circle cx="260" cy="170" r="150" fill="url(#ghg)" stroke="rgba(198,244,50,.25)" stroke-width="1"/>
-            <ellipse cx="260" cy="170" rx="50" ry="150" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-            <ellipse cx="260" cy="170" rx="100" ry="150" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>
-            <line x1="260" y1="20" x2="260" y2="320" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
-            <line x1="110" y1="170" x2="410" y2="170" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
-            <path d="M124 110 Q260 92 396 110" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>
-            <path d="M124 230 Q260 248 396 230" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1"/>
-            <path class="gh-arc" d="M150 150 Q230 70 330 120"/><path class="gh-arc" d="M330 120 Q420 150 360 210"/>
-            <path class="gh-arc" d="M150 150 Q180 250 250 240"/><path class="gh-arc" d="M250 240 Q330 270 360 210"/>
-            <g><circle class="gh-pin-glow" cx="150" cy="150" r="3"/><circle class="gh-pin" cx="150" cy="150" r="3.5"/></g>
-            <g><circle class="gh-pin-glow" cx="330" cy="120" r="3"/><circle class="gh-pin" cx="330" cy="120" r="3.5"/></g>
-            <g><circle class="gh-pin-glow" cx="360" cy="210" r="3"/><circle class="gh-pin" cx="360" cy="210" r="3.5"/></g>
-            <g><circle class="gh-pin-glow" cx="250" cy="240" r="3"/><circle class="gh-pin" cx="250" cy="240" r="3.5"/></g>
-            <g><circle class="gh-pin-glow" cx="210" cy="120" r="3"/><circle class="gh-pin" cx="210" cy="120" r="3.5"/></g>
-          </svg>
-          <div class="gh-net-legend"><span>🟢 Hotéis</span><span>🔵 Cias aéreas</span><span>🟣 Lounges</span><span>🟠 Experiências</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="grid-column:1 / -1;background:rgba(95,207,138,.08);border:1px solid rgba(95,207,138,.3);border-radius:18px;padding:24px">
+          <div style="font-size:13px;color:#9a958c;margin-bottom:8px">Pix instantâneo</div>
+          <div id="calcPix" style="font-family:'Sora',sans-serif;font-weight:800;font-size:38px;color:#5fcf8a;letter-spacing:-1px">R$ 900,00</div>
         </div>
-        <div class="gh-hotels" id="hotels">
-          <div style="display:flex;align-items:center;justify-content:space-between"><h3>Hotéis que aceitam pontos</h3><span class="gh-demo">rede em expansão</span></div>
-          <div class="sub">Converta pontos Blaxx em diárias nas maiores redes do mundo.</div>
-          <div class="gh-hotel"><span class="logo" style="background:#7B1E3B">M</span><div><div class="nm">Marriott Bonvoy</div><div class="rt">8.500+ hotéis · 139 países</div></div><span class="mult">Estadia</span></div>
-          <div class="gh-hotel"><span class="logo" style="background:#104C97">H</span><div><div class="nm">Hilton Honors</div><div class="rt">7.000+ hotéis · 122 países</div></div><span class="mult">Estadia</span></div>
-          <div class="gh-hotel"><span class="logo" style="background:#C8102E">A</span><div><div class="nm">Accor ALL</div><div class="rt">5.500+ hotéis · 110 países</div></div><span class="mult">Estadia</span></div>
-          <div class="gh-hotel"><span class="logo" style="background:#0B3D2E">I</span><div><div class="nm">IHG One Rewards</div><div class="rt">6.000+ hotéis · 100 países</div></div><span class="mult">Estadia</span></div>
-          <div class="gh-hotel"><span class="logo" style="background:#7A5Cff">Y</span><div><div class="nm">World of Hyatt</div><div class="rt">1.300+ hotéis · 75 países</div></div><span class="mult">Estadia</span></div>
-          <div class="gh-hotel"><span class="logo" style="background:#1F6F5C">ML</span><div><div class="nm">Meliá Rewards</div><div class="rt">380+ hotéis · 40 países</div></div><span class="mult">Estadia</span></div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px">
+          <div style="font-size:13px;color:#9a958c;margin-bottom:8px">Em milhas aéreas</div>
+          <div id="calcMiles" style="font-family:'Sora',sans-serif;font-weight:700;font-size:26px;color:#fff">47.500</div>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px">
+          <div style="font-size:13px;color:#9a958c;margin-bottom:8px">Diárias de hotel</div>
+          <div id="calcNights" style="font-family:'Sora',sans-serif;font-weight:700;font-size:26px;color:#fff">4</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="gh-sec" id="tiers" style="background:radial-gradient(circle at 20% 0%,rgba(198,244,50,.08),transparent 30%)">
-    <div class="gh-wrap">
-      <div class="gh-sec-head">
-        <div class="k">Níveis Blaxx</div>
-        <h2>Quanto mais você usa, mais alto você chega.</h2>
-        <p>Seu nível sobe com os pontos acumulados (vitalício) e nunca cai ao resgatar. No topo, o <b>BlaXx VIP</b> — exclusivo, apenas por convite.</p>
-      </div>
-      <div class="gh-tiers">
-        <div class="gh-tier"><span class="dot" style="background:#CD7F32"></span><h4>Bronze</h4><div class="min">0+ pts</div><p>Acesso ao programa, catálogo e PIX.</p></div>
-        <div class="gh-tier"><span class="dot" style="background:#9AA0A6"></span><h4>Prata</h4><div class="min">5.000+ pts</div><p>Ofertas exclusivas + atendimento prioritário.</p></div>
-        <div class="gh-tier"><span class="dot" style="background:#D4AF37"></span><h4>Ouro</h4><div class="min">20.000+ pts</div><p>Bônus em campanhas + benefícios premium.</p></div>
-        <div class="gh-tier"><span class="dot" style="background:#0B0B0C"></span><h4>Black</h4><div class="min">50.000+ pts</div><p>Experiências Black e limites ampliados.</p></div>
-        <div class="gh-tier vip"><span class="dot" style="background:var(--gl)"></span><h4>BlaXx VIP</h4><div class="min">Por convite</div><p>Compras de pontos ilimitadas, exchange preferencial e concierge dedicado.</p></div>
-      </div>
+  <!-- ============ DEPOIMENTOS ============ -->
+  <section class="wrap" style="padding:90px 40px 40px">
+    <div style="text-align:center;margin-bottom:46px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">QUEM USA, RECOMENDA</div>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:38px;letter-spacing:-1px;margin:0;color:#fff">Mais de 800 mil pessoas já trocam com a BlaXx</h2>
+    </div>
+    <div id="reviewsGrid" class="grid3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px"></div>
+  </section>
+
+  <!-- ============ CTA BAND ============ -->
+  <section class="wrap" style="margin-top:30px;padding:0 40px">
+    <div style="position:relative;overflow:hidden;background:linear-gradient(120deg,#b6f23d,#8fd11f);border-radius:26px;padding:60px 48px;text-align:center">
+      <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:42px;letter-spacing:-1.5px;margin:0 0 14px;color:#14210a">Seus pontos valem o mundo. Comece hoje.</h2>
+      <p style="font-size:17px;color:#2e4310;margin:0 0 30px;font-weight:500">Crie sua conta grátis e resgate seu primeiro Pix em minutos.</p>
+      <button style="background:#16140d;color:#fff;border:none;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;padding:16px 36px;border-radius:14px" onclick="location.href='cadastro.html'">Criar conta grátis</button>
     </div>
   </section>
 
-  <footer class="gh-foot">
-    <div class="gh-wrap gh-foot-grid">
-      <div><h2>BLA<span>XX</span> Rewards</h2><p>The Global Rewards Operating System. Acumule, compre, envie, troque e viaje com seus pontos.</p></div>
-      <div><a href="cadastro.html" class="btn primary lg">Começar agora →</a><p class="disc">Os pontos Blaxx não são moeda, depósito, investimento ou criptoativo — são créditos promocionais de uso restrito. Rede de hotéis/companhias ilustrativa (em expansão).</p></div>
+  <!-- ============ FOOTER ============ -->
+  <footer class="wrap" style="margin-top:80px;padding:50px 40px;border-top:1px solid rgba(255,255,255,.07)">
+    <div class="grid4" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:44px">
+      <div>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:21px;margin-bottom:14px"><span style="color:#fff">Bla</span><span style="color:var(--accent)">Xx</span></div>
+        <p style="font-size:14px;line-height:1.6;color:#8b867b;margin:0;max-width:280px">Compre. Ganhe. Troque. Envie. A forma mais simples de fazer seus pontos valerem mais.</p>
+      </div>
+      <div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px">Produto</div><div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:#8b867b"><span>Como funciona</span><span>Parceiros</span><span>Mapa global</span><span>Calculadora</span></div></div>
+      <div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px">Empresa</div><div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:#8b867b"><span>Sobre</span><span>Carreiras</span><span>Imprensa</span><span>Contato</span></div></div>
+      <div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px">Legal</div><div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:#8b867b"><span>Termos de uso</span><span>Privacidade</span><span>Segurança</span></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;color:#5a554c;font-family:'JetBrains Mono',monospace">
+      <span>© 2026 BlaXx Pontos · CNPJ 00.000.000/0001-00</span>
+      <span>Feito no Brasil 🇧🇷</span>
     </div>
   </footer>
+</div>
+
+<script>
+/* =================================================================== *
+ *  BLAXX PONTOS — CONFIGURAÇÃO DE DADOS                               *
+ *  Edite SOMENTE este objeto CONFIG para popular a home.              *
+ *  Cada chave está documentada em INSTRUCOES.md.                      *
+ * =================================================================== */
+const CONFIG = {
+  // -- Marca / tema --
+  brandName: 'BlaXx',
+  accent: '#b6f23d',          // cor de destaque (verde limão)
+
+  // -- Cartão de saldo do hero (apenas exibição) --
+  hero: {
+    balance: '128.450',
+    balancePix: '≈ R$ 2.312,10 disponíveis em Pix'
+  },
+
+  // -- Mini-stats do hero (abaixo dos botões) --
+  heroStats: [
+    { value: '+2,4 mi', label: 'pontos trocados' },
+    { value: '120+',    label: 'parceiros' },
+    { value: '4.9★',    label: 'avaliação' }
+  ],
+
+  // -- Faixa de números (trust strip) --
+  trust: [
+    { value: '350+', label: 'salas VIP no mundo' },
+    { value: '60',   label: 'países atendidos' },
+    { value: '12s',  label: 'tempo médio do Pix' },
+    { value: '0',    label: 'taxas escondidas' }
+  ],
+
+  // -- Calculadora --
+  calc: {
+    pixRate: 0.018,        // R$ por ponto    (1.000 pts = R$ 18,00)
+    milesRate: 0.95,       // milhas por ponto
+    pointsPerNight: 12000, // pontos por diária de hotel
+    defaultPoints: 50000   // valor inicial do slider
+  },
+
+  /* -- FORNECEDORES do mapa --
+     A "chave" (smiles, latam, ...) liga o fornecedor aos seus pontos abaixo.
+     rgb: cor do fornecedor no mapa, no formato "R,G,B".               */
+  suppliers: {
+    smiles:   { name: 'Smiles',          cat: 'Milhas',    rgb: '231,178,74'  },
+    latam:    { name: 'LATAM Pass',      cat: 'Milhas',    rgb: '224,96,160'  },
+    azul:     { name: 'Azul Fidelidade', cat: 'Milhas',    rgb: '79,143,240'  },
+    accor:    { name: 'Accor ALL',       cat: 'Hotéis',    rgb: '79,201,106'  },
+    marriott: { name: 'Marriott Bonvoy', cat: 'Hotéis',    rgb: '155,108,240' },
+    priority: { name: 'Priority Pass',   cat: 'Salas VIP', rgb: '63,198,216'  }
+  },
+
+  /* -- PONTOS no mapa (hotéis / salas VIP / cidades por fornecedor) --
+     s   = chave do fornecedor (deve existir em suppliers acima)
+     c   = nome exibido (cidade / aeroporto / unidade)
+     lat = latitude  (-90 a 90)
+     lon = longitude (-180 a 180)
+     i   = intensidade do calor (0.1 a 1)                              */
+  points: [
+    {s:'smiles',c:'São Paulo',lat:-23.5,lon:-46.6,i:1},
+    {s:'smiles',c:'Rio de Janeiro',lat:-22.9,lon:-43.2,i:.8},
+    {s:'smiles',c:'Brasília',lat:-15.8,lon:-47.9,i:.6},
+    {s:'smiles',c:'Recife',lat:-8,lon:-34.9,i:.5},
+    {s:'smiles',c:'Buenos Aires',lat:-34.6,lon:-58.4,i:.6},
+    {s:'smiles',c:'Orlando',lat:28.5,lon:-81.3,i:.7},
+    {s:'smiles',c:'Lisboa',lat:38.7,lon:-9.1,i:.6},
+    {s:'latam',c:'Santiago',lat:-33.4,lon:-70.6,i:.9},
+    {s:'latam',c:'Lima',lat:-12,lon:-77,i:.7},
+    {s:'latam',c:'São Paulo',lat:-23.55,lon:-46.63,i:.9},
+    {s:'latam',c:'Bogotá',lat:4.7,lon:-74,i:.6},
+    {s:'latam',c:'Madri',lat:40.4,lon:-3.7,i:.7},
+    {s:'latam',c:'Miami',lat:25.7,lon:-80.2,i:.7},
+    {s:'latam',c:'Sydney',lat:-33.8,lon:151.2,i:.6},
+    {s:'azul',c:'Campinas',lat:-23,lon:-47.1,i:.9},
+    {s:'azul',c:'Recife',lat:-8.05,lon:-34.88,i:.6},
+    {s:'azul',c:'Belo Horizonte',lat:-19.9,lon:-43.9,i:.6},
+    {s:'azul',c:'Manaus',lat:-3.1,lon:-60,i:.5},
+    {s:'azul',c:'Fort Lauderdale',lat:26.1,lon:-80.1,i:.6},
+    {s:'azul',c:'Lisboa',lat:38.72,lon:-9.13,i:.5},
+    {s:'accor',c:'Paris',lat:48.8,lon:2.3,i:1},
+    {s:'accor',c:'Londres',lat:51.5,lon:-0.1,i:.8},
+    {s:'accor',c:'Bangkok',lat:13.7,lon:100.5,i:.7},
+    {s:'accor',c:'Dubai',lat:25.2,lon:55.3,i:.8},
+    {s:'accor',c:'São Paulo',lat:-23.52,lon:-46.6,i:.7},
+    {s:'accor',c:'Singapura',lat:1.3,lon:103.8,i:.7},
+    {s:'accor',c:'Sydney',lat:-33.86,lon:151.2,i:.6},
+    {s:'marriott',c:'Nova York',lat:40.7,lon:-74,i:1},
+    {s:'marriott',c:'Londres',lat:51.51,lon:-0.12,i:.8},
+    {s:'marriott',c:'Tóquio',lat:35.6,lon:139.7,i:.8},
+    {s:'marriott',c:'Dubai',lat:25.21,lon:55.27,i:.7},
+    {s:'marriott',c:'Los Angeles',lat:34,lon:-118.2,i:.7},
+    {s:'marriott',c:'Xangai',lat:31.2,lon:121.5,i:.7},
+    {s:'marriott',c:'Cancún',lat:21.1,lon:-86.8,i:.6},
+    {s:'priority',c:'Dubai (DXB)',lat:25.25,lon:55.36,i:1},
+    {s:'priority',c:'Londres (LHR)',lat:51.47,lon:-0.45,i:.8},
+    {s:'priority',c:'Singapura (SIN)',lat:1.36,lon:103.99,i:.8},
+    {s:'priority',c:'Frankfurt (FRA)',lat:50.04,lon:8.56,i:.7},
+    {s:'priority',c:'Hong Kong (HKG)',lat:22.3,lon:114.2,i:.7},
+    {s:'priority',c:'Istambul (IST)',lat:41,lon:28.9,i:.7},
+    {s:'priority',c:'Guarulhos (GRU)',lat:-23.43,lon:-46.47,i:.8},
+    {s:'priority',c:'Doha (DOH)',lat:25.3,lon:51.5,i:.6}
+  ],
+
+  /* -- PARCEIROS (logos) --
+     name   = nome exibido
+     domain = domínio usado para buscar o favicon/logo automaticamente
+     logo   = (OPCIONAL) caminho para um arquivo de logo oficial.
+              Se preenchido, tem prioridade sobre o favicon do domínio.
+              Ex.: logo: 'logos/smiles.svg'                            */
+  brands: {
+    miles: [
+      { name:'Smiles',     domain:'smiles.com.br'  /*, logo:'logos/smiles.svg' */ },
+      { name:'LATAM Pass', domain:'latam.com' },
+      { name:'Azul',       domain:'voeazul.com.br' },
+      { name:'Livelo',     domain:'livelo.com.br' },
+      { name:'Esfera',     domain:'esfera.com.vc' }
+    ],
+    hotels: [
+      { name:'Accor ALL', domain:'accor.com' },
+      { name:'Marriott',  domain:'marriott.com' },
+      { name:'Hilton',    domain:'hilton.com' },
+      { name:'IHG',       domain:'ihg.com' },
+      { name:'Meliá',     domain:'melia.com' }
+    ],
+    vip: [
+      { name:'Priority Pass', domain:'prioritypass.com' },
+      { name:'LoungeKey',     domain:'loungekey.com' },
+      { name:'Dragon Pass',   domain:'dragonpass.com' },
+      { name:'Itaú',          domain:'itau.com.br' },
+      { name:'Nubank',        domain:'nubank.com.br' }
+    ]
+  },
+
+  // -- Como funciona (4 passos) --
+  steps: [
+    { n:'01', title:'Compre', desc:'Acumule pontos automaticamente nas compras do dia a dia, com cartões e lojas parceiras.' },
+    { n:'02', title:'Ganhe',  desc:'Multiplique com bônus de transferência de até 120%, missões e promoções relâmpago.' },
+    { n:'03', title:'Troque', desc:'Vire Pix na hora, milhas aéreas, diárias de hotel ou acesso a salas VIP pelo mundo.' },
+    { n:'04', title:'Envie',  desc:'Transfira pontos ou Pix para qualquer pessoa, em segundos, sem burocracia.', highlight:true }
+  ],
+
+  // -- Vantagens (cards) --
+  perks: [
+    { tag:'PIX',    title:'Pix em segundos',        desc:'Resgate seus pontos como dinheiro na conta, sem espera e sem letras miúdas.' },
+    { tag:'BÔNUS',  title:'Transferência turbinada', desc:'Bônus de até 120% ao transferir entre programas parceiros nas janelas certas.' },
+    { tag:'VIP',    title:'Salas VIP no mundo',     desc:'Acesso a 350+ lounges em aeroportos do planeta usando seus pontos.' },
+    { tag:'HOTÉIS', title:'Diárias dos sonhos',     desc:'Troque por noites nas maiores redes — Accor, Marriott, Hilton e mais.' },
+    { tag:'ZERO',   title:'Sem taxas escondidas',   desc:'O que você vê é o que você recebe. Transparência total em cada resgate.' },
+    { tag:'24/7',   title:'Suporte humano',         desc:'Time de verdade pronto pra ajudar a qualquer hora, todos os dias.' }
+  ],
+
+  // -- Depoimentos --
+  reviews: [
+    { text:'Acumulei pontos do dia a dia e troquei por Pix pra fechar a viagem. Caiu na conta em segundos. Surreal.', name:'Marina A.', role:'São Paulo, SP', initial:'M' },
+    { text:'O mapa de salas VIP é genial — vi exatamente onde podia usar antes de viajar pra Lisboa.', name:'Rafael T.', role:'Belo Horizonte, MG', initial:'R' },
+    { text:'Transferi com bônus de 100% e dobrei minhas milhas. A BlaXx virou meu hub de pontos.', name:'Camila S.', role:'Recife, PE', initial:'C' }
+  ]
+};
+
+/* =================================================================== *
+ *  A PARTIR DAQUI É MOTOR DE RENDERIZAÇÃO — não precisa editar.        *
+ * =================================================================== */
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => n.toLocaleString('pt-BR');
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  // tema
+  document.documentElement.style.setProperty('--accent', CONFIG.accent);
+  document.body.style.setProperty('--accent', CONFIG.accent);
+
+  // hero
+  $('heroBalance').textContent = CONFIG.hero.balance;
+  $('heroBalancePix').textContent = CONFIG.hero.balancePix;
+  $('heroStats').innerHTML = CONFIG.heroStats.map(s =>
+    `<div><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:24px;color:#fff">${esc(s.value)}</div><div style="font-size:13px;color:#8b867b">${esc(s.label)}</div></div>`
+  ).join('');
+
+  // trust strip
+  $('trustStrip').innerHTML = CONFIG.trust.map(s =>
+    `<div style="background:#0b0b10;padding:26px 24px;text-align:center"><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:30px;color:#fff">${esc(s.value)}</div><div style="font-size:13.5px;color:#8b867b;margin-top:4px">${esc(s.label)}</div></div>`
+  ).join('');
+
+  // steps
+  $('stepsGrid').innerHTML = CONFIG.steps.map(s => {
+    const bg = s.highlight ? 'linear-gradient(160deg,rgba(22,30,10,.85),rgba(13,16,9,.85))' : 'linear-gradient(160deg,rgba(22,22,28,.8),rgba(13,13,18,.8))';
+    const bd = s.highlight ? 'rgba(182,242,61,.25)' : 'rgba(255,255,255,.08)';
+    const dc = s.highlight ? '#c3d3a8' : '#9a958c';
+    return `<div style="background:${bg};border:1px solid ${bd};border-radius:20px;padding:28px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);margin-bottom:18px">${esc(s.n)}</div>
+      <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:21px;color:#fff;margin-bottom:10px">${esc(s.title)}</div>
+      <p style="font-size:14.5px;line-height:1.6;color:${dc};margin:0">${esc(s.desc)}</p></div>`;
+  }).join('');
+
+  // perks
+  $('perksGrid').innerHTML = CONFIG.perks.map(p =>
+    `<div style="background:linear-gradient(160deg,rgba(22,22,28,.7),rgba(13,13,18,.7));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:16px">${esc(p.tag)}</div>
+      <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:#fff;margin-bottom:9px">${esc(p.title)}</div>
+      <p style="font-size:14px;line-height:1.6;color:#9a958c;margin:0">${esc(p.desc)}</p></div>`
+  ).join('');
+
+  // reviews
+  $('reviewsGrid').innerHTML = CONFIG.reviews.map(r =>
+    `<div style="background:linear-gradient(160deg,rgba(22,22,28,.7),rgba(13,13,18,.7));border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px">
+      <div style="color:var(--accent);font-size:15px;margin-bottom:14px">★★★★★</div>
+      <p style="font-size:15px;line-height:1.65;color:#cfc9bd;margin:0 0 22px">${esc(r.text)}</p>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2a2a34,#16161c);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;color:var(--accent)">${esc(r.initial)}</div>
+        <div><div style="font-size:14px;font-weight:700;color:#fff">${esc(r.name)}</div><div style="font-size:12.5px;color:#8b867b">${esc(r.role)}</div></div>
+      </div></div>`
+  ).join('');
+
+  // brands / logos
+  function logoSrc(b){ return b.logo ? b.logo : 'https://www.google.com/s2/favicons?domain=' + b.domain + '&sz=128'; }
+  function renderBrands(id, list){
+    $(id).innerHTML = list.map(b =>
+      `<div class="logocell"><img src="${esc(logoSrc(b))}" alt="${esc(b.name)}" onerror="this.style.display='none'"><span>${esc(b.name)}</span></div>`
+    ).join('');
+  }
+  renderBrands('brandsMiles',  CONFIG.brands.miles);
+  renderBrands('brandsHotels', CONFIG.brands.hotels);
+  renderBrands('brandsVip',    CONFIG.brands.vip);
+
+  // ---------- ESTADO DO MAPA ----------
+  const SUP = CONFIG.suppliers, POINTS = CONFIG.points;
+  const active = {}; Object.keys(SUP).forEach(k => active[k] = true);
+
+  function renderLegend(){
+    $('legend').innerHTML = Object.keys(SUP).map(k => {
+      const s = SUP[k], on = active[k], cnt = POINTS.filter(p => p.s === k).length;
+      const chipStyle = `border-color:${on?'rgba('+s.rgb+',0.5)':'rgba(255,255,255,0.08)'};background:${on?'rgba('+s.rgb+',0.08)':'rgba(255,255,255,0.02)'};opacity:${on?1:0.42}`;
+      const dotStyle = `width:12px;height:12px;border-radius:50%;background:rgb(${s.rgb});flex:none;box-shadow:${on?'0 0 12px rgb('+s.rgb+')':'none'}`;
+      return `<div class="chip" data-key="${k}" style="${chipStyle}">
+        <span style="${dotStyle}"></span>
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-size:13.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.name)}</span>
+          <span style="display:block;font-size:11.5px;color:#8b867b">${esc(s.cat)} · ${cnt}</span>
+        </span></div>`;
+    }).join('');
+    $('legend').querySelectorAll('.chip').forEach(el => el.onclick = () => { active[el.dataset.key] = !active[el.dataset.key]; renderLegend(); renderLocList(); updateTotal(); });
+  }
+  function renderLocList(){
+    $('locList').innerHTML = POINTS.map(p => {
+      const s = SUP[p.s], on = active[p.s];
+      const dot = `width:8px;height:8px;border-radius:50%;background:rgb(${s.rgb});flex:none;box-shadow:0 0 8px rgb(${s.rgb})`;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(255,255,255,0.05);opacity:${on?1:0.28};transition:opacity .2s">
+        <span style="${dot}"></span>
+        <span style="flex:1;font-size:13px;color:#ece8e0">${esc(p.c)}</span>
+        <span style="font-size:11.5px;color:#8b867b">${esc(s.name)}</span></div>`;
+    }).join('');
+  }
+  function updateTotal(){ $('totalActive').textContent = POINTS.filter(p => active[p.s]).length; }
+  renderLegend(); renderLocList(); updateTotal();
+
+  // ---------- CALCULADORA ----------
+  const range = $('calcRange'); range.value = CONFIG.calc.defaultPoints;
+  function calc(){
+    const pts = Math.max(0, parseInt(range.value) || 0);
+    $('calcPoints').textContent = fmt(pts);
+    $('calcPix').textContent = 'R$ ' + (pts*CONFIG.calc.pixRate).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    $('calcMiles').textContent = fmt(Math.round(pts*CONFIG.calc.milesRate));
+    $('calcNights').textContent = String(Math.max(0, Math.floor(pts/CONFIG.calc.pointsPerNight)));
+  }
+  range.addEventListener('input', calc); calc();
+
+  // ---------- GLOBO (mapa de calor) ----------
+  const canvas = $('globe'), ctx = canvas.getContext('2d');
+  const tipEl = $('globeTip'), wrap = $('globeWrap');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let rotL = 60, rotP = -14, dragging = false, autoR = true, lastX = 0, lastY = 0, hoverId = null;
+
+  function heat(x, y, col, intensity, z){
+    const hr = (16 + 14*intensity) * (0.55 + 0.6*z);
+    const g = ctx.createRadialGradient(x, y, 0, x, y, hr);
+    g.addColorStop(0, 'rgba(' + col + ',' + (0.5*z + 0.22) + ')');
+    g.addColorStop(1, 'rgba(' + col + ',0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, hr, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(' + col + ',' + (0.65 + 0.35*z) + ')';
+    ctx.beginPath(); ctx.arc(x, y, 2.1 * (0.7 + 0.5*z), 0, 7); ctx.fill();
+  }
+
+  function startGlobe(world){
+    const land = topojson.feature(world, world.objects.countries);
+    const borders = topojson.mesh(world, world.objects.countries, (a,b) => a !== b);
+    const coast = topojson.mesh(world, world.objects.countries, (a,b) => a === b);
+
+    function draw(){
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0){
+        const nW = Math.max(1, Math.round(rect.width*dpr)), nH = Math.max(1, Math.round(rect.height*dpr));
+        if (canvas.width !== nW || canvas.height !== nH){ canvas.width = nW; canvas.height = nH; }
+      }
+      const Wc = canvas.width/dpr, Hc = canvas.height/dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.clearRect(0,0,Wc,Hc);
+      const cx = Wc/2, cy = Hc/2, R = Math.min(Wc,Hc)*0.42;
+
+      let atm = ctx.createRadialGradient(cx,cy,R*0.88,cx,cy,R*1.28);
+      atm.addColorStop(0,'rgba(182,242,61,0.10)'); atm.addColorStop(1,'rgba(182,242,61,0)');
+      ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx,cy,R*1.28,0,7); ctx.fill();
+      let sph = ctx.createRadialGradient(cx-R*0.35,cy-R*0.35,R*0.1,cx,cy,R);
+      sph.addColorStop(0,'#1a2230'); sph.addColorStop(0.65,'#0e131c'); sph.addColorStop(1,'#070709');
+      ctx.fillStyle = sph; ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.fill();
+
+      const proj = d3.geoOrthographic().translate([cx,cy]).scale(R).rotate([rotL,rotP]).clipAngle(90);
+      const path = d3.geoPath(proj, ctx);
+      ctx.beginPath(); path(d3.geoGraticule10()); ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 0.5; ctx.stroke();
+      ctx.beginPath(); path(land); ctx.fillStyle = 'rgba(58,62,80,0.95)'; ctx.fill();
+      ctx.beginPath(); path(coast); ctx.strokeStyle = 'rgba(186,190,214,0.55)'; ctx.lineWidth = 0.8; ctx.stroke();
+      ctx.beginPath(); path(borders); ctx.strokeStyle = 'rgba(132,136,166,0.42)'; ctx.lineWidth = 0.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.strokeStyle = 'rgba(182,242,61,0.25)'; ctx.lineWidth = 1; ctx.stroke();
+
+      for (const m of POINTS){
+        m._vis = false;
+        if (!active[m.s]) continue;
+        const dist = d3.geoDistance([m.lon,m.lat], [-rotL,-rotP]);
+        if (dist >= Math.PI/2) continue;
+        const p = proj([m.lon,m.lat]); if (!p) continue;
+        const z = Math.cos(dist);
+        heat(p[0], p[1], SUP[m.s].rgb, m.i, z);
+        m._sx = p[0]; m._sy = p[1]; m._vis = true;
+      }
+      if (autoR && !dragging) rotL += 0.16;
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    wrap.addEventListener('mousedown', e => { dragging = true; autoR = false; lastX = e.clientX; lastY = e.clientY; wrap.style.cursor = 'grabbing'; });
+    window.addEventListener('mouseup', () => { if (dragging){ dragging = false; wrap.style.cursor = 'grab'; setTimeout(() => { if (!dragging) autoR = true; }, 2500); } });
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      if (dragging){
+        rotL += (e.clientX - lastX) * 0.28;
+        rotP = Math.max(-88, Math.min(88, rotP - (e.clientY - lastY) * 0.28));
+        lastX = e.clientX; lastY = e.clientY; tipEl.style.display = 'none'; hoverId = null; return;
+      }
+      let best = null, bestD = 15;
+      for (const m of POINTS){ if (!m._vis) continue; const d = Math.hypot(m._sx - mx, m._sy - my); if (d < bestD){ bestD = d; best = m; } }
+      if (best){
+        const id = best.s + best.c;
+        if (id !== hoverId){
+          hoverId = id;
+          tipEl.innerHTML = `<div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#fff">${esc(best.c)}</div><div style="font-size:12px;color:#9a958c;margin-top:2px">${esc(SUP[best.s].name)} · ${esc(SUP[best.s].cat)}</div>`;
+          tipEl.style.display = 'block';
+        }
+        tipEl.style.left = best._sx + 'px'; tipEl.style.top = best._sy + 'px'; tipEl.style.transform = 'translate(-50%,-145%)';
+        wrap.style.cursor = 'pointer';
+      } else if (hoverId){ hoverId = null; tipEl.style.display = 'none'; wrap.style.cursor = 'grab'; }
+    });
+    canvas.addEventListener('mouseleave', () => { if (hoverId){ hoverId = null; tipEl.style.display = 'none'; } });
+  }
+
+  // carrega o mapa-múndi (países + fronteiras)
+  fetch('vendor/countries-110m.json')
+    .then(r => r.json())
+    .then(startGlobe)
+    .catch(e => console.error('Falha ao carregar o mapa-múndi:', e));
+})();
+</script>
 </body>
 </html>
