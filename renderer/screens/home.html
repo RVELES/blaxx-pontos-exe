@@ -440,6 +440,22 @@ const CONFIG = {
   // hero
   $('heroBalance').textContent = CONFIG.hero.balance;
   $('heroBalancePix').textContent = CONFIG.hero.balancePix;
+  // Saldo real da carteira: sobrepõe o número de exibição quando há sessão
+  // ativa (reflete pontos creditados após compra PIX). Deslogado mantém o demo.
+  (function(){
+    var DEFAULT_API = 'https://blaxx-pontos-exe.onrender.com';
+    var base; try { base = (localStorage.getItem('blaxx_api_url') || DEFAULT_API).replace(/\/+$/,''); } catch(e){ base = DEFAULT_API; }
+    var tok; try { tok = (JSON.parse(localStorage.getItem('blaxx_session')||'null')||{}).token || null; } catch(e){ tok = null; }
+    if (!tok) return;
+    fetch(base + '/wallet/', { headers: { Authorization: 'Bearer ' + tok } })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(w){
+        if (!w) return;
+        var hb = $('heroBalance'); if (hb) hb.textContent = Number(w.balance_pts||0).toLocaleString('pt-BR');
+        var hp = $('heroBalancePix'); if (hp) hp.textContent = '≈ ' + Number(w.balance_brl_equiv||0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' }) + ' disponíveis em Pix';
+      })
+      .catch(function(){});
+  })();
   $('heroStats').innerHTML = CONFIG.heroStats.map(s =>
     `<div><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:24px;color:#fff">${esc(s.value)}</div><div style="font-size:13px;color:#8b867b">${esc(s.label)}</div></div>`
   ).join('');
@@ -595,6 +611,11 @@ const CONFIG = {
     draw();
 
     wrap.addEventListener('mousedown', e => { dragging = true; autoR = false; lastX = e.clientX; lastY = e.clientY; wrap.style.cursor = 'grabbing'; });
+    // Touch (iPad/celular): girar com o dedo. Sem isto, só o mouse girava o globo.
+    canvas.style.touchAction = 'none'; wrap.style.touchAction = 'none';
+    wrap.addEventListener('touchstart', e => { if (e.touches.length !== 1) return; dragging = true; autoR = false; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }, { passive: true });
+    wrap.addEventListener('touchmove', e => { if (!dragging || e.touches.length !== 1) return; e.preventDefault(); const t = e.touches[0]; rotL += (t.clientX - lastX) * 0.28; rotP = Math.max(-88, Math.min(88, rotP - (t.clientY - lastY) * 0.28)); lastX = t.clientX; lastY = t.clientY; tipEl.style.display = 'none'; hoverId = null; }, { passive: false });
+    window.addEventListener('touchend', () => { if (dragging) { dragging = false; setTimeout(() => { if (!dragging) autoR = true; }, 2500); } });
     window.addEventListener('mouseup', () => { if (dragging){ dragging = false; wrap.style.cursor = 'grab'; setTimeout(() => { if (!dragging) autoR = true; }, 2500); } });
     canvas.addEventListener('mousemove', e => {
       const rect = canvas.getBoundingClientRect();
