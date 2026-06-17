@@ -5,6 +5,23 @@
   <title>Criar conta · Blaxx Pontos</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/design-system.css" />
+  <style>
+    .wz-steps { display:flex; gap:8px; margin:14px 0 20px; }
+    .wz-step { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; }
+    .wz-step .wz-dot { width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font-size:13px; font-weight:700; background:var(--gray-100,#2a2a2a); color:var(--text-muted,#999); transition:all .2s ease; }
+    .wz-step .wz-label { font-size:11px; color:var(--text-muted,#999); text-align:center; font-weight:600; }
+    .wz-step.is-active .wz-dot { background:var(--blaxx-lime,#C6F432); color:var(--blaxx-black,#0A0A0A); }
+    .wz-step.is-active .wz-label { color:var(--text,#fff); }
+    .wz-step.is-done .wz-dot { background:var(--blaxx-black,#0A0A0A); color:var(--blaxx-lime,#C6F432); border:2px solid var(--blaxx-lime,#C6F432); }
+    .wz-step::after { content:''; position:absolute; top:15px; left:calc(50% + 18px); right:calc(-50% + 18px); height:2px; background:var(--border,rgba(255,255,255,.12)); }
+    .wz-step:last-child::after { display:none; }
+    .wz-pane { display:none; } .wz-pane.on { display:block; }
+    .wz-nav { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:22px; }
+    .wz-nav .btn { min-width:130px; }
+    .wz-summary { margin-top:8px; border:1px solid var(--border,rgba(255,255,255,.12)); border-radius:var(--radius,12px); padding:12px 14px; display:grid; gap:8px; background:var(--blaxx-lime-light,rgba(198,244,50,.08)); }
+    .wz-summary > div { display:flex; justify-content:space-between; gap:12px; font-size:13px; }
+    .wz-summary span { color:var(--text-muted,#999); } .wz-summary b { max-width:60%; text-align:right; word-break:break-word; }
+  </style>
 </head>
 <body>
   <div class="main center" style="min-height:100vh;">
@@ -14,152 +31,116 @@
         <div class="tagline">Criar conta</div>
       </div>
       <div class="card elevated">
-        <span class="eyebrow">Cadastro</span>
-        <h3>Comece a acumular pontos</h3>
-        <p class="subtitle">Cadastro rápido. Sua carteira é criada automaticamente.</p>
+        <span class="eyebrow">Cadastro · passo <span id="bx-step-n">1</span> de 3</span>
+        <h3 id="bx-step-title">Seus dados</h3>
+
+        <div class="wz-steps">
+          <div class="wz-step is-active" data-i="0"><span class="wz-dot">1</span><span class="wz-label">Seus dados</span></div>
+          <div class="wz-step" data-i="1"><span class="wz-dot">2</span><span class="wz-label">Crie sua senha</span></div>
+          <div class="wz-step" data-i="2"><span class="wz-dot">3</span><span class="wz-label">Confirme e aceite</span></div>
+        </div>
 
         <form id="form-signup" autocomplete="on">
-          <div class="field">
-            <label for="name">Nome completo</label>
-            <input id="name" name="name" type="text" autocomplete="name" required minlength="3" />
-          </div>
-          <div class="field">
-            <label for="email">E-mail</label>
-            <input id="email" name="email" type="email" autocomplete="email"
-                   autocapitalize="none" spellcheck="false" required />
-          </div>
-          <div class="field">
-            <label for="cpf">CPF</label>
-            <input id="cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off"
-                   maxlength="14" placeholder="000.000.000-00" required />
-          </div>
-          <div class="field">
-            <label for="pix_key">Chave PIX (opcional)</label>
-            <input id="pix_key" name="pix_key" type="text" autocomplete="off"
-                   autocapitalize="none" spellcheck="false"
-                   placeholder="e-mail, telefone, CPF ou chave aleatória" />
-            <span class="hint">Você pode adicionar depois nas configurações.</span>
-          </div>
-          <div class="field">
-            <label for="password">Senha (mín. 7 caracteres)</label>
-            <input id="password" name="password" type="password" autocomplete="new-password"
-                   minlength="7" required />
-            <span class="hint" id="bx-strength">Use maiúscula, minúscula, número e caractere especial.</span>
-          </div>
-          <div class="field">
-            <label for="password-confirm">Confirmar senha</label>
-            <input id="password-confirm" name="password-confirm" type="password" autocomplete="new-password" required />
+          <!-- Passo 1 -->
+          <div class="wz-pane on" data-pane="0">
+            <div class="field">
+              <label for="name">Nome completo</label>
+              <input id="name" name="name" type="text" autocomplete="name" required minlength="3" />
+            </div>
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" required />
+            </div>
+            <div class="field">
+              <label for="cpf">CPF</label>
+              <input id="cpf" name="cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required />
+            </div>
           </div>
 
-          <div class="field" style="display:flex;align-items:flex-start;gap:10px;margin:18px 0 4px;">
-            <input type="checkbox" id="accept-terms" name="accept-terms" required
-                   style="margin-top:3px;flex-shrink:0;width:18px;height:18px;
-                          cursor:pointer;accent-color:#C6F432;" />
-            <label for="accept-terms"
-                   style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.75);
-                          cursor:pointer;flex:1;">
-              Li e aceito os
-              <a class="btn link" style="display:inline;padding:0;"
-                 onclick="go('termos.html')">termos de uso e a política de privacidade (LGPD)</a>.
-            </label>
+          <!-- Passo 2 -->
+          <div class="wz-pane" data-pane="1">
+            <div class="field">
+              <label for="password">Senha (mín. 7 caracteres)</label>
+              <input id="password" name="password" type="password" autocomplete="new-password" minlength="7" required />
+              <span class="hint" id="bx-strength">Use maiúscula, minúscula, número e caractere especial.</span>
+            </div>
+            <div class="field">
+              <label for="password-confirm">Confirmar senha</label>
+              <input id="password-confirm" name="password-confirm" type="password" autocomplete="new-password" required />
+            </div>
           </div>
 
-          <button class="btn primary lg block" type="submit" id="btn-submit" disabled>
-            Criar conta
-          </button>
+          <!-- Passo 3 -->
+          <div class="wz-pane" data-pane="2">
+            <div class="field">
+              <label for="pix_key">Chave PIX (opcional)</label>
+              <input id="pix_key" name="pix_key" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e-mail, telefone, CPF ou chave aleatória" />
+              <span class="hint">Você pode adicionar depois nas configurações.</span>
+            </div>
+            <div class="wz-summary">
+              <div><span>Nome</span><b id="sm-name">—</b></div>
+              <div><span>E-mail</span><b id="sm-email">—</b></div>
+              <div><span>CPF</span><b id="sm-cpf">—</b></div>
+            </div>
+            <div class="field" style="display:flex;align-items:flex-start;gap:10px;margin:18px 0 4px;">
+              <input type="checkbox" id="accept-terms" name="accept-terms" required style="margin-top:3px;flex-shrink:0;width:18px;height:18px;cursor:pointer;accent-color:#C6F432;" />
+              <label for="accept-terms" style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.75);cursor:pointer;flex:1;">
+                Li e aceito os
+                <a class="btn link" style="display:inline;padding:0;" onclick="go('termos.html')">termos de uso e a política de privacidade (LGPD)</a>.
+              </label>
+            </div>
+          </div>
+
+          <!-- Navegação -->
+          <div class="wz-nav">
+            <button type="button" class="btn ghost lg" id="btn-back" style="display:none;">Voltar</button>
+            <a class="btn link" id="btn-have-account" onclick="go('login.html')">Já tenho conta</a>
+            <button type="button" class="btn primary lg" id="btn-next">Continuar</button>
+            <button class="btn primary lg" type="submit" id="btn-submit" style="display:none;" disabled>Criar conta</button>
+          </div>
         </form>
-
-        <div class="center-text mt-6">
-          <a class="btn link" onclick="go('login.html')">Já tenho conta</a>
-        </div>
       </div>
     </div>
   </div>
 
   <script src="../assets/app.js"></script>
   <script>
-    // Se ja logado, manda pro dashboard — evita flash do form de cadastro.
     if (typeof redirectIfLoggedIn === 'function' && redirectIfLoggedIn()) {
       /* navegando, abort */
     } else {
 
-    // -----------------------------------------------------------------
-    // Persistencia do rascunho · nao perde o preenchido se o usuario
-    // navegar pro termos.html e voltar. Senha NAO e' persistida.
-    // -----------------------------------------------------------------
+    // ---- rascunho (sem senha) ----
     const DRAFT_KEY = 'blaxx_signup_draft';
     const DRAFT_FIELDS = ['name', 'email', 'cpf', 'pix_key'];
-
     function loadDraft() {
       try {
         const saved = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || 'null');
         if (!saved) return;
-        DRAFT_FIELDS.forEach((f) => {
-          const el = document.getElementById(f);
-          if (el && typeof saved[f] === 'string') el.value = saved[f];
-        });
-        const cb = document.getElementById('accept-terms');
-        if (cb && saved.accepted) cb.checked = true;
-      } catch (_) { /* sessionStorage indisponivel */ }
+        DRAFT_FIELDS.forEach((f) => { const el = document.getElementById(f); if (el && typeof saved[f] === 'string') el.value = saved[f]; });
+        const cb = document.getElementById('accept-terms'); if (cb && saved.accepted) cb.checked = true;
+      } catch (_) {}
     }
-
     function saveDraft() {
       const data = { accepted: document.getElementById('accept-terms').checked };
-      DRAFT_FIELDS.forEach((f) => {
-        const el = document.getElementById(f);
-        if (el) data[f] = el.value;
-      });
+      DRAFT_FIELDS.forEach((f) => { const el = document.getElementById(f); if (el) data[f] = el.value; });
       try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch (_) {}
     }
-
-    function clearDraft() {
-      try { sessionStorage.removeItem(DRAFT_KEY); } catch (_) {}
-    }
-
-    DRAFT_FIELDS.forEach((f) => {
-      const el = document.getElementById(f);
-      if (el) el.addEventListener('input', saveDraft);
-    });
+    function clearDraft() { try { sessionStorage.removeItem(DRAFT_KEY); } catch (_) {} }
+    DRAFT_FIELDS.forEach((f) => { const el = document.getElementById(f); if (el) el.addEventListener('input', saveDraft); });
     document.getElementById('accept-terms').addEventListener('change', saveDraft);
-
-    // Restaura ANTES de qualquer outra logica que leia o DOM
     loadDraft();
 
-    // -----------------------------------------------------------------
-    // Mascara de CPF
-    // -----------------------------------------------------------------
+    // ---- máscara CPF ----
     document.getElementById('cpf').addEventListener('input', (e) => {
       const v = e.target.value.replace(/\D/g, '').slice(0, 11);
-      const masked = v
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-      e.target.value = masked;
+      e.target.value = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
     });
 
-    // -----------------------------------------------------------------
-    // Botao "Criar conta" so habilita apos aceitar os termos (LGPD)
-    // -----------------------------------------------------------------
-    const acceptCb = document.getElementById('accept-terms');
-    const submitBtn = document.getElementById('btn-submit');
-    function refreshSubmitState() {
-      submitBtn.disabled = !acceptCb.checked;
-      submitBtn.style.opacity = acceptCb.checked ? '1' : '0.55';
-      submitBtn.style.cursor = acceptCb.checked ? 'pointer' : 'not-allowed';
-    }
-    acceptCb.addEventListener('change', refreshSubmitState);
-    refreshSubmitState();
-
-    // -----------------------------------------------------------------
-    // Indicador inline de força de senha
-    // -----------------------------------------------------------------
+    // ---- força de senha ----
     const STRENGTH_COLORS = ['#ff6b6b', '#ff6b6b', '#ffb74d', '#a4d65e', '#a4d65e'];
     function passwordStrength(pwd) {
-      pwd = pwd || '';
-      // Política (spec do user): senha livre, mínimo 7 caracteres.
-      const ok = pwd.length >= 7;
-      const hints = ok ? [] : ['7+ caracteres'];
-      return { score: ok ? 5 : Math.min(4, pwd.length), label: ok ? 'ok' : 'mínimo 7 caracteres', hints, ok };
+      pwd = pwd || ''; const ok = pwd.length >= 7;
+      return { score: ok ? 5 : Math.min(4, pwd.length), label: ok ? 'ok' : 'mínimo 7 caracteres', hints: ok ? [] : ['7+ caracteres'], ok };
     }
     const senhaEl = document.getElementById('password');
     const strengthEl = document.getElementById('bx-strength');
@@ -167,38 +148,78 @@
     if (senhaEl && strengthEl) {
       senhaEl.addEventListener('input', () => {
         const v = senhaEl.value;
-        if (!v) {
-          strengthEl.textContent = defaultStrengthText;
-          strengthEl.style.color = '';
-          return;
-        }
+        if (!v) { strengthEl.textContent = defaultStrengthText; strengthEl.style.color = ''; return; }
         const r = passwordStrength(v);
         strengthEl.style.color = STRENGTH_COLORS[Math.max(0, r.score - 1)] || '';
         strengthEl.textContent = 'Senha ' + r.label + (r.hints.length ? ' — falta: ' + r.hints.join(', ') : ' ✓');
       });
     }
 
-    // -----------------------------------------------------------------
-    // Submit
-    // -----------------------------------------------------------------
+    // ---- wizard 3 passos ----
+    const TITLES = ['Seus dados', 'Crie sua senha', 'Confirme e aceite'];
+    const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    let step = 0;
+    const panes = Array.prototype.slice.call(document.querySelectorAll('.wz-pane'));
+    const stepsUi = Array.prototype.slice.call(document.querySelectorAll('.wz-step'));
+    const btnBack = document.getElementById('btn-back');
+    const btnNext = document.getElementById('btn-next');
+    const btnSubmit = document.getElementById('btn-submit');
+    const btnHave = document.getElementById('btn-have-account');
+    const acceptCb = document.getElementById('accept-terms');
+
+    function refreshSubmitState() {
+      btnSubmit.disabled = !acceptCb.checked;
+      btnSubmit.style.opacity = acceptCb.checked ? '1' : '0.55';
+      btnSubmit.style.cursor = acceptCb.checked ? 'pointer' : 'not-allowed';
+    }
+    acceptCb.addEventListener('change', refreshSubmitState);
+
+    function show(n) {
+      step = n;
+      panes.forEach((p, i) => p.classList.toggle('on', i === n));
+      stepsUi.forEach((s, i) => { s.classList.toggle('is-active', i === n); s.classList.toggle('is-done', i < n); });
+      document.getElementById('bx-step-n').textContent = (n + 1);
+      document.getElementById('bx-step-title').textContent = TITLES[n];
+      btnBack.style.display = n > 0 ? '' : 'none';
+      btnHave.style.display = n === 0 ? '' : 'none';
+      btnNext.style.display = n < 2 ? '' : 'none';
+      btnSubmit.style.display = n === 2 ? '' : 'none';
+      if (n === 2) {
+        document.getElementById('sm-name').textContent = document.getElementById('name').value || '—';
+        document.getElementById('sm-email').textContent = document.getElementById('email').value || '—';
+        document.getElementById('sm-cpf').textContent = document.getElementById('cpf').value || '—';
+        refreshSubmitState();
+      }
+      const first = panes[n].querySelector('input:not([type=checkbox])');
+      if (first) setTimeout(() => first.focus(), 40);
+    }
+
+    function validate(n) {
+      if (n === 0) {
+        const name = document.getElementById('name').value.trim();
+        if (name.length < 4 || name.split(/\s+/).length < 2) return 'Informe seu nome completo (nome e sobrenome).';
+        if (!EMAIL_RX.test(document.getElementById('email').value.trim())) return 'E-mail inválido.';
+        if (document.getElementById('cpf').value.replace(/\D/g, '').length !== 11) return 'CPF incompleto.';
+      } else if (n === 1) {
+        if (!passwordStrength(document.getElementById('password').value).ok) return 'A senha precisa ter no mínimo 7 caracteres.';
+        if (document.getElementById('password').value !== document.getElementById('password-confirm').value) return 'As senhas não conferem.';
+      }
+      return null;
+    }
+
+    btnNext.addEventListener('click', () => { const err = validate(step); if (err) { toast(err, 'error', 3200); return; } show(Math.min(2, step + 1)); });
+    btnBack.addEventListener('click', () => show(Math.max(0, step - 1)));
+    show(0);
+
+    // ---- submit ----
     document.getElementById('form-signup').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!acceptCb.checked) {
-        toast('Voce precisa aceitar os termos para criar a conta.', 'error', 3200);
-        return;
-      }
+      const e0 = validate(0); if (e0) { show(0); toast(e0, 'error', 3200); return; }
+      const e1 = validate(1); if (e1) { show(1); toast(e1, 'error', 3200); return; }
+      if (!acceptCb.checked) { toast('Você precisa aceitar os termos para criar a conta.', 'error', 3200); return; }
       const pwd = document.getElementById('password').value;
       const pwdConfirm = document.getElementById('password-confirm').value;
-      if (!passwordStrength(pwd).ok) {
-        toast('A senha precisa ter no mínimo 7 caracteres.', 'error', 3200);
-        return;
-      }
-      if (pwd !== pwdConfirm) {
-        toast('Senhas não conferem.', 'error', 3200);
-        return;
-      }
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Criando...';
+      btnSubmit.disabled = true; btnSubmit.textContent = 'Criando...';
       try {
         const data = await api('/auth/register', {
           method: 'POST',
@@ -207,21 +228,12 @@
             email: document.getElementById('email').value.trim().toLowerCase(),
             cpf: document.getElementById('cpf').value.replace(/\D/g, ''),
             pix_key: document.getElementById('pix_key').value.trim(),
-            password: pwd,
-            password_confirm: pwdConfirm,
-            // Backend exige 3 aceites separados (Termos + Privacidade + LGPD).
-            // Frontend cobre os 3 docs via 1 checkbox unico (o link "termos"
-            // leva ao documento que inclui Termos+Privacidade+LGPD).
-            accept_terms: true,
-            accept_privacy: true,
-            accept_lgpd: true,
+            password: pwd, password_confirm: pwdConfirm,
+            accept_terms: true, accept_privacy: true, accept_lgpd: true,
             accept_terms_at: new Date().toISOString(),
           },
         });
         clearDraft();
-        // Compatível com 2 contratos:
-        //  - backend antigo: emite token na hora -> Session + dashboard
-        //  - backend novo: status pending_verification + sem token -> validacao
         if (data && data.token) {
           Session.set({ token: data.token, user: data.user });
           toast('Conta criada! Bem-vindo, ' + (data.user.name || '').split(' ')[0], 'success');
@@ -232,12 +244,11 @@
         }
       } catch (err) {
         toast(err.message || 'Falha no cadastro', 'error', 3200);
-        submitBtn.textContent = 'Criar conta';
-        refreshSubmitState();
+        btnSubmit.textContent = 'Criar conta'; refreshSubmitState();
       }
     });
 
-    } // fecha o else do redirectIfLoggedIn (linha ~163)
+    } // fecha o else do redirectIfLoggedIn
   </script>
 </body>
 </html>
