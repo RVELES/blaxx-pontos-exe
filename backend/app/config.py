@@ -87,6 +87,14 @@ def _resolve_db_url() -> str:
 class Config:
     SQLALCHEMY_DATABASE_URI = _resolve_db_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Confiabilidade com Neon/serverless: o provedor FECHA conexões ociosas e o
+    # pooler derruba SSL, gerando "SSL connection has been closed unexpectedly"
+    # (500 no próximo SELECT). pool_pre_ping testa a conexão antes de usar e
+    # reconecta; pool_recycle descarta conexões velhas antes do timeout do Neon.
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 280,
+    }
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
     # ---------------- JWT ----------------
@@ -148,6 +156,17 @@ class Config:
     TRANSFER_MIN_POINTS = 100
     TRANSFER_MAX_POINTS_PER_DAY = 50_000
     PIX_CHARGE_TTL_SECONDS = 30 * 60
+
+    # ---------------- Step-up 2FA em operações sensíveis (B13) ----------------
+    # Acima deste valor, transferência/resgate exigem o código TOTP — MAS só
+    # para usuários que têm 2FA ativo (não-disruptivo p/ quem não configurou).
+    SENSITIVE_OP_THRESHOLD_PTS = int(os.environ.get("BLAXX_SENSITIVE_OP_THRESHOLD_PTS", 20_000))
+
+    # ---------------- Alertas de transações suspeitas (B14) ----------------
+    ALERT_HIGH_VALUE_PTS = int(os.environ.get("BLAXX_ALERT_HIGH_VALUE_PTS", 30_000))
+    ALERT_VELOCITY_COUNT = int(os.environ.get("BLAXX_ALERT_VELOCITY_COUNT", 5))
+    ALERT_VELOCITY_WINDOW_MIN = int(os.environ.get("BLAXX_ALERT_VELOCITY_WINDOW_MIN", 10))
+    ALERT_DISTINCT_RECIPIENTS = int(os.environ.get("BLAXX_ALERT_DISTINCT_RECIPIENTS", 4))
 
     @classmethod
     def brl_per_point(cls) -> float:

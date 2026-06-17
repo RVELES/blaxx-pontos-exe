@@ -168,7 +168,9 @@ def create_app(config: type[Config] | None = None, pix_provider=None) -> Flask:
         required_origins = {
             "https://blaxx-pontos-app.netlify.app",   # SPA web em produção (atual)
             "https://blaxxpontos.netlify.app",         # domínio Netlify legado
-            "https://blaxxpontos.com",       # caso configure domínio próprio
+            "https://blaxxpontos.com.br",      # domínio próprio (apex) — produção
+            "https://www.blaxxpontos.com.br",  # domínio próprio (www) — produção
+            "https://blaxxpontos.com",       # variação .com (caso usada)
             "https://www.blaxxpontos.com",
             "http://localhost:5173",          # Vite dev server (blaxx-spa)
             "http://127.0.0.1:5173",
