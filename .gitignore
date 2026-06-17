@@ -51,3 +51,6 @@ backend/pytest-cache-files-*/
 # Outros DB
 *.sqlite
 *.sqlite3
+
+# Local Netlify folder
+.netlify
