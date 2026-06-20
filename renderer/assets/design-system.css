@@ -1,5 +1,5 @@
 /* =======================================================================
-   Blaxx Pontos · Design System
+   BlaXx · Design System
    Fonte: Blaxx_Pontos_Projeto.pdf · seção 11
    ======================================================================= */
 
@@ -7,8 +7,8 @@
   /* Paleta de cores oficial */
   --blaxx-black:          #0A0A0A;   /* preto absoluto - headers, blocos de destaque */
   --blaxx-black-soft:     #1A1A1A;   /* preto suavizado */
-  --blaxx-lime:           #C6F432;   /* verde-limão Blaxx - acento institucional */
-  --blaxx-lime-dark:      #8FB81F;   /* verde-limão escuro - marcadores */
+  --blaxx-lime:           #7CFF00;   /* verde-limão Blaxx - acento institucional */
+  --blaxx-lime-dark:      #5AB800;   /* verde-limão escuro - marcadores */
   --blaxx-lime-light:     #F0FAD9;   /* verde-limão claro - destaques positivos */
   --blaxx-white:          #FFFFFF;
   --gray-50:              #FAFAFA;
@@ -142,7 +142,9 @@ h3, .display-3 { font-size: 22px; line-height: 1.25; }
   padding-left: 0;
 }
 .sidebar .logo .dot { color: var(--blaxx-lime-dark); }
-/* Brand mark "BlaxX" — tema light: wordmark preto sobre sidebar clara,
+/* Wordmark "Xx" em destaque neon (superfícies claras) — paridade com o lockup da marca */
+.mark .xx, .logo-mark .xx { color: var(--blaxx-lime-dark); }
+/* Brand mark "BlaXx" — tema light: wordmark preto sobre sidebar clara,
    identidade compartilhada com o AppIcon do Mac/iOS. */
 .sidebar .logo.logo-blaxx {
   display: flex;
@@ -351,7 +353,7 @@ h3, .display-3 { font-size: 22px; line-height: 1.25; }
   background: rgba(22,163,74,.12);
   color: var(--positive);
 }
-.growth-pill.on-dark { background: rgba(198,244,50,.16); color: var(--blaxx-lime); }
+.growth-pill.on-dark { background: rgba(124,255,0,.16); color: var(--blaxx-lime); }
 .growth-pill.negative { background: rgba(220,38,38,.12); color: var(--negative); }
 
 /* barras de distribuição da carteira */
@@ -497,7 +499,7 @@ h3, .display-3 { font-size: 22px; line-height: 1.25; }
 .field input:focus, .field select:focus, .field textarea:focus {
   outline: none;
   border-color: var(--blaxx-black);
-  box-shadow: 0 0 0 3px rgba(198,244,50,0.35);
+  box-shadow: 0 0 0 3px rgba(124,255,0,0.35);
 }
 .field .hint { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 .field.error input { border-color: var(--negative); }
@@ -664,7 +666,7 @@ table.blaxx tbody tr:last-child td { border-bottom: 0; }
   width: 36px; height: 36px; flex: none;
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 18px;
-  background: rgba(198,244,50,.16);
+  background: rgba(124,255,0,.16);
   border-radius: 10px;
 }
 .auth-aside .aside-foot { font-size: 12px; color: rgba(255,255,255,.5); position: relative; z-index: 1; }

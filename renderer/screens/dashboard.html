@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Início · Blaxx Pontos</title>
+  <title>Início · BlaXx</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/design-system.css" />
   <style>
@@ -15,7 +15,7 @@
     .cc-section-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
     .cc-section-head h3 { margin:0; font-size:17px; }
 
-    .cc-hero { padding:28px; color:#fff; background:radial-gradient(circle at 84% 24%, rgba(198,244,50,.2), transparent 28%), linear-gradient(140deg,#06080A,#0D1217); }
+    .cc-hero { padding:28px; color:#fff; background:radial-gradient(circle at 84% 24%, rgba(124,255,0,.2), transparent 28%), linear-gradient(140deg,#06080A,#0D1217); }
     .cc-hero-row { display:grid; grid-template-columns:1fr .9fr; gap:18px; align-items:center; }
     .cc-eyebrow { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.6); font-weight:600; }
     .cc-balance { font-size:52px; font-weight:900; letter-spacing:-.03em; line-height:.95; margin:16px 0 4px; }
@@ -39,18 +39,18 @@
     .cc-market { padding:24px; background:#06080A; color:#fff; }
     .cc-exps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
     .cc-exp { text-align:left; border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:16px; background:rgba(255,255,255,.03); cursor:pointer; transition:transform .18s ease, border-color .18s ease; color:#fff; }
-    .cc-exp:hover { transform:translateY(-4px); border-color:rgba(198,244,50,.4); }
+    .cc-exp:hover { transform:translateY(-4px); border-color:rgba(124,255,0,.4); }
     .cc-exp .em { font-size:32px; }
     .cc-exp strong { display:block; font-size:15px; margin-top:10px; }
     .cc-exp span { color:var(--blaxx-lime); font-weight:800; font-size:12px; }
 
     .cc-map { padding:22px; background:#06080A; color:#fff; }
-    .cc-map-canvas { height:220px; border-radius:18px; position:relative; overflow:hidden; background:radial-gradient(circle at 22% 42%, rgba(198,244,50,.7), transparent 2.3%), radial-gradient(circle at 50% 36%, rgba(198,244,50,.65), transparent 3%), radial-gradient(circle at 72% 50%, rgba(198,244,50,.5), transparent 2.5%), radial-gradient(circle at 39% 64%, rgba(198,244,50,.3), transparent 2%), linear-gradient(135deg,#151a1f,#06080A); }
+    .cc-map-canvas { height:220px; border-radius:18px; position:relative; overflow:hidden; background:radial-gradient(circle at 22% 42%, rgba(124,255,0,.7), transparent 2.3%), radial-gradient(circle at 50% 36%, rgba(124,255,0,.65), transparent 3%), radial-gradient(circle at 72% 50%, rgba(124,255,0,.5), transparent 2.5%), radial-gradient(circle at 39% 64%, rgba(124,255,0,.3), transparent 2%), linear-gradient(135deg,#151a1f,#06080A); }
     .cc-legend { position:absolute; left:18px; bottom:16px; display:flex; gap:10px; flex-wrap:wrap; }
     .cc-legend span { background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:7px 11px; font-size:12px; font-weight:700; }
 
     .cc-levels { padding:22px; background:var(--surface); border:1px solid var(--gray-200); }
-    .cc-level-card { height:118px; border-radius:18px; color:#fff; padding:20px; margin:14px 0; background:radial-gradient(circle at 80% 40%, rgba(198,244,50,.2), transparent 24%), linear-gradient(135deg,#101318,#010101); }
+    .cc-level-card { height:118px; border-radius:18px; color:#fff; padding:20px; margin:14px 0; background:radial-gradient(circle at 80% 40%, rgba(124,255,0,.2), transparent 24%), linear-gradient(135deg,#101318,#010101); }
     .cc-level-card h2 { margin:0; font-size:28px; letter-spacing:-1px; }
     .cc-level-card small { opacity:.82; }
     .cc-prog-head { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-secondary); }
@@ -67,7 +67,7 @@
 
     .cc-score { padding:24px; text-align:center; color:#fff; background:linear-gradient(140deg,#07090b,#11151a); }
     .cc-score h3 { margin:0 0 6px; }
-    .cc-ring { width:170px; height:170px; border-radius:50%; margin:16px auto; background:conic-gradient(var(--blaxx-lime) 0 89%, rgba(198,244,50,.22) 89% 100%); display:grid; place-items:center; }
+    .cc-ring { width:170px; height:170px; border-radius:50%; margin:16px auto; background:conic-gradient(var(--blaxx-lime) 0 89%, rgba(124,255,0,.22) 89% 100%); display:grid; place-items:center; }
     .cc-ring-inner { width:128px; height:128px; border-radius:50%; background:#07090b; display:grid; place-items:center; }
     .cc-ring b { font-size:46px; }
     .cc-score h2 { margin:6px 0; }
@@ -120,7 +120,7 @@
               <div class="cc-chart">
                 <svg viewBox="0 0 500 180" preserveAspectRatio="none">
                   <path d="M20 140 C80 105, 95 120, 130 88 S195 70, 220 88 S280 130, 320 80 S390 48, 470 20" fill="none" stroke="var(--blaxx-lime)" stroke-width="7" stroke-linecap="round"/>
-                  <path d="M20 140 C80 105, 95 120, 130 88 S195 70, 220 88 S280 130, 320 80 S390 48, 470 20 L470 180 L20 180 Z" fill="rgba(198,244,50,.15)"/>
+                  <path d="M20 140 C80 105, 95 120, 130 88 S195 70, 220 88 S280 130, 320 80 S390 48, 470 20 L470 180 L20 180 Z" fill="rgba(124,255,0,.15)"/>
                 </svg>
                 <div class="cc-gain"><span id="cc-month">+0</span><br><small>pts este mês</small></div>
               </div>

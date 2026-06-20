@@ -1,5 +1,5 @@
 /**
- * Blaxx Pontos — runtime do renderer.
+ * BlaXx — runtime do renderer.
  * - Wrapper para o backend Flask em http://127.0.0.1:5050.
  * - Sessão em sessionStorage (some quando fecha o app).
  * - Helpers de navegação entre telas e toasts.
@@ -394,7 +394,20 @@ function renderSidebar(active) {
 
   return `
     <aside class="sidebar">
-      <div class="logo logo-blaxx"><img class="brand-logo" src="../assets/blaxx-logo-dark.png" alt="BLAXX Pontos" /></div>
+      <div class="logo logo-blaxx"><div style="display:flex;align-items:center;gap:10px">
+        <svg width="30" height="30" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:#5AB800">
+          <mask id="bxm-exeside" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+            <rect width="64" height="64" fill="#000"/>
+            <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
+            <path d="M14 10H33a11 11 0 0 1 0 22H14Z" fill="#fff"/>
+            <path d="M14 31h21a11.5 11.5 0 0 1 0 23H14Z" fill="#fff"/>
+            <rect x="25" y="16" width="12" height="10" rx="2.5" fill="#000"/>
+            <rect x="25" y="36" width="13" height="12" rx="2.5" fill="#000"/>
+          </mask>
+          <rect width="64" height="64" fill="currentColor" mask="url(#bxm-exeside)"/>
+        </svg>
+        <span style="font-family:Inter,-apple-system,system-ui,sans-serif;font-weight:800;font-size:27px;letter-spacing:-0.03em;line-height:1"><span style="color:#0A0D12">Bla</span><span style="color:#5AB800">Xx</span></span>
+      </div></div>
 
       <div class="section-label">Programa</div>
       ${items.map(it => `
@@ -418,7 +431,7 @@ function renderSidebar(active) {
 
       <div class="sidebar-footer">
         ${initial} · ${user.name}<br/>
-        BlaxX · v0.1.0
+        BlaXx · v0.1.0
       </div>
     </aside>
   `;
@@ -474,7 +487,7 @@ function renderTopbar({ eyebrow = 'Bem-vindo de volta', title } = {}) {
     if (document.getElementById('blaxx-wa-fab')) return;
     var a = document.createElement('a');
     a.id = 'blaxx-wa-fab';
-    a.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent('Olá! Preciso de ajuda com a Blaxx Pontos.');
+    a.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent('Olá! Preciso de ajuda com a BlaXx.');
     a.target = '_blank'; a.rel = 'noopener noreferrer';
     a.title = 'Falar no WhatsApp'; a.setAttribute('aria-label', 'Falar no WhatsApp');
     a.style.cssText = 'position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.28);z-index:900;text-decoration:none;';

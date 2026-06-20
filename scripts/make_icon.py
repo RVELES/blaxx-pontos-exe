@@ -27,8 +27,8 @@ OUTPUT = ROOT / "assets" / "icon.ico"
 
 # Cores Blaxx (espec. design system)
 BLACK = (10, 10, 10, 255)            # #0A0A0A
-LIME = (198, 244, 50, 255)           # #C6F432
-LIME_DARK = (143, 184, 31, 255)      # #8FB81F
+LIME = (124, 255, 0, 255)            # #7CFF00
+LIME_DARK = (90, 184, 0, 255)        # #5AB800
 WHITE = (255, 255, 255, 255)
 
 

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Notificações · Blaxx Pontos</title>
+  <title>Notificações · BlaXx</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/design-system.css" />
 </head>
@@ -51,7 +51,7 @@
         }
         document.getElementById('list').innerHTML = `<div class="col">` +
           items.map(n => `
-            <div class="row" style="padding:14px 0;border-bottom:1px solid var(--border);${n.is_read?'':'background:rgba(198,244,50,0.06);'}cursor:pointer;"
+            <div class="row" style="padding:14px 0;border-bottom:1px solid var(--border);${n.is_read?'':'background:rgba(124,255,0,0.06);'}cursor:pointer;"
                  onclick="markRead('${n.id}')">
               <div class="avatar" style="background:${bgFor(n.type)};color:${fgFor(n.type)};flex-shrink:0;">
                 ${n.icon || '!'}

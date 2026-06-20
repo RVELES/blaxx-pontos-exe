@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' http://127.0.0.1:* https://*.fly.dev; img-src 'self' data:; font-src 'self' https: data:; connect-src 'self' http://127.0.0.1:* https://*.fly.dev https://*.blaxxpontos.com;" />
-  <title>Blaxx Pontos</title>
+  <title>BlaXx</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
@@ -16,15 +16,15 @@
     .splash { text-align: center; max-width: 480px; width: 90%; padding: 24px; }
     .brand { font-family: 'Playfair Display', serif; font-size: 56px;
              font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
-    .brand .dot { color: #C6F432; }
+    .brand .dot { color: #7CFF00; }
     .brand .brand-logo { display: block; width: 280px; max-width: 64vw; height: auto; margin: 0 auto; }
     .tagline { margin-top: 12px; letter-spacing: 0.18em;
                text-transform: uppercase; font-size: 11px;
                color: rgba(255,255,255,0.45); }
     .mode-badge { display:inline-block; margin-top:14px; padding:3px 10px;
-                  border:1px solid rgba(198,244,50,0.35); border-radius:999px;
+                  border:1px solid rgba(124,255,0,0.35); border-radius:999px;
                   font-size:10px; letter-spacing:.16em; text-transform:uppercase;
-                  color:#C6F432; opacity:0; transition:opacity .3s; }
+                  color:#7CFF00; opacity:0; transition:opacity .3s; }
     .mode-badge.visible { opacity: 1; }
     .progress-wrap { margin-top: 36px; width: 100%; max-width: 320px;
                      margin-left: auto; margin-right: auto; }
@@ -32,7 +32,7 @@
                     background: rgba(255,255,255,0.08);
                     border-radius: 999px; overflow: hidden; position: relative; }
     .progress-fill { position: absolute; inset: 0; width: 0%;
-                     background: #C6F432;
+                     background: #7CFF00;
                      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                      border-radius: 999px; }
     .progress-fill.indeterminate { width: 32% !important;
@@ -51,7 +51,7 @@
     .error-title { font-weight: 600; margin-bottom: 6px; color: #fecaca; }
     .error code { background: rgba(0,0,0,0.3); padding: 1px 6px;
                   border-radius: 4px; font-size: 12px; }
-    .retry-btn { margin-top: 14px; background: #C6F432; color: #0A0A0A;
+    .retry-btn { margin-top: 14px; background: #7CFF00; color: #0A0A0A;
                  border: 0; padding: 8px 16px; font-weight: 600;
                  font-size: 12px; border-radius: 6px; cursor: pointer;
                  font-family: inherit; }
@@ -59,7 +59,20 @@
 </head>
 <body>
   <div class="splash">
-    <div class="brand"><img class="brand-logo" src="assets/blaxx-logo.png" alt="BLAXX Pontos" /></div>
+    <div class="brand" style="display:flex;align-items:center;justify-content:center;gap:14px">
+      <svg width="56" height="56" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:#7CFF00">
+        <mask id="bxm-splash" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+          <rect width="64" height="64" fill="#000"/>
+          <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
+          <path d="M14 10H33a11 11 0 0 1 0 22H14Z" fill="#fff"/>
+          <path d="M14 31h21a11.5 11.5 0 0 1 0 23H14Z" fill="#fff"/>
+          <rect x="25" y="16" width="12" height="10" rx="2.5" fill="#000"/>
+          <rect x="25" y="36" width="13" height="12" rx="2.5" fill="#000"/>
+        </mask>
+        <rect width="64" height="64" fill="currentColor" mask="url(#bxm-splash)"/>
+      </svg>
+      <span style="font-family:Inter,-apple-system,system-ui,sans-serif;font-weight:800;font-size:52px;letter-spacing:-0.03em;line-height:1"><span style="color:#fff">Bla</span><span style="color:#7CFF00">Xx</span></span>
+    </div>
     <div class="tagline">Plataforma institucional de pontos</div>
     <div class="mode-badge" id="mode-badge"></div>
 

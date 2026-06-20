@@ -257,7 +257,7 @@ def register():
     db.session.add(Wallet(user_id=user.id, balance_pts=0, pending_pts=0))
     db.session.add(Notification(
         user_id=user.id, type="system",
-        title="Bem-vindo ao Blaxx Pontos",
+        title="Bem-vindo ao BlaXx",
         body="Confirme seu e-mail para liberar todas as funcionalidades.",
         icon="★",
     ))
@@ -574,7 +574,7 @@ def google_sign_in():
         db.session.add(Wallet(user_id=user.id, balance_pts=0, pending_pts=0))
         db.session.add(Notification(
             user_id=user.id, type="system",
-            title="Bem-vindo ao Blaxx Pontos",
+            title="Bem-vindo ao BlaXx",
             body="Sua conta foi criada via Google. Complete seu CPF no Perfil para liberar resgates PIX.",
             icon="★",
         ))

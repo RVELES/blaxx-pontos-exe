@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BlaXx Pontos — Compre. Ganhe. Troque. Envie.</title>
+<title>BlaXx — Compre. Ganhe. Troque. Envie.</title>
 <meta name="description" content="Transforme seus pontos em Pix, milhas, hotéis e salas VIP — com os melhores parceiros do Brasil e do mundo.">
 
 <!-- ============================================================= -->
@@ -20,7 +20,7 @@
   html,body{margin:0}
   body{
     background:
-      radial-gradient(1200px 700px at 80% -10%, rgba(182,242,61,.10), transparent 60%),
+      radial-gradient(1200px 700px at 80% -10%, rgba(124,255,0,.10), transparent 60%),
       radial-gradient(900px 600px at -10% 30%, rgba(120,90,240,.07), transparent 60%),
       #08080b;
     color:#ece8e0;
@@ -30,7 +30,7 @@
   }
   a{color:inherit}
   @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-  ::selection{background:rgba(182,242,61,.30)}
+  ::selection{background:rgba(124,255,0,.30)}
   ::-webkit-scrollbar{width:8px;height:8px}
   ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
 
@@ -38,7 +38,7 @@
   .navlink{color:#b5afa3;font-size:14.5px;text-decoration:none}
   .navlink:hover{color:#ece8e0}
   .logocell{display:flex;align-items:center;justify-content:center;gap:12px;height:84px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.02);padding:14px;transition:all .2s}
-  .logocell:hover{background:rgba(255,255,255,.05);border-color:rgba(182,242,61,.3)}
+  .logocell:hover{background:rgba(255,255,255,.05);border-color:rgba(124,255,0,.3)}
   .logocell img{width:30px;height:30px;object-fit:contain;border-radius:7px;flex:none}
   .logocell span{font-family:'Sora',sans-serif;font-weight:700;font-size:15.5px;color:#d8d2c6;letter-spacing:-.3px;white-space:nowrap}
   .chip{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:13px;cursor:pointer;user-select:none;transition:all .2s;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02)}
@@ -75,8 +75,19 @@
   <!-- ============ NAV ============ -->
   <nav style="position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(8,8,11,.72);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.07)">
     <div style="display:flex;align-items:center;gap:42px">
-      <div style="display:flex;align-items:baseline;gap:2px;font-family:'Sora',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.5px">
-        <span style="color:#fff">Bla</span><span style="color:var(--accent)">Xx</span><span style="font-weight:500;color:#8b867b;font-size:15px;margin-left:6px;letter-spacing:1px">PONTOS</span>
+      <div style="display:flex;align-items:center;gap:9px;font-family:'Sora',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.5px">
+        <svg width="25" height="25" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:var(--accent)">
+          <mask id="bxm-home-nav" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+            <rect width="64" height="64" fill="#000"/>
+            <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
+            <path d="M14 10H33a11 11 0 0 1 0 22H14Z" fill="#fff"/>
+            <path d="M14 31h21a11.5 11.5 0 0 1 0 23H14Z" fill="#fff"/>
+            <rect x="25" y="16" width="12" height="10" rx="2.5" fill="#000"/>
+            <rect x="25" y="36" width="13" height="12" rx="2.5" fill="#000"/>
+          </mask>
+          <rect width="64" height="64" fill="currentColor" mask="url(#bxm-home-nav)"/>
+        </svg>
+        <span style="display:inline-flex;align-items:baseline"><span style="color:#fff">Bla</span><span style="color:var(--accent)">Xx</span></span>
       </div>
       <div class="menu" style="display:flex;gap:30px">
         <a class="navlink" href="#como">Como funciona</a>
@@ -87,14 +98,14 @@
     </div>
     <div style="display:flex;align-items:center;gap:14px">
       <button style="background:none;border:none;color:#cfc9bd;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;padding:10px 8px" onclick="location.href='login.html'">Entrar</button>
-      <button style="background:var(--accent);color:#14210a;border:none;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;padding:11px 20px;border-radius:11px;box-shadow:0 8px 26px rgba(182,242,61,.22)" onclick="location.href='cadastro.html'">Criar conta grátis</button>
+      <button style="background:var(--accent);color:#14210a;border:none;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;padding:11px 20px;border-radius:11px;box-shadow:0 8px 26px rgba(124,255,0,.22)" onclick="location.href='cadastro.html'">Criar conta grátis</button>
     </div>
   </nav>
 
   <!-- ============ HERO ============ -->
   <header class="wrap grid2" style="padding:72px 40px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center">
     <div>
-      <div style="display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);border:1px solid rgba(182,242,61,.3);border-radius:100px;padding:7px 16px;margin-bottom:26px">
+      <div style="display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);border:1px solid rgba(124,255,0,.3);border-radius:100px;padding:7px 16px;margin-bottom:26px">
         <span style="width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)"></span>PONTOS · PIX · VANTAGENS
       </div>
       <h1 class="hero" style="font-family:'Sora',sans-serif;font-weight:800;font-size:60px;line-height:1.02;letter-spacing:-2px;margin:0 0 22px">
@@ -105,7 +116,7 @@
         A plataforma que transforma seus pontos em <strong style="color:#ece8e0;font-weight:600">Pix na hora</strong>, milhas, diárias de hotel e salas VIP — com os melhores parceiros do Brasil e do mundo.
       </p>
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:40px">
-        <button style="background:var(--accent);color:#14210a;border:none;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;padding:15px 28px;border-radius:13px;box-shadow:0 12px 34px rgba(182,242,61,.24)" onclick="location.href='cadastro.html'">Começar agora</button>
+        <button style="background:var(--accent);color:#14210a;border:none;font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;padding:15px 28px;border-radius:13px;box-shadow:0 12px 34px rgba(124,255,0,.24)" onclick="location.href='cadastro.html'">Começar agora</button>
         <a href="#como" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:#ece8e0;font-size:15.5px;font-weight:600;padding:15px 26px;border-radius:13px;border:1px solid rgba(255,255,255,.14)">Ver como funciona →</a>
       </div>
       <div id="heroStats" style="display:flex;gap:34px"></div>
@@ -116,7 +127,7 @@
       <div style="position:relative;z-index:2;background:linear-gradient(160deg,rgba(28,28,36,.9),rgba(16,16,22,.92));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.5)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
           <span style="font-size:13.5px;color:#8b867b">Seu saldo BlaXx</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);border:1px solid rgba(182,242,61,.3);border-radius:6px;padding:3px 8px">PRO</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);border:1px solid rgba(124,255,0,.3);border-radius:6px;padding:3px 8px">PRO</span>
         </div>
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
           <span id="heroBalance" style="font-family:'Sora',sans-serif;font-weight:800;font-size:42px;color:#fff;letter-spacing:-1px">128.450</span>
@@ -204,13 +215,13 @@
 
   <!-- ============ CALCULADORA ============ -->
   <section class="wrap" style="margin-top:50px;padding:0 40px">
-    <div class="grid2" style="background:linear-gradient(150deg,rgba(22,30,10,.9),rgba(13,13,18,.95));border:1px solid rgba(182,242,61,.2);border-radius:26px;padding:48px;display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center">
+    <div class="grid2" style="background:linear-gradient(150deg,rgba(22,30,10,.9),rgba(13,13,18,.95));border:1px solid rgba(124,255,0,.2);border-radius:26px;padding:48px;display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center">
       <div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--accent);margin-bottom:14px">SIMULADOR</div>
         <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:34px;letter-spacing:-1px;margin:0 0 14px;color:#fff">Quanto valem seus pontos?</h2>
         <p style="font-size:15.5px;line-height:1.6;color:#aaa498;margin:0 0 28px">Arraste e veja, em tempo real, o que seus pontos rendem em Pix, milhas e diárias de hotel.</p>
         <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:40px;color:#fff;letter-spacing:-1px;margin-bottom:18px"><span id="calcPoints">50.000</span> <span style="font-size:18px;color:#8b867b;font-weight:500">pontos</span></div>
-        <input id="calcRange" type="range" min="1000" max="500000" step="1000" value="50000" style="width:100%;accent-color:#b6f23d;height:6px;cursor:pointer">
+        <input id="calcRange" type="range" min="1000" max="500000" step="1000" value="50000" style="width:100%;accent-color:#7CFF00;height:6px;cursor:pointer">
         <div style="display:flex;justify-content:space-between;font-size:12px;color:#5a554c;margin-top:8px;font-family:'JetBrains Mono',monospace"><span>1k</span><span>500k</span></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
@@ -241,7 +252,7 @@
 
   <!-- ============ CTA BAND ============ -->
   <section class="wrap" style="margin-top:30px;padding:0 40px">
-    <div style="position:relative;overflow:hidden;background:linear-gradient(120deg,#b6f23d,#8fd11f);border-radius:26px;padding:60px 48px;text-align:center">
+    <div style="position:relative;overflow:hidden;background:linear-gradient(120deg,#7CFF00,#8fd11f);border-radius:26px;padding:60px 48px;text-align:center">
       <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:42px;letter-spacing:-1.5px;margin:0 0 14px;color:#14210a">Seus pontos valem o mundo. Comece hoje.</h2>
       <p style="font-size:17px;color:#2e4310;margin:0 0 30px;font-weight:500">Crie sua conta grátis e resgate seu primeiro Pix em minutos.</p>
       <button style="background:#16140d;color:#fff;border:none;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;padding:16px 36px;border-radius:14px" onclick="location.href='cadastro.html'">Criar conta grátis</button>
@@ -252,7 +263,20 @@
   <footer class="wrap" style="margin-top:80px;padding:50px 40px;border-top:1px solid rgba(255,255,255,.07)">
     <div class="grid4" style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:44px">
       <div>
-        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:21px;margin-bottom:14px"><span style="color:#fff">Bla</span><span style="color:var(--accent)">Xx</span></div>
+        <div style="display:flex;align-items:center;gap:8px;font-family:'Sora',sans-serif;font-weight:800;font-size:21px;margin-bottom:14px">
+          <svg width="23" height="23" viewBox="0 0 64 64" fill="none" aria-hidden="true" style="display:block;flex:0 0 auto;color:var(--accent)">
+            <mask id="bxm-home-foot" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+              <rect width="64" height="64" fill="#000"/>
+              <rect x="14" y="10" width="11" height="44" rx="2.5" fill="#fff"/>
+              <path d="M14 10H33a11 11 0 0 1 0 22H14Z" fill="#fff"/>
+              <path d="M14 31h21a11.5 11.5 0 0 1 0 23H14Z" fill="#fff"/>
+              <rect x="25" y="16" width="12" height="10" rx="2.5" fill="#000"/>
+              <rect x="25" y="36" width="13" height="12" rx="2.5" fill="#000"/>
+            </mask>
+            <rect width="64" height="64" fill="currentColor" mask="url(#bxm-home-foot)"/>
+          </svg>
+          <span><span style="color:#fff">Bla</span><span style="color:var(--accent)">Xx</span></span>
+        </div>
         <p style="font-size:14px;line-height:1.6;color:#8b867b;margin:0;max-width:280px">Compre. Ganhe. Troque. Envie. A forma mais simples de fazer seus pontos valerem mais.</p>
       </div>
       <div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px">Produto</div><div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:#8b867b"><span>Como funciona</span><span>Parceiros</span><span>Mapa global</span><span>Calculadora</span></div></div>
@@ -260,7 +284,7 @@
       <div><div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:14px">Legal</div><div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:#8b867b"><span>Termos de uso</span><span>Privacidade</span><span>Segurança</span></div></div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;color:#5a554c;font-family:'JetBrains Mono',monospace">
-      <span>© 2026 BlaXx Pontos · CNPJ 00.000.000/0001-00</span>
+      <span>© 2026 BlaXx · CNPJ 00.000.000/0001-00</span>
       <span>Feito no Brasil 🇧🇷</span>
     </div>
   </footer>
@@ -268,14 +292,14 @@
 
 <script>
 /* =================================================================== *
- *  BLAXX PONTOS — CONFIGURAÇÃO DE DADOS                               *
+ *  BlaXx — CONFIGURAÇÃO DE DADOS                               *
  *  Edite SOMENTE este objeto CONFIG para popular a home.              *
  *  Cada chave está documentada em INSTRUCOES.md.                      *
  * =================================================================== */
 const CONFIG = {
   // -- Marca / tema --
   brandName: 'BlaXx',
-  accent: '#b6f23d',          // cor de destaque (verde limão)
+  accent: '#7CFF00',          // cor de destaque (verde limão)
 
   // -- Cartão de saldo do hero (apenas exibição) --
   hero: {
@@ -468,7 +492,7 @@ const CONFIG = {
   // steps
   $('stepsGrid').innerHTML = CONFIG.steps.map(s => {
     const bg = s.highlight ? 'linear-gradient(160deg,rgba(22,30,10,.85),rgba(13,16,9,.85))' : 'linear-gradient(160deg,rgba(22,22,28,.8),rgba(13,13,18,.8))';
-    const bd = s.highlight ? 'rgba(182,242,61,.25)' : 'rgba(255,255,255,.08)';
+    const bd = s.highlight ? 'rgba(124,255,0,.25)' : 'rgba(255,255,255,.08)';
     const dc = s.highlight ? '#c3d3a8' : '#9a958c';
     return `<div style="background:${bg};border:1px solid ${bd};border-radius:20px;padding:28px">
       <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);margin-bottom:18px">${esc(s.n)}</div>
@@ -581,7 +605,7 @@ const CONFIG = {
       const cx = Wc/2, cy = Hc/2, R = Math.min(Wc,Hc)*0.42;
 
       let atm = ctx.createRadialGradient(cx,cy,R*0.88,cx,cy,R*1.28);
-      atm.addColorStop(0,'rgba(182,242,61,0.10)'); atm.addColorStop(1,'rgba(182,242,61,0)');
+      atm.addColorStop(0,'rgba(124,255,0,0.10)'); atm.addColorStop(1,'rgba(124,255,0,0)');
       ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx,cy,R*1.28,0,7); ctx.fill();
       let sph = ctx.createRadialGradient(cx-R*0.35,cy-R*0.35,R*0.1,cx,cy,R);
       sph.addColorStop(0,'#1a2230'); sph.addColorStop(0.65,'#0e131c'); sph.addColorStop(1,'#070709');
@@ -593,7 +617,7 @@ const CONFIG = {
       ctx.beginPath(); path(land); ctx.fillStyle = 'rgba(58,62,80,0.95)'; ctx.fill();
       ctx.beginPath(); path(coast); ctx.strokeStyle = 'rgba(186,190,214,0.55)'; ctx.lineWidth = 0.8; ctx.stroke();
       ctx.beginPath(); path(borders); ctx.strokeStyle = 'rgba(132,136,166,0.42)'; ctx.lineWidth = 0.5; ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.strokeStyle = 'rgba(182,242,61,0.25)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.strokeStyle = 'rgba(124,255,0,0.25)'; ctx.lineWidth = 1; ctx.stroke();
 
       for (const m of POINTS){
         m._vis = false;

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <title>Cartão Blaxx · Blaxx Pontos</title>
+  <title>Cartão Blaxx · BlaXx</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/design-system.css" />
 </head>
@@ -98,7 +98,7 @@
           document.getElementById('cartao').outerHTML = `
             <div class="balance-card" style="background:${tier.color||'#0B0B0C'};color:${tier.text_color||'#fff'};">
               <div class="row between">
-                <div class="label" style="color:${tier.text_color};opacity:.85;">Blaxx Pontos</div>
+                <div class="label" style="color:${tier.text_color};opacity:.85;">BlaXx</div>
                 <div class="chip" style="background:rgba(255,255,255,.14);color:${tier.text_color};border:1px solid rgba(255,255,255,.25);">${tier.label||''}</div>
               </div>
               <div class="amount" style="margin-top:18px;"><span>${fmtNum(c.balance_pts)}</span><span class="unit" style="color:${tier.text_color};">pts</span></div>
@@ -122,8 +122,8 @@
             const active = t.key === tier.key;
             return `
               <div class="row" style="align-items:center;gap:12px;padding:10px 12px;border-radius:12px;
-                   border:1px solid ${active ? 'var(--lime,#C6F432)' : 'rgba(255,255,255,.08)'};
-                   background:${active ? 'rgba(198,244,50,.06)' : 'transparent'};">
+                   border:1px solid ${active ? 'var(--lime,#7CFF00)' : 'rgba(255,255,255,.08)'};
+                   background:${active ? 'rgba(124,255,0,.06)' : 'transparent'};">
                 <span style="width:14px;height:14px;border-radius:99px;background:${t.color};border:1px solid rgba(255,255,255,.3);flex:0 0 auto;"></span>
                 <div style="flex:1;">
                   <div class="row between"><strong>${t.label}</strong><span class="muted" style="font-size:12px;">${t.key === 'vip' ? 'Por convite' : fmtNum(t.min_points) + '+ pts'}</span></div>

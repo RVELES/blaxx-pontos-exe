@@ -96,7 +96,7 @@ def _free_port() -> int:
 _SUCCESS_HTML = ("""<!doctype html>
 <html lang="pt-BR"><head>
 <meta charset="utf-8">
-<title>Blaxx Pontos · Login conclu&iacute;do</title>
+<title>BlaXx · Login conclu&iacute;do</title>
 <style>
   html,body{margin:0;height:100%;background:#0A0A0A;color:#fff;
             font-family:-apple-system,Segoe UI,Inter,system-ui,sans-serif;
@@ -104,19 +104,19 @@ _SUCCESS_HTML = ("""<!doctype html>
             text-align:center;padding:24px}
   .card{max-width:420px}
   .logo{font-size:36px;font-weight:700;letter-spacing:-0.02em}
-  .lime{color:#C6F432}
+  .lime{color:#7CFF00}
   .tag{margin-top:6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
        color:rgba(255,255,255,.45)}
   h2{margin-top:36px;font-size:22px;font-weight:600}
   p{color:rgba(255,255,255,.7);font-size:14px;margin:8px 0 0 0;line-height:1.5}
   .spinner{margin:28px auto 0;width:18px;height:18px;border-radius:50%;
-           border:2px solid rgba(255,255,255,.15);border-top-color:#C6F432;
+           border:2px solid rgba(255,255,255,.15);border-top-color:#7CFF00;
            animation:spin 0.8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head><body>
 <div class="card">
-  <div class="logo">blaxx<span class="lime">&middot;</span>pontos</div>
+  <div class="logo">Bla<span class="lime">Xx</span></div>
   <div class="tag">Plataforma institucional de pontos</div>
   <h2>Login conclu&iacute;do</h2>
   <p>Voltando ao aplicativo&hellip;</p>
@@ -128,7 +128,7 @@ _SUCCESS_HTML = ("""<!doctype html>
 _ERROR_HTML = ("""<!doctype html>
 <html lang="pt-BR"><head>
 <meta charset="utf-8">
-<title>Blaxx Pontos · Erro</title>
+<title>BlaXx · Erro</title>
 <style>
   html,body{margin:0;height:100%;background:#0A0A0A;color:#fff;
             font-family:-apple-system,Segoe UI,Inter,system-ui,sans-serif;

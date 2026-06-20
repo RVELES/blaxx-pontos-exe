@@ -296,7 +296,7 @@ class Config:
              "color": "#D4AF37", "text_color": "#0B0B0C",
              "perks": "Bônus em campanhas + benefícios premium."},
             {"key": "black", "label": "Black", "min_points": cls.TIER_BLACK_MIN,
-             "color": "#0B0B0C", "text_color": "#C6F432",
+             "color": "#0B0B0C", "text_color": "#7CFF00",
              "perks": "Tudo do Ouro + experiências Black e limites VIP."},
         ]
 
@@ -308,7 +308,7 @@ class Config:
     # "Por convite" para a chave 'vip'.
     VIP_TIER = {
         "key": "vip", "label": "BlaXx VIP", "min_points": 999_999_999,
-        "color": "#0A0A0A", "text_color": "#C6F432", "invite_only": True,
+        "color": "#0A0A0A", "text_color": "#7CFF00", "invite_only": True,
         "perks": "Compras de pontos ilimitadas, exchange preferencial e "
                  "concierge dedicado — exclusivo, apenas por convite.",
     }

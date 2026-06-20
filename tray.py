@@ -175,6 +175,6 @@ def _make_fallback_icon(size: int = 64) -> "Image.Image":
     pad = size // 8
     draw.ellipse(
         (pad, pad, size - pad, size - pad),
-        fill=(198, 244, 50, 255),                              # #C6F432
+        fill=(124, 255, 0, 255),                               # #7CFF00
     )
     return img
